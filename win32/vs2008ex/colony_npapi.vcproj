@@ -28,6 +28,7 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -61,7 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\npcolony.dll"
 				LinkIncremental="2"
+				ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\colony_npapi.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -86,6 +89,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="$(SolutionDir)..\..\scripts\make_all.bat $(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName) bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			/>
 		</Configuration>
 		<Configuration
@@ -134,7 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\npcolony.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\colony_npapi.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -161,6 +167,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="$(SolutionDir)..\..\scripts\make_all.bat $(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName) bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			/>
 		</Configuration>
 	</Configurations>
@@ -233,6 +240,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\colony_npapi\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\colony_npapi\stdafx.h"
 				>
 			</File>
@@ -278,6 +289,14 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\..\src\colony_npapi\colony_npapi.def"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\colony_npapi\colony_npapi.rc"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath="..\..\src\colony_npapi\ReadMe.txt"

@@ -75,9 +75,9 @@ NP_END_MACRO
 
 #endif
 
-static NPObject        *so       = NULL;
+static NPObject *so = NULL;
 static NPNetscapeFuncs *npnfuncs = NULL;
-static NPP              inst     = NULL;
+static NPP inst = NULL;
 
 /* NPN */
 
@@ -238,7 +238,7 @@ setWindow(NPP instance, NPWindow* pNPWindow) {
 extern "C" {
 #endif
 
-NPError OSCALL
+NPError OSCALL 
 NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
 	logmsg("npsimple: NP_GetEntryPoints\n");
 	nppfuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
@@ -255,7 +255,7 @@ NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
 #define HIBYTE(x) ((((uint32)(x)) & 0xff00) >> 8)
 #endif
 
-NPError OSCALL
+NPError OSCALL 
 NP_Initialize(NPNetscapeFuncs *npnf
 #if defined(ANDROID)
 			, NPPluginFuncs *nppfuncs, JNIEnv *env, jobject plugin_object
@@ -283,16 +283,15 @@ NPError OSCALL NP_Shutdown() {
 	return NPERR_NO_ERROR;
 }
 
-char *
-NP_GetMIMEDescription(void) {
+char * NP_GetMIMEDescription(void) {
 	logmsg("npsimple: NP_GetMIMEDescription\n");
 	return "application/x-vnd-aplix-foo:.foo:anselm@aplix.co.jp";
 }
 
 NPError OSCALL /* needs to be present for WebKit based browsers */
 NP_GetValue(void *npp, NPPVariable variable, void *value) {
-	inst = (NPP)npp;
-	return getValue((NPP)npp, variable, value);
+	inst = (NPP) npp;
+	return getValue((NPP) npp, variable, value);
 }
 
 #ifdef __cplusplus

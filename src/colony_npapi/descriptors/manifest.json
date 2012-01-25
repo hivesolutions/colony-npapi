@@ -1,0 +1,10 @@
+{
+    "name" : "Colony Gateway",
+    "id" : "00123456789ABCDEF0123456789ABCDEF0123456",
+    "version" : "1.0",
+    "description" : "Gateway plugin for interaction with the colony framwork",
+    "plugins" : [{
+                "path" : "npcolony.dll",
+                "public" : true
+            }]
+}

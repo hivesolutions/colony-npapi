@@ -18,10 +18,13 @@ shutil.copyfile(specification_path, temporary_path + "/manifest.json")
 shutil.copyfile(library_path, temporary_path + "/npcolony.dll")
 
 try:
-    #@TODO: check windows
-    local_app_path = os.environ["LOCALAPPDATA"]
+    if os.name in ("nt", "os"):
+        local_app_path = os.environ["LOCALAPPDATA"]
+        chrome_path = "%s/Google/Chrome/Application/chrome.exe" % local_app_path
+    else:
+        chrome_path = "chrome"
 
-    subprocess.call(["%s/Google/Chrome/Application/chrome.exe" % local_app_path, "--pack-extension=%s" % temporary_path, "--no-message-box"])
+    subprocess.call([chrome_path, "--pack-extension=%s" % temporary_path, "--no-message-box"])
     try:
         shutil.copyfile(directory_path + "/npcolony.crx", target_path + "/npcolony.crx")
     finally:

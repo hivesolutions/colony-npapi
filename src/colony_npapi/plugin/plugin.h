@@ -25,4 +25,7 @@
  __license__   = GNU General Public License (GPL), Version 3
 */
 
-#include "stdafx.h"
+#pragma once
+
+#include "base.h"
+#include "util.h"

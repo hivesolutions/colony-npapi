@@ -97,7 +97,21 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <npapi.h>
+#include <npupp.h>
+#include <npruntime.h>
 
 unsigned char *nameColonyNpapi();
 unsigned char *versionColonyNpapi();
 unsigned char *descriptionColonyNpapi();
+
+
+/* TODO: must remove this stuff from here */
+
+static NPObject *so = NULL;
+static NPNetscapeFuncs *npnfuncs = NULL;
+static NPP inst = NULL;
+
+#ifndef HIBYTE
+#define HIBYTE(x) ((((uint32)(x)) & 0xff00) >> 8)
+#endif

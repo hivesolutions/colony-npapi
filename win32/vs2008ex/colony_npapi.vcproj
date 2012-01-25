@@ -64,7 +64,7 @@
                 Name="VCLinkerTool"
                 OutputFile="$(OutDir)\npcolony.dll"
                 LinkIncremental="2"
-                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\colony_npapi.def"
+                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\colony_npapi.def"
                 GenerateDebugInformation="true"
                 SubSystem="2"
                 TargetMachine="1"
@@ -140,7 +140,7 @@
                 Name="VCLinkerTool"
                 OutputFile="$(OutDir)\npcolony.dll"
                 LinkIncremental="1"
-                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\colony_npapi.def"
+                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\colony_npapi.def"
                 GenerateDebugInformation="true"
                 SubSystem="2"
                 OptimizeReferences="2"
@@ -229,6 +229,18 @@
                 Name="Global"
                 >
             </Filter>
+            <Filter
+                Name="Plugin"
+                >
+                <File
+                    RelativePath="..\..\src\colony_npapi\plugin\base.c"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\plugin\util.c"
+                    >
+                </File>
+            </Filter>
         </Filter>
         <Filter
             Name="Header Files"
@@ -283,6 +295,22 @@
                     >
                 </File>
             </Filter>
+            <Filter
+                Name="Plugin"
+                >
+                <File
+                    RelativePath="..\..\src\colony_npapi\plugin\base.h"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\plugin\plugin.h"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\plugin\util.h"
+                    >
+                </File>
+            </Filter>
         </Filter>
         <Filter
             Name="Resource Files"
@@ -290,11 +318,11 @@
             UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
             >
             <File
-                RelativePath="..\..\src\colony_npapi\colony_npapi.def"
+                RelativePath="..\..\src\colony_npapi\resources\colony_npapi.def"
                 >
             </File>
             <File
-                RelativePath="..\..\src\colony_npapi\colony_npapi.rc"
+                RelativePath="..\..\src\colony_npapi\resources\colony_npapi.rc"
                 >
             </File>
         </Filter>

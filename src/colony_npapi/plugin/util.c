@@ -30,9 +30,19 @@
 #include "util.h"
 
 void logmsg(const char *msg) {
-    FILE *out = fopen("\\npsimple.log", "a");
-    if(out) {
-        fputs(msg, out);
-        fclose(out);
-    }
+	/* opens the logging file for wirting (appending)
+	this is the file to be used for logging  */
+    FILE *file = fopen("\\npsimple.log", "a");
+
+	/* in case the file was not correclty
+	opened, avoid any operation */
+    if(file == NULL) {
+		/* returns immediately */
+		return;
+	}
+
+	/* prints the message into file (printing)
+	and then closes it immediately */
+    fputs(msg, file);
+    fclose(file);
 }

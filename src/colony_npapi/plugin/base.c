@@ -59,7 +59,8 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
 
                 logmsg("npsimple: invoke callback function\n");
                 memcpy(txt, kHello, strlen(kHello));
-                STRINGN_TO_NPVARIANT(txt, strlen(kHello), v);
+                
+				STRINGN_TO_NPVARIANT(txt, strlen(kHello), v);
                 /* INT32_TO_NPVARIANT(42, v); */
 
                 if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &v, 1, &r)) {

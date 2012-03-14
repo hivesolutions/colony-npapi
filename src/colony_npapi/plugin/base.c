@@ -30,11 +30,14 @@
 #include "base.h"
 
 bool hasMethod(NPObject* obj, NPIdentifier methodName) {
+    /* logs the function call */
     logmsg("npsimple: hasMethod\n");
     return true;
 }
 
 bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+	/* logs the function call and sets the result as
+	the default magic value (answer to the universe) */
     logmsg("npsimple: invokeDefault\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
@@ -54,7 +57,7 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
         else if(!strcmp(name, "callback")) {
             if(argCount == 1 && args[0].type == NPVariantType_Object) {
                 static NPVariant v, r;
-                const char kHello[] = "Hello";
+                const char kHello[] = "Hello World";
                 char *txt = (char *)npnfuncs->memalloc(strlen(kHello));
 
                 logmsg("npsimple: invoke callback function\n");
@@ -94,9 +97,9 @@ NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char 
 }
 
 NPError destroy(NPP instance, NPSavedData **save) {
-    if(so) {
-        npnfuncs->releaseobject(so);
-    }
+	/* in case the shared object is defined
+	releases it from memory (avoids leaking) */
+    if(so) { npnfuncs->releaseobject(so); }
 
     /* unsets the shared object reference, so that no more
     usage of it may be done without null pointing*/

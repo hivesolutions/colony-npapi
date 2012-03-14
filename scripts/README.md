@@ -1,7 +1,3 @@
-# Scripts for creation of plugin deployer
-
-This package shold include 
-
 ## Example usage
 
 There are only two parameters to the calling:

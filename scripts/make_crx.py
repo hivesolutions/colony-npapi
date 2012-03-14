@@ -9,6 +9,7 @@ base_path = sys.argv[2]
 directory_path = os.path.dirname(os.path.realpath(__file__))
 temporary_path = os.path.join(directory_path, "npcolony")
 
+not os.path.exists(target_path) and os.mkdir(target_path)
 not os.path.exists(temporary_path) and os.mkdir(temporary_path)
 
 specification_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/manifest.json"))

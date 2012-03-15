@@ -105,9 +105,6 @@ unsigned char *nameColonyNpapi();
 unsigned char *versionColonyNpapi();
 unsigned char *descriptionColonyNpapi();
 
-
-/* TODO: must remove this stuff from here */
-
 static NPObject *so = NULL;
 static NPNetscapeFuncs *npnfuncs = NULL;
 static NPP inst = NULL;

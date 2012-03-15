@@ -53,12 +53,11 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
         if(!strcmp(name, "foo")) {
             logmsg("npsimple: invoke foo\n");
             return invokeDefault(obj, args, argCount, result);
-        }
-        else if(!strcmp(name, "callback")) {
+        } else if(!strcmp(name, "callback")) {
             if(argCount == 1 && args[0].type == NPVariantType_Object) {
                 static NPVariant v, r;
                 const char kHello[] = "Hello World";
-                char *txt = (char *)npnfuncs->memalloc(strlen(kHello));
+                char *txt = (char *) npnfuncs->memalloc(strlen(kHello));
 
                 logmsg("npsimple: invoke callback function\n");
                 memcpy(txt, kHello, strlen(kHello));
@@ -70,7 +69,33 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
                     return invokeDefault(obj, args, argCount, result);
                 }
             }
-        }
+		} else if(!strcmp(name, "alert")) {
+			/* retrieves the first argument as an utf8 string */
+			struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
+
+			/* allocates space for both the title and the message
+			of the alert box then converts them from the base string 
+			encoded utf8 values to the win32 api unicode representation */
+			wchar_t *title = new wchar_t[6];
+			wchar_t *message = new wchar_t[messageString.utf8length];
+			MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
+			MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, -1, message, messageString.utf8length);
+
+			/* creates the alert box with the "just" converted title
+			and message values (both encoded in unicode) */
+			int returnValue = MessageBoxW(
+				NULL,
+				message,
+				title,
+				MB_ICONINFORMATION | MB_OK
+			);
+
+			/* releases the title and the message, then returns
+			the execution control to the caller */
+			delete message;
+			delete title;
+			return true;
+		}
     }
 
     /* in case the control reaches this area an exception

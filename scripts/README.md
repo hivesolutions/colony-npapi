@@ -7,4 +7,4 @@ There are only two parameters to the calling:
 
 An example call to the creation of all the plugin package files would be:
 
-* `make_all all_files bin/colony_npapi/i386/win32/Release`
+* `make_all build bin/colony_npapi/i386/win32/Release`

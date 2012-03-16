@@ -29,6 +29,227 @@
 
 #include "base.h"
 
+#include <Windows.h>
+#include <winspool.h>
+#include <Commdlg.h>
+
+#define BUFFER_SIZE 1024
+
+typedef struct ElementHeader_t {
+	unsigned int type;
+	unsigned int length;
+} ElementHeade;
+
+typedef struct Position_t {
+	int x;
+	int y;
+} Position;
+
+typedef struct Element_t {
+	struct ElementHeader_t header;
+	void *contents;
+} Element;
+
+typedef struct TextElementHeader_t {
+	struct ElementHeader_t header;
+	struct Position_t position;
+    char font[256];
+    unsigned int fontSize;
+	unsigned int textAlign;
+	unsigned int textWeight;
+	unsigned int textItalic;
+    unsigned int length;
+} TextElementHeader;
+
+typedef struct TextElement_t {
+	struct TextElementHeader_t header;
+	char *text;
+} TextElement;
+
+typedef struct DocumentHeader_t {
+	char title[256];
+	unsigned int elementCount;
+} DocumentHeader;
+
+typedef struct Document_t {
+	struct DocumentHeader_t header;
+	char *elements;
+} Document;
+
+HDC getDefaultPrinter() {
+	/* allocates a new buffer in the stack
+	and then set a long variable with the size
+	of it to be used in the printer call */
+	char buffer[BUFFER_SIZE];
+	unsigned long size = BUFFER_SIZE;
+
+	/* retrieves the default printer and then
+	and then uses it to create the apropriate context */
+	GetDefaultPrinter(buffer, &size);
+	HDC hPrinterDC = CreateDC("WINSPOOL\0", buffer, NULL, NULL);
+
+	/* retrieves the just created context */
+	return hPrinterDC;
+}
+
+BOOL showPrintDialog(PRINTDLG *printDialogPointer) {
+	/* populates the print dialog structure
+	with the appropriate values */
+	printDialogPointer->lStructSize = sizeof(PRINTDLG);
+	printDialogPointer->hwndOwner = NULL;
+	printDialogPointer->hDevMode = NULL;
+	printDialogPointer->hDevNames = NULL;
+	printDialogPointer->Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+	printDialogPointer->nCopies = 1;
+	printDialogPointer->nFromPage = 0xffff;
+	printDialogPointer->nToPage	= 0xffff;
+	printDialogPointer->nMinPage = 1;
+	printDialogPointer->nMaxPage = 0xffff;
+
+	/* shows the print dialog and then retrieves
+	the result of the execution of it, returning it
+	to the caller function */
+	BOOL result = PrintDlg(printDialogPointer);
+	return result;
+}
+
+int print(bool showDialog) {
+	/* reserves space for the printing context to be
+	used in the current operation */
+	HDC context;
+
+	/* in case the printer dialog is meant to be shown
+	the proper show dialog function must be called*/
+	if(showDialog) {
+		/* allocates and resets the print dialog structure
+		according to the windows rules */
+		PRINTDLG printDialog;
+		ZeroMemory(&printDialog, sizeof(PRINTDLG));
+		BOOL result = showPrintDialog(&printDialog);
+		if(!result) { return -1; }
+		context = printDialog.hDC;
+	}
+	/* otherwise the default printer is retrieved */
+	else {
+		/* retrieves the default printer as the
+		the default context for printing */
+		context = getDefaultPrinter();
+	}
+
+	/* declares a document information structure
+	and populate it */
+	DOCINFO documentInformation;
+	documentInformation.cbSize = sizeof(DOCINFO);
+	documentInformation.lpszDocName	= "Glowdot Port Scanner";
+	documentInformation.lpszOutput = NULL;
+	documentInformation.fwType = 0;
+
+
+
+
+
+
+	/* contructs the document information and prints
+	it on finishing it (print on close document) */
+	StartDoc (context, &documentInformation);
+	StartPage(context);
+
+	SetMapMode(context, MM_TWIPS);
+
+
+/*
+	HFONT font = CreateFont(
+        48,
+		0,
+		0,
+		0,
+		FW_DONTCARE,
+		FALSE,
+		FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_OUTLINE_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+		CLEARTYPE_QUALITY,
+		VARIABLE_PITCH,
+		"Calibri"
+	);
+	SelectObject(context, font);
+	TextOut(context, 10, 10, "Hello World", lstrlen("Hello World"));*/
+
+
+	/* POR O ITEM DE FONT SCALE */
+
+
+	FILE *file = fopen("c:/tobias.binie", "rb");
+
+	fseek(file, 0, SEEK_END);
+	size_t sz = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	char *buffer = (char *) malloc(sz);
+	fread(buffer, sizeof(char), sz, file);
+
+	size_t a = sizeof(struct DocumentHeader_t);
+
+	struct DocumentHeader_t *documentHeader = (struct DocumentHeader_t *) buffer;
+    struct ElementHeader_t *elementHeader = (struct ElementHeader_t *) (buffer + sizeof(struct DocumentHeader_t));
+
+	for(size_t index = 0; index < documentHeader->elementCount; index++) {
+		unsigned short elementType = elementHeader->type;
+		unsigned int elementLength = elementHeader->length;
+
+		switch(elementType) {
+			case 1:
+				struct TextElementHeader_t *textElementHeader = (struct TextElementHeader_t *) elementHeader;
+				char *text = (char *) textElementHeader + sizeof(struct TextElementHeader_t);
+
+				printf(text);
+
+				int weight = FW_DONTCARE;
+
+				if(textElementHeader->textWeight > 0) { weight = FW_BOLD; }
+
+				HFONT font = CreateFont(
+					textElementHeader->fontSize * 20,
+					0,
+					0,
+					0,
+					weight,
+					textElementHeader->textItalic,
+					FALSE,
+					FALSE,
+					DEFAULT_CHARSET,
+					OUT_OUTLINE_PRECIS,
+					CLIP_DEFAULT_PRECIS,
+					CLEARTYPE_QUALITY,
+					VARIABLE_PITCH,
+					textElementHeader->font
+				);
+				SelectObject(context, font);
+				TextOut(context, textElementHeader->position.x, textElementHeader->position.y, text, lstrlen(text));
+
+				break;
+		}
+
+		elementHeader = (struct ElementHeader_t *) ((char *) elementHeader + sizeof(struct ElementHeader_t) + elementLength);
+	}
+
+
+	EndPage(context);
+	EndDoc(context);
+
+	/* deletes the print context (avoids leaking ofmemory) */
+	DeleteDC(context);
+
+	/* returns with no error */
+	return 0;
+}
+
+
+
+
+
 bool hasMethod(NPObject* obj, NPIdentifier methodName) {
     /* logs the function call */
     logmsg("npsimple: hasMethod\n");
@@ -94,6 +315,10 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
 			the execution control to the caller */
 			delete message;
 			delete title;
+			return true;
+		} else if(!strcmp(name, "print")) {
+			bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
+			print(showDialog);
 			return true;
 		}
     }

@@ -215,6 +215,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Print"
+				>
+				<File
+					RelativePath="..\..\src\colony_npapi\print\print_win32.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -278,6 +286,18 @@
 				</File>
 				<File
 					RelativePath="..\..\src\colony_npapi\plugin\util.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Print"
+				>
+				<File
+					RelativePath="..\..\src\colony_npapi\print\print.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\colony_npapi\print\print_win32.h"
 					>
 				</File>
 			</Filter>

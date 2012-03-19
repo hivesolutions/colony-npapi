@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "../print/print.h"
 #include "util.h"
 
 bool hasMethod(NPObject* obj, NPIdentifier methodName);

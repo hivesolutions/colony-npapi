@@ -89,6 +89,10 @@
 
 #ifdef COLONY_PLATFORM_WIN32
 #include <windows.h>
+#include <windowsx.h>
+#include <winspool.h>
+#include <Commdlg.h>
+
 #endif
 
 #ifdef COLONY_PLATFORM_UNIX

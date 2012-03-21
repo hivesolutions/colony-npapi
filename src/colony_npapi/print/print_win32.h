@@ -17,7 +17,7 @@
  You should have received a copy of the GNU General Public License
  along with Hive Colony Framework. If not, see <http://www.gnu.org/licenses/>.
 
- __author__    = Jo„o Magalh„es <joamag@hive.pt>
+ __author__    = Jo√£o Magalh√£es <joamag@hive.pt>
  __version__   = 1.0.0
  __revision__  = $LastChangedRevision$
  __date__      = $LastChangedDate$
@@ -59,8 +59,8 @@
  * based system.
  */
 typedef struct Position_t {
-	int x;
-	int y;
+    int x;
+    int y;
 } Position;
 
 /**
@@ -68,8 +68,8 @@ typedef struct Position_t {
  * of the binie file.
  */
 typedef struct ElementHeader_t {
-	unsigned int type;
-	unsigned int length;
+    unsigned int type;
+    unsigned int length;
 } ElementHeader;
 
 /**
@@ -77,8 +77,8 @@ typedef struct ElementHeader_t {
  * file.
  */
 typedef struct Element_t {
-	struct ElementHeader_t header;
-	void *contents;
+    struct ElementHeader_t header;
+    void *contents;
 } Element;
 
 /**
@@ -86,15 +86,15 @@ typedef struct Element_t {
  * of the binie file.
  */
 typedef struct TextElementHeader_t {
-	struct ElementHeader_t header;
-	struct Position_t position;
+    struct ElementHeader_t header;
+    struct Position_t position;
     char font[256];
     unsigned int fontSize;
-	unsigned int textAlign;
-	unsigned int textWeight;
-	unsigned int textItalic;
-	unsigned int marginLeft;
-	unsigned int marginRight;
+    unsigned int textAlign;
+    unsigned int textWeight;
+    unsigned int textItalic;
+    unsigned int marginLeft;
+    unsigned int marginRight;
     unsigned int length;
 } TextElementHeader;
 
@@ -103,8 +103,8 @@ typedef struct TextElementHeader_t {
  * file.
  */
 typedef struct TextElement_t {
-	struct TextElementHeader_t header;
-	char *text;
+    struct TextElementHeader_t header;
+    char *text;
 } TextElement;
 
 /**
@@ -112,9 +112,9 @@ typedef struct TextElement_t {
  * of the binie file.
  */
 typedef struct ImageElementHeader_t {
-	struct ElementHeader_t header;
-	struct Position_t position;
-	unsigned int textAlign;
+    struct ElementHeader_t header;
+    struct Position_t position;
+    unsigned int textAlign;
     unsigned int length;
 } ImageElementHeader;
 
@@ -123,24 +123,24 @@ typedef struct ImageElementHeader_t {
  * file.
  */
 typedef struct ImageElement_t {
-	struct TextElementHeader_t header;
-	char *data;
+    struct TextElementHeader_t header;
+    char *data;
 } ImageElement;
 
 /**
  * Structure describing the header of the binie document.
  */
 typedef struct DocumentHeader_t {
-	char title[256];
-	unsigned int elementCount;
+    char title[256];
+    unsigned int elementCount;
 } DocumentHeader;
 
 /**
  * Structure describing the binie document.
  */
 typedef struct Document_t {
-	struct DocumentHeader_t header;
-	char *elements;
+    struct DocumentHeader_t header;
+    char *elements;
 } Document;
 
 HDC getDefaultPrinter();

@@ -14,9 +14,11 @@ not os.path.exists(temporary_path) and os.mkdir(temporary_path)
 
 specification_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/manifest.json"))
 library_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/npcolony.dll"))
+images_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/images"))
 
 shutil.copyfile(specification_path, temporary_path + "/manifest.json")
 shutil.copyfile(library_path, temporary_path + "/npcolony.dll")
+shutil.copytree(images_path, temporary_path + "/images")
 
 try:
     if os.name in ("nt", "os"):
@@ -32,6 +34,7 @@ try:
         os.remove(directory_path + "/npcolony.crx")
         os.remove(directory_path + "/npcolony.pem")
 finally:
+    shutil.rmtree(temporary_path + "/images")
     os.remove(temporary_path + "/manifest.json")
     os.remove(temporary_path + "/npcolony.dll")
     os.rmdir(temporary_path)

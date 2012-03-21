@@ -27,32 +27,4 @@
 
 #pragma once
 
-#include "../print/print.h"
-#include "../encoding/encoding.h"
-#include "util.h"
-
-bool hasMethod(NPObject* obj, NPIdentifier methodName);
-bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool hasProperty(NPObject *obj, NPIdentifier propertyName);
-bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result);
-
-NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
-NPError destroy(NPP instance, NPSavedData **save);
-NPError getValue(NPP instance, NPPVariable variable, void *value);
-NPError handleEvent(NPP instance, void *ev);
-NPError setWindow(NPP instance, NPWindow* pNPWindow);
-
-static NPClass npcRefObject = {
-    NP_CLASS_STRUCT_VERSION,
-    NULL,
-    NULL,
-    NULL,
-    hasMethod,
-    invoke,
-    invokeDefault,
-    hasProperty,
-    getProperty,
-    NULL,
-    NULL,
-};
+#include "base_64.h"

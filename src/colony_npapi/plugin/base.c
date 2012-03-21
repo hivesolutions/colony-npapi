@@ -36,8 +36,8 @@ bool hasMethod(NPObject* obj, NPIdentifier methodName) {
 }
 
 bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
-	/* logs the function call and sets the result as
-	the default magic value (answer to the universe) */
+    /* logs the function call and sets the result as
+    the default magic value (answer to the universe) */
     logmsg("npsimple: invokeDefault\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
@@ -69,37 +69,53 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
                     return invokeDefault(obj, args, argCount, result);
                 }
             }
-		} else if(!strcmp(name, "alert")) {
-			/* retrieves the first argument as an utf8 string */
-			struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
+        } else if(!strcmp(name, "alert")) {
+            /* retrieves the first argument as an utf8 string */
+            struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
 
-			/* allocates space for both the title and the message
-			of the alert box then converts them from the base string 
-			encoded utf8 values to the win32 api unicode representation */
-			wchar_t *title = new wchar_t[6];
-			wchar_t *message = new wchar_t[messageString.utf8length];
-			MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-			MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, -1, message, messageString.utf8length);
+            /* allocates space for both the title and the message
+            of the alert box then converts them from the base string
+            encoded utf8 values to the win32 api unicode representation */
+            wchar_t *title = new wchar_t[6];
+            wchar_t *message = new wchar_t[messageString.utf8length];
+            MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
+            MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, -1, message, messageString.utf8length);
 
-			/* creates the alert box with the "just" converted title
-			and message values (both encoded in unicode) */
-			int returnValue = MessageBoxW(
-				NULL,
-				message,
-				title,
-				MB_ICONINFORMATION | MB_OK
-			);
+            /* creates the alert box with the "just" converted title
+            and message values (both encoded in unicode) */
+            int returnValue = MessageBoxW(
+                NULL,
+                message,
+                title,
+                MB_ICONINFORMATION | MB_OK
+            );
 
-			/* releases the title and the message, then returns
-			the execution control to the caller */
-			delete message;
-			delete title;
-			return true;
-		} else if(!strcmp(name, "print")) {
-			bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
-			print(showDialog, NULL);
-			return true;
-		}
+            /* releases the title and the message, then returns
+            the execution control to the caller */
+            delete message;
+            delete title;
+            return true;
+        } else if(!strcmp(name, "print")) {
+            /* retrieves both the show dialog and the data string
+            values to be used in the printing operation */
+            bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
+            struct _NPString dataString = NPVARIANT_TO_STRING(args[1]);
+
+            /* allocates space for the decoded data buffer and for
+            the storage of the length (size) of it */
+            char *data;
+            size_t dataLength;
+
+            /* decodes the data value from the base 64 encoding
+            and then uses it to print the data */
+            decodeBase64((unsigned char *) dataString.utf8characters, dataString.utf8length, (unsigned char **) &data, &dataLength);
+            print(showDialog, (char *) data);
+
+            /* releases the decoded buffer (avoids memory leak)
+            and then returns in success */
+            free(data);
+            return true;
+        }
     }
 
     /* in case the control reaches this area an exception
@@ -126,8 +142,8 @@ NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char 
 }
 
 NPError destroy(NPP instance, NPSavedData **save) {
-	/* in case the shared object is defined
-	releases it from memory (avoids leaking) */
+    /* in case the shared object is defined
+    releases it from memory (avoids leaking) */
     if(so) { npnfuncs->releaseobject(so); }
 
     /* unsets the shared object reference, so that no more

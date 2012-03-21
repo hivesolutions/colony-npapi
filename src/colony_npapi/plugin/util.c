@@ -32,7 +32,7 @@
 void logmsg(const char *msg) {
     /* opens the logging file for wirting (appending)
     this is the file to be used for logging  */
-    FILE *file = fopen("\\npsimple.log", "a");
+    FILE *file = fopen("\\npcolony.log", "a");
 
     /* in case the file was not correclty
     opened, avoid any operation */

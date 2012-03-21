@@ -31,27 +31,27 @@
 
 bool hasMethod(NPObject* obj, NPIdentifier methodName) {
     /* logs the function call */
-    logmsg("npsimple: hasMethod\n");
+    logmsg("npcolony: hasMethod\n");
     return true;
 }
 
 bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
     /* logs the function call and sets the result as
     the default magic value (answer to the universe) */
-    logmsg("npsimple: invokeDefault\n");
+    logmsg("npcolony: invokeDefault\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
     return true;
 }
 
 bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result) {
-    logmsg("npsimple: invoke\n");
+    logmsg("npcolony: invoke\n");
     int error = 1;
     char *name = npnfuncs->utf8fromidentifier(methodName);
 
     if(name) {
         if(!strcmp(name, "foo")) {
-            logmsg("npsimple: invoke foo\n");
+            logmsg("npcolony: invoke foo\n");
             return invokeDefault(obj, args, argCount, result);
         } else if(!strcmp(name, "callback")) {
             if(argCount == 1 && args[0].type == NPVariantType_Object) {
@@ -59,11 +59,10 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
                 const char kHello[] = "Hello World";
                 char *txt = (char *) npnfuncs->memalloc(strlen(kHello));
 
-                logmsg("npsimple: invoke callback function\n");
+                logmsg("npcolony: invoke callback function\n");
                 memcpy(txt, kHello, strlen(kHello));
 
                 STRINGN_TO_NPVARIANT(txt, strlen(kHello), v);
-                /* INT32_TO_NPVARIANT(42, v); */
 
                 if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &v, 1, &r)) {
                     return invokeDefault(obj, args, argCount, result);
@@ -126,18 +125,18 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
 }
 
 bool hasProperty(NPObject *obj, NPIdentifier propertyName) {
-    logmsg("npsimple: hasProperty\n");
+    logmsg("npcolony: hasProperty\n");
     return false;
 }
 
 bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result) {
-    logmsg("npsimple: getProperty\n");
+    logmsg("npcolony: getProperty\n");
     return false;
 }
 
 NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
     inst = instance;
-    logmsg("npsimple: new\n");
+    logmsg("npcolony: new\n");
     return NPERR_NO_ERROR;
 }
 
@@ -150,7 +149,7 @@ NPError destroy(NPP instance, NPSavedData **save) {
     usage of it may be done without null pointing*/
     so = NULL;
 
-    logmsg("npsimple: destroy\n");
+    logmsg("npcolony: destroy\n");
     return NPERR_NO_ERROR;
 }
 
@@ -159,17 +158,17 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 
     switch(variable) {
         case NPPVpluginNameString:
-            logmsg("npsimple: getvalue - name string\n");
+            logmsg("npcolony: getvalue - name string\n");
             *((char **)value) = "AplixFooPlugin";
             break;
 
         case NPPVpluginDescriptionString:
-            logmsg("npsimple: getvalue - description string\n");
+            logmsg("npcolony: getvalue - description string\n");
             *((char **)value) = "<a href=\"http://www.aplix.co.jp/\">AplixFooPlugin</a> plugin.";
             break;
 
         case NPPVpluginScriptableNPObject:
-            logmsg("npsimple: getvalue - scriptable object\n");
+            logmsg("npcolony: getvalue - scriptable object\n");
             if(!so)
                 so = npnfuncs->createobject(instance, &npcRefObject);
             npnfuncs->retainobject(so);
@@ -177,12 +176,12 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
             break;
 
         case NPPVpluginNeedsXEmbed:
-            logmsg("npsimple: getvalue - xembed\n");
+            logmsg("npcolony: getvalue - xembed\n");
             *((PRBool *)value) = PR_FALSE;
             break;
 
         default:
-            logmsg("npsimple: getvalue - default\n");
+            logmsg("npcolony: getvalue - default\n");
             return NPERR_GENERIC_ERROR;
     }
 
@@ -192,14 +191,14 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 /* expected by Safari on Darwin */
 NPError handleEvent(NPP instance, void *ev) {
     inst = instance;
-    logmsg("npsimple: handleEvent\n");
+    logmsg("npcolony: handleEvent\n");
     return NPERR_NO_ERROR;
 }
 
 /* expected by Opera */
 NPError setWindow(NPP instance, NPWindow* pNPWindow) {
     inst = instance;
-    logmsg("npsimple: setWindow\n");
+    logmsg("npcolony: setWindow\n");
     return NPERR_NO_ERROR;
 }
 
@@ -208,7 +207,7 @@ extern "C" {
 #endif
 
 NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
-    logmsg("npsimple: NP_GetEntryPoints\n");
+    logmsg("npcolony: NP_GetEntryPoints\n");
     nppfuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     nppfuncs->newp          = nevv;
     nppfuncs->destroy       = destroy;
@@ -220,7 +219,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
 }
 
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
-    logmsg("npsimple: NP_Initialize\n");
+    logmsg("npcolony: NP_Initialize\n");
 
     if(npnf == NULL) {
         return NPERR_INVALID_FUNCTABLE_ERROR;
@@ -240,13 +239,13 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
 }
 
 NPError OSCALL NP_Shutdown() {
-    logmsg("npsimple: NP_Shutdown\n");
+    logmsg("npcolony: NP_Shutdown\n");
     return NPERR_NO_ERROR;
 }
 
 char *NP_GetMIMEDescription() {
-    logmsg("npsimple: NP_GetMIMEDescription\n");
-    return "application/x-vnd-aplix-foo:.foo:anselm@aplix.co.jp";
+    logmsg("npcolony: NP_GetMIMEDescription\n");
+    return "application/x-colony-gateway:.colony:gateway@getcolony.com";
 }
 
 /* needs to be present for WebKit based browsers */

@@ -57,7 +57,7 @@ BEGIN
             VALUE "FileVersion", "1, 0, 0, 1"
             VALUE "InternalName", "ColonyGatewayPlugin"
             VALUE "LegalCopyright", "Copyright 2008 Hive Solutions Lda."
-            VALUE "MIMEType", "application/x-vnd-aplix-foo"
+            VALUE "MIMEType", "application/x-colony-gateway"
             VALUE "OriginalFilename", "npcolony.dll"
             VALUE "ProductName", "Colony Gateway Plugin"
             VALUE "ProductVersion", "1, 0, 0, 1"

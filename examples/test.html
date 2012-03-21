@@ -1,60 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Plugin Test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+        <title>Colony Gateway Test</title>
     </head>
     <body>
-        <script type="text/javascript">
-                function callback() {
-                        try {
-                                var pluginReference = document.getElementById("pluginobj");
-                                pluginReference.callback(function(message) {
-                                    alert(message);
-                                });
-                        }
-                        catch(e) {
-                                alert(e);
-                        }
-                }
-
-                function foo() {
-                        try {
-                                var pluginReference = document.getElementById("pluginobj");
-                                alert(pluginReference.foo());
-                        }
-                        catch(e) {
-                                alert(e);
-                        }
-                }
-
-                function _alert() {
-                        try {
-                                var pluginReference = document.getElementById("pluginobj");
-                                pluginReference.alert("João Filipe Gama de Magalhães");
-                        }
-                        catch(e) {
-                                alert(e);
-                        }
-                }
-
-                function _print() {
-                        try {
-                                var pluginReference = document.getElementById("pluginobj");
-                                pluginReference.print(true);
-                        }
-                        catch(e) {
-                                alert(e);
-                        }
-                }
-        </script>
+        <script type="text/javascript" src="js/main.js"></script>
         <p>
-                <button onclick="callback()">Call callback()</button>
-                <button onclick="foo()">Call foo()</button>
-                <button onclick="_alert()">Call alert()</button>
-                <button onclick="_print()">Call print()</button>
-                <object id="pluginobj" type="application/x-colony-gateway">Plugin failed to load</object>
+            <button onclick="callback()">Call callback()</button>
+            <button onclick="foo()">Call foo()</button>
+            <button onclick="_alert()">Call alert()</button>
+            <button onclick="_print()">Call print()</button>
         </p>
-        <p>If the plugin is working correctly, a click on the button should open a popup dialog containing <b>42</b> as value.</p>
-        <p>Please try a <a href="http://foo.webvm.net/test.html">more complex test using a loader</a> that demonstrates dynamic API provisioning.</p>
+		<p>
+		    <object id="colony-gateway" type="application/x-colony-gateway">Plugin failed to load</object>
+		</p>
     </body>
 </html>

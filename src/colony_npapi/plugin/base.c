@@ -76,9 +76,9 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
             of the alert box then converts them from the base string
             encoded utf8 values to the win32 api unicode representation */
             wchar_t *title = new wchar_t[6];
-            wchar_t *message = new wchar_t[messageString.utf8length];
+            wchar_t *message = new wchar_t[messageString.utf8length + 1];
             MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-            MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, -1, message, messageString.utf8length);
+            MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, messageString.utf8length, message, messageString.utf8length);
 
             /* creates the alert box with the "just" converted title
             and message values (both encoded in unicode) */

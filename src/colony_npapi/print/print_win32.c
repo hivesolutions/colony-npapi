@@ -55,7 +55,7 @@ BOOL showPrintDialog(PRINTDLG *printDialogPointer) {
     printDialogPointer->Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
     printDialogPointer->nCopies = 1;
     printDialogPointer->nFromPage = 0xffff;
-    printDialogPointer->nToPage    = 0xffff;
+    printDialogPointer->nToPage = 0xffff;
     printDialogPointer->nMinPage = 1;
     printDialogPointer->nMaxPage = 0xffff;
 

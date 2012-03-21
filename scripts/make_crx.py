@@ -14,7 +14,7 @@ not os.path.exists(temporary_path) and os.mkdir(temporary_path)
 
 specification_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/manifest.json"))
 library_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/npcolony.dll"))
-images_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/images"))
+images_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/images"))
 
 shutil.copyfile(specification_path, temporary_path + "/manifest.json")
 shutil.copyfile(library_path, temporary_path + "/npcolony.dll")

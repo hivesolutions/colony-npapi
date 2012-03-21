@@ -30,9 +30,11 @@
 #include "util.h"
 
 void logmsg(const char *msg) {
+    FILE *file;
+
     /* opens the logging file for wirting (appending)
     this is the file to be used for logging  */
-    FILE *file = fopen("\\npcolony.log", "a");
+    fopen_s(&file, "\\npcolony.log", "a");
 
     /* in case the file was not correclty
     opened, avoid any operation */

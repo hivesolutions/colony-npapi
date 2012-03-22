@@ -4,7 +4,9 @@
     "version" : "1.0.0",
     "description" : "Gateway plugin for interaction with colony framework native tools",
     "icons" : {
-        "48" : "images/colony_icon_48.png"
+        "16" : "images/colony_icon_16.png",
+        "48" : "images/colony_icon_48.png",
+        "128" : "images/colony_icon_128.png"
     },
     "plugins" : [{
                 "path" : "npcolony.dll",

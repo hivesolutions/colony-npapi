@@ -79,7 +79,7 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
             wchar_t *message = new wchar_t[messageString.utf8length + 1];
             MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
             size_t count = MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, messageString.utf8length, message, messageString.utf8length);
-			message[count] = '\0';
+            message[count] = '\0';
 
             /* creates the alert box with the "just" converted title
             and message values (both encoded in unicode) */
@@ -150,7 +150,7 @@ NPError destroy(NPP instance, NPSavedData **save) {
     usage of it may be done without null pointing*/
     so = NULL;
 
-    logmsg("npcolony: destroy\n");
+    /* returns with no error */
     return NPERR_NO_ERROR;
 }
 
@@ -170,8 +170,7 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 
         case NPPVpluginScriptableNPObject:
             logmsg("npcolony: getvalue - scriptable object\n");
-            if(!so)
-                so = npnfuncs->createobject(instance, &npcRefObject);
+            if(!so) { so = npnfuncs->createobject(instance, &npcRefObject); }
             npnfuncs->retainobject(so);
             *(NPObject **)value = so;
             break;
@@ -208,21 +207,21 @@ extern "C" {
 #endif
 
 NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
-    logmsg("npcolony: NP_GetEntryPoints\n");
-    nppfuncs->version       = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
-    nppfuncs->newp          = nevv;
-    nppfuncs->destroy       = destroy;
-    nppfuncs->getvalue      = getValue;
-    nppfuncs->event         = handleEvent;
-    nppfuncs->setwindow     = setWindow;
+    nppfuncs->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
+    nppfuncs->newp = nevv;
+    nppfuncs->destroy = destroy;
+    nppfuncs->getvalue = getValue;
+    nppfuncs->event = handleEvent;
+    nppfuncs->setwindow = setWindow;
 
     return NPERR_NO_ERROR;
 }
 
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
-    logmsg("npcolony: NP_Initialize\n");
-
+    /* in case the functions table is not valid,
+    must return in error */
     if(npnf == NULL) {
+        /* returns in error (invalid function table) */
         return NPERR_INVALID_FUNCTABLE_ERROR;
     }
 
@@ -233,23 +232,20 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 
+    /* save the functions in a global variable
+    and returns in no error */
     npnfuncs = npnf;
-
-    /* returns in no error */
     return NPERR_NO_ERROR;
 }
 
 NPError OSCALL NP_Shutdown() {
-    logmsg("npcolony: NP_Shutdown\n");
     return NPERR_NO_ERROR;
 }
 
 char *NP_GetMIMEDescription() {
-    logmsg("npcolony: NP_GetMIMEDescription\n");
     return "application/x-colony-gateway:.colony:gateway@getcolony.com";
 }
 
-/* needs to be present for WebKit based browsers */
 NPError OSCALL NP_GetValue(void *npp, NPPVariable variable, void *value) {
     inst = (NPP) npp;
     return getValue((NPP) npp, variable, value);

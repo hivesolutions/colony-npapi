@@ -30,6 +30,7 @@
 #include "util.h"
 
 void logmsg(const char *msg) {
+    /* allocates space for a file reference */
     FILE *file;
 
     /* opens the logging file for wirting (appending)

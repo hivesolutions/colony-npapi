@@ -218,9 +218,14 @@ int print(bool showDialog, char *data) {
                 );
                 SelectObject(context, font);
 
+                /* converts the text into the appropriate windows unicode
+                representation (may represent all charset) */
+                textUnicode = new wchar_t[lstrlen(text) + 1];
+                result = MultiByteToWideChar(CP_UTF8, NULL, text, -1, textUnicode, lstrlen(text) + 1);
+
                 /* retrieves the extension (size) of the text for the current
                 font using the current settings */
-                GetTextExtentPoint(context, text, lstrlen(text), &textSize);
+                GetTextExtentPointW(context, textUnicode, lstrlenW(textUnicode), &textSize);
                 GetClipBox(context, &clipBox);
 
                 /* calculates the text initial x position (deducting the margins)
@@ -243,11 +248,11 @@ int print(bool showDialog, char *data) {
                 /* sets the text y as the current position context y */
                 textY = textElementHeader->position.y;
 
-                /* converts the text into the appropriate windows unicode
-                representation (may represent all charset) */
-                textUnicode = new wchar_t[lstrlen(text) + 1];
-                result = MultiByteToWideChar(CP_UTF8, NULL, text, -1, textUnicode, lstrlen(text) + 1);
+                /* outputs the text to the current drawing context */
                 TextOutW(context, textX, textY, textUnicode, lstrlenW(textUnicode));
+
+                /* releases the unicode representation of the text */
+                delete textUnicode;
 
                 /* breaks the switch */
                 break;

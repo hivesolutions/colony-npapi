@@ -143,6 +143,40 @@ typedef struct Document_t {
     char *elements;
 } Document;
 
+/**
+ * Retrieves the context handle to the default printer
+ * This function is useful for situations where no print
+ * dialog is wanted (fast printing).
+ *
+ * @return The handle for the the drawing context of the
+ * default printer.
+ */
 HDC getDefaultPrinter();
+
+/**
+ * Shows the printing dialog for printer selction, the return
+ * value reflects the success of the calling.
+ *
+ * @param printDialogPointer A pointer to the print dialog
+ * structure describing the configuration for the dialog box.
+ * @return A boolean with the success result of the print dialog.
+ */
 BOOL showPrintDialog(PRINTDLG *printDialogPointer);
+
+/**
+ * Prints a document using the default printer or in case the show
+ * dialog option is set using the printer selected in the printing
+ * dialog.
+ *
+ * The provided data buffer must be encoded using the binie sbinary
+ * file specification, that specifies a series of basic printing
+ * primitive routines.
+ *
+ * @param showDialog If the printing dialog should be display for
+ * selection of the printer.
+ * @param data The buffer of data encoded in binie format describing
+ * the document to be printed.
+ * @return The result of the printing processm if success a value
+ * greater than zero should be returned.
+ */
 int print(bool showDialog, char *data);

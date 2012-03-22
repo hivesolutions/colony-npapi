@@ -265,10 +265,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\colony_npapi\global\memory.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\colony_npapi\global\platforms.h"
 					>
 				</File>

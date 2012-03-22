@@ -51,20 +51,29 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
 
     if(name) {
         if(!strcmp(name, "foo")) {
-            log("npcolony: invoke foo\n");
+            /* returns the result of the default invoking */
             return invokeDefault(obj, args, argCount, result);
         } else if(!strcmp(name, "callback")) {
             if(argCount == 1 && args[0].type == NPVariantType_Object) {
-                static NPVariant v, r;
-                const char kHello[] = "Hello World";
-                char *txt = (char *) npnfuncs->memalloc(strlen(kHello));
+                /* allocates space for both the parameter and the return
+                value variant values */
+                static NPVariant parameter;
+                static NPVariant returnValue;
 
-                log("npcolony: invoke callback function\n");
-                memcpy(txt, kHello, strlen(kHello));
+                /* allocates static space for the hello message and
+                then allocates npapi space for it */
+                const char hello[] = "Hello World";
+                char *message = (char *) npnfuncs->memalloc(strlen(hello));
 
-                STRINGN_TO_NPVARIANT(txt, strlen(kHello), v);
+                /* copies the hello message into the allocated message
+                and then converts it into a variant value */
+                memcpy(message, hello, strlen(hello));
+                STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
 
-                if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &v, 1, &r)) {
+                /* invokes the callback fnction and then returns the value of the
+                invoke default function */
+                if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &returnValue)) {
+                    /* returns the result of the default invoking */
                     return invokeDefault(obj, args, argCount, result);
                 }
             }
@@ -136,8 +145,8 @@ bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result) {
 }
 
 NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
-    inst = instance;
     log("npcolony: new\n");
+    inst = instance;
     return NPERR_NO_ERROR;
 }
 
@@ -190,15 +199,15 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 
 /* expected by Safari on Darwin */
 NPError handleEvent(NPP instance, void *ev) {
-    inst = instance;
     log("npcolony: handleEvent\n");
+    inst = instance;
     return NPERR_NO_ERROR;
 }
 
 /* expected by Opera */
 NPError setWindow(NPP instance, NPWindow* pNPWindow) {
-    inst = instance;
     log("npcolony: setWindow\n");
+    inst = instance;
     return NPERR_NO_ERROR;
 }
 

@@ -27,4 +27,4 @@
 
 #pragma once
 
-void logmsg(const char *msg);
+void log(const char *message);

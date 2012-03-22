@@ -29,7 +29,8 @@
 
 #include "util.h"
 
-void logmsg(const char *msg) {
+#ifdef COLONY_DEBUG
+void log(const char *message) {
     /* allocates space for a file reference */
     FILE *file;
 
@@ -46,6 +47,9 @@ void logmsg(const char *msg) {
 
     /* prints the message into file (printing)
     and then closes it immediately */
-    fputs(msg, file);
+    fputs(message, file);
     fclose(file);
 }
+#else
+void log(const char *message) { }
+#endif

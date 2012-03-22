@@ -168,29 +168,24 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 
     switch(variable) {
         case NPPVpluginNameString:
-            log("npcolony: getvalue - name string\n");
-            *((char **)value) = "AplixFooPlugin";
+            *((char **)value) = "ColonyGatewayPlugin";
             break;
 
         case NPPVpluginDescriptionString:
-            log("npcolony: getvalue - description string\n");
-            *((char **)value) = "<a href=\"http://www.aplix.co.jp/\">AplixFooPlugin</a> plugin.";
+            *((char **)value) = "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin.";
             break;
 
         case NPPVpluginScriptableNPObject:
-            log("npcolony: getvalue - scriptable object\n");
             if(!so) { so = npnfuncs->createobject(instance, &npcRefObject); }
             npnfuncs->retainobject(so);
-            *(NPObject **)value = so;
+            * (NPObject **) value = so;
             break;
 
         case NPPVpluginNeedsXEmbed:
-            log("npcolony: getvalue - xembed\n");
-            *((PRBool *)value) = PR_FALSE;
+            *((PRBool *) value) = PR_FALSE;
             break;
 
         default:
-            log("npcolony: getvalue - default\n");
             return NPERR_GENERIC_ERROR;
     }
 

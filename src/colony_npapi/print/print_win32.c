@@ -172,10 +172,13 @@ int print(bool showDialog, char *data) {
         char directoryBuffer[1024];
         char path[MAX_PATH];
         int imageX;
+        int imageY;
         int horizontalResolution;
         int verticalResolution;
+        int pixelDensity;
         int previousMode;
-        float multiplier;
+        double divisor;
+        double multiplier;
         HDC imageContext;
         HBITMAP handleImage;
         HANDLE handleImageNew;
@@ -284,13 +287,16 @@ int print(bool showDialog, char *data) {
                 /* removes the temporary image file (it's no longer reuired)`*/
                 remove(path);
 
-                /* retrieve the horizontal and vertical resolution capabilities */
+                /* retrieve the horizontal and vertical resolution and pixel
+                density capabilities */
                 horizontalResolution = GetDeviceCaps(context, HORZRES);
                 verticalResolution = GetDeviceCaps(context, VERTRES);
+                pixelDensity = GetDeviceCaps(context, LOGPIXELSY);
 
-                /* calculates the multiplier value taking into account the image scale
-                factor and the currently provided vertical resolution */
-                multiplier = (float) ((float) verticalResolution / (16000 / IMAGE_SCALE_FACTOR));
+                /* calculates the pixel divisor (resizing for text mode) and
+                calculates the multipler for the image size */
+                divisor = 1440.0 / pixelDensity;
+                multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
                 /* in case the text align is left */
                 if(imageElementHeader->textAlign == LEFT_TEXT_ALIGN_VALUE) {
@@ -310,12 +316,16 @@ int print(bool showDialog, char *data) {
                 scaledWidth = (float) bitmap.bmWidth * (float) multiplier;
                 scaledHeight = (float) bitmap.bmHeight * (float) multiplier;
 
+                /* sets the iamge y as the current position context y using
+                the divisor for text mode scale */
+                imageY = (int) ((double) imageElementHeader->position.y / divisor) * -1;
+
                 /* switches the map mode to text (pixel oriented) and writes
                 the image into the current context, then switches back to the
                 previous map mode */
                 previousMode = GetMapMode(context);
                 SetMapMode(context, MM_TEXT);
-                StretchBlt(context, imageX, 0, (int) scaledWidth, (int) scaledHeight, imageContext, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+                StretchBlt(context, imageX, imageY, (int) scaledWidth, (int) scaledHeight, imageContext, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
                 SetMapMode(context, previousMode);
 
                 /* selectes the bitmap for the context and then deletes the

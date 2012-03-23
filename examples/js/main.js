@@ -23,12 +23,10 @@
 // __copyright__ = Copyright (c) 2008 Hive Solutions Lda.
 // __license__   = GNU General Public License (GPL), Version 3
 
-function callback() {
+function version() {
     try {
         var gateway = document.getElementById("colony-gateway");
-        gateway.callback(function(message) {
-                    alert(message);
-                });
+        alert(gateway.version());
     } catch (exception) {
         alert(exception);
     }
@@ -38,6 +36,17 @@ function foo() {
     try {
         var gateway = document.getElementById("colony-gateway");
         alert(gateway.foo());
+    } catch (exception) {
+        alert(exception);
+    }
+}
+
+function callback() {
+    try {
+        var gateway = document.getElementById("colony-gateway");
+        gateway.callback(function(message) {
+                    alert(message);
+                });
     } catch (exception) {
         alert(exception);
     }

@@ -31,8 +31,19 @@
 #include "../encoding/encoding.h"
 #include "util.h"
 
+/**
+ * The number of methods (smbols) to be exposed
+ * by the gateway to the javascript interface.
+ */
+#define METHODS_COUNT 6
+
 bool hasMethod(NPObject* obj, NPIdentifier methodName);
 bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
+bool invokeStatus(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
+bool invokeVersion(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
+bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
+bool invokeAlert(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
+bool invokePrint(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
 bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result);
 bool hasProperty(NPObject *obj, NPIdentifier propertyName);
 bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result);
@@ -55,4 +66,13 @@ static NPClass npcRefObject = {
     getProperty,
     NULL,
     NULL,
+};
+
+static char *methods[METHODS_COUNT] = {
+    "status",
+    "version",
+    "foo",
+    "callback",
+    "alert",
+    "print"
 };

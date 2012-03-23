@@ -32,7 +32,21 @@
 bool hasMethod(NPObject* obj, NPIdentifier methodName) {
     /* logs the function call */
     log("npcolony: hasMethod\n");
-    return true;
+
+    /* retrieves the correct string for the method name
+    as a normal comparision structure */
+    char *name = npnfuncs->utf8fromidentifier(methodName);
+
+    /* iterates over all the methods in the static structure
+    to compare them against the requesed method */
+    for(size_t index = 0; index < METHODS_COUNT; index++) {
+        /* in case the current method is the sames as the
+        requested on returns valid */
+        if(!strcmp(name, methods[index])) { return true; }
+    }
+
+    /* by default returns method not found */
+    return false;
 }
 
 bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
@@ -44,86 +58,140 @@ bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVa
     return true;
 }
 
+bool invokeStatus(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+    result->type = NPVariantType_Bool;
+    result->value.boolValue = true;
+    return true;
+}
+
+bool invokeVersion(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+    /* allocates static space for the hello message and
+    then allocates npapi space for it */
+    const char version[] = "1.0.10";
+    char *versionMessage = (char *) npnfuncs->memalloc(strlen(version));
+
+    /* copes the version value into the javascript owned
+    version message */
+    memcpy(versionMessage, version, strlen(version));
+
+    /* allocates space for the version string and populates
+    it with the just copied version message and the length of it */
+    NPString versionString;
+    versionString.utf8characters = versionMessage;
+    versionString.utf8length = strlen(version);
+
+    /* sets the version string value in the return value */
+    result->type = NPVariantType_String;
+    result->value.stringValue = versionString;
+
+    /* returns in success */
+    return true;
+}
+
+bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+    if(argCount == 1 && args[0].type == NPVariantType_Object) {
+        /* allocates space for both the parameter and the return
+        value variant values */
+        static NPVariant parameter;
+        static NPVariant returnValue;
+
+        /* allocates static space for the hello message and
+        then allocates npapi space for it */
+        const char hello[] = "Hello World";
+        char *message = (char *) npnfuncs->memalloc(strlen(hello));
+
+        /* copies the hello message into the allocated message
+        and then converts it into a variant value */
+        memcpy(message, hello, strlen(hello));
+        STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
+
+        /* invokes the callback fnction and then returns the value of the
+        invoke default function */
+        if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &returnValue)) {
+            /* returns the result of the default invoking */
+            return invokeDefault(obj, args, argCount, result);
+        }
+    }
+
+    /* returns true by default */
+    return true;
+}
+
+bool invokeAlert(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+    /* retrieves the first argument as an utf8 string */
+    struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
+
+    /* allocates space for both the title and the message
+    of the alert box then converts them from the base string
+    encoded utf8 values to the win32 api unicode representation */
+    wchar_t *title = new wchar_t[6];
+    wchar_t *message = new wchar_t[messageString.utf8length + 1];
+    MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
+    size_t count = MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, messageString.utf8length, message, messageString.utf8length);
+    message[count] = '\0';
+
+    /* creates the alert box with the "just" converted title
+    and message values (both encoded in unicode) */
+    int returnValue = MessageBoxW(
+        NULL,
+        message,
+        title,
+        MB_ICONINFORMATION | MB_OK
+    );
+
+    /* releases the title and the message, then returns
+    the execution control to the caller */
+    delete message;
+    delete title;
+    return true;
+}
+
+bool invokePrint(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+    /* retrieves both the show dialog and the data string
+    values to be used in the printing operation */
+    bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
+    struct _NPString dataString = NPVARIANT_TO_STRING(args[1]);
+
+    /* allocates space for the decoded data buffer and for
+    the storage of the length (size) of it */
+    char *data;
+    size_t dataLength;
+
+    /* decodes the data value from the base 64 encoding
+    and then uses it to print the data */
+    decodeBase64((unsigned char *) dataString.utf8characters, dataString.utf8length, (unsigned char **) &data, &dataLength);
+    print(showDialog, (char *) data);
+
+    /* releases the decoded buffer (avoids memory leak)
+    and then returns in success */
+    free(data);
+    return true;
+}
+
 bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result) {
     log("npcolony: invoke\n");
     int error = 1;
     char *name = npnfuncs->utf8fromidentifier(methodName);
 
     if(name) {
-        if(!strcmp(name, "foo")) {
+        if(!strcmp(name, "status")) {
+           /* returns the result of the status invoking */
+            return invokeStatus(obj, args, argCount, result);
+        } else if(!strcmp(name, "version")) {
+           /* returns the result of the version invoking */
+            return invokeVersion(obj, args, argCount, result);
+        } else if(!strcmp(name, "foo")) {
             /* returns the result of the default invoking */
             return invokeDefault(obj, args, argCount, result);
         } else if(!strcmp(name, "callback")) {
-            if(argCount == 1 && args[0].type == NPVariantType_Object) {
-                /* allocates space for both the parameter and the return
-                value variant values */
-                static NPVariant parameter;
-                static NPVariant returnValue;
-
-                /* allocates static space for the hello message and
-                then allocates npapi space for it */
-                const char hello[] = "Hello World";
-                char *message = (char *) npnfuncs->memalloc(strlen(hello));
-
-                /* copies the hello message into the allocated message
-                and then converts it into a variant value */
-                memcpy(message, hello, strlen(hello));
-                STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
-
-                /* invokes the callback fnction and then returns the value of the
-                invoke default function */
-                if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &returnValue)) {
-                    /* returns the result of the default invoking */
-                    return invokeDefault(obj, args, argCount, result);
-                }
-            }
+            /* returns the result of the callback invoking */
+            return invokeCallback(obj, args, argCount, result);
         } else if(!strcmp(name, "alert")) {
-            /* retrieves the first argument as an utf8 string */
-            struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
-
-            /* allocates space for both the title and the message
-            of the alert box then converts them from the base string
-            encoded utf8 values to the win32 api unicode representation */
-            wchar_t *title = new wchar_t[6];
-            wchar_t *message = new wchar_t[messageString.utf8length + 1];
-            MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-            size_t count = MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, messageString.utf8length, message, messageString.utf8length);
-            message[count] = '\0';
-
-            /* creates the alert box with the "just" converted title
-            and message values (both encoded in unicode) */
-            int returnValue = MessageBoxW(
-                NULL,
-                message,
-                title,
-                MB_ICONINFORMATION | MB_OK
-            );
-
-            /* releases the title and the message, then returns
-            the execution control to the caller */
-            delete message;
-            delete title;
-            return true;
+            /* returns the result of the alert invoking */
+            return invokeAlert(obj, args, argCount, result);
         } else if(!strcmp(name, "print")) {
-            /* retrieves both the show dialog and the data string
-            values to be used in the printing operation */
-            bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
-            struct _NPString dataString = NPVARIANT_TO_STRING(args[1]);
-
-            /* allocates space for the decoded data buffer and for
-            the storage of the length (size) of it */
-            char *data;
-            size_t dataLength;
-
-            /* decodes the data value from the base 64 encoding
-            and then uses it to print the data */
-            decodeBase64((unsigned char *) dataString.utf8characters, dataString.utf8length, (unsigned char **) &data, &dataLength);
-            print(showDialog, (char *) data);
-
-            /* releases the decoded buffer (avoids memory leak)
-            and then returns in success */
-            free(data);
-            return true;
+            /* returns the result of the print invoking */
+            return invokePrint(obj, args, argCount, result);
         }
     }
 

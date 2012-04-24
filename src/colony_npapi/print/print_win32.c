@@ -234,9 +234,6 @@ int print(bool showDialog, char *data) {
                 );
                 SelectObject(context, font);
 
-                /* retrieves the vertical size for the current
-                verticalSize = GetDeviceCaps(context, VERTSIZE);
-
                 /* converts the text into the appropriate windows unicode
                 representation (may represent all charset) */
                 textUnicode = new wchar_t[lstrlen(text) + 1];

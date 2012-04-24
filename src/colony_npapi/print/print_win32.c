@@ -128,16 +128,16 @@ int print(bool showDialog, char *data) {
     and populate it */
     DOCINFO documentInformation;
     documentInformation.cbSize = sizeof(DOCINFO);
-    documentInformation.lpszDocName    = documentHeader->title;
+    documentInformation.lpszDocName = documentHeader->title;
     documentInformation.lpszOutput = NULL;
     documentInformation.fwType = 0;
 
     /* contructs the document information and prints
     it on finishing it (print on close document) */
-    StartDoc (context, &documentInformation);
+    StartDoc(context, &documentInformation);
     StartPage(context);
 
-    /* sets the map mode of the coument to twips */
+    /* sets the map mode of the document to twips */
     SetMapMode(context, MM_TWIPS);
 
     /* creates a new (drawing) pen for the document to
@@ -147,6 +147,16 @@ int print(bool showDialog, char *data) {
 
     /* retrieves the initial document element  header */
     struct ElementHeader_t *elementHeader = (struct ElementHeader_t *) (buffer + sizeof(struct DocumentHeader_t));
+
+    /* retrieves the horizontal and vertical resolution and pixel
+    density capabilities */
+    int horizontalResolution = GetDeviceCaps(context, HORZRES);
+    int verticalResolution = GetDeviceCaps(context, VERTRES);
+    int verticalSize = GetDeviceCaps(context, VERTSIZE);
+    int pixelDensity = GetDeviceCaps(context, LOGPIXELSY);
+
+    /* start the current page value at the initial value */
+    int currentPage = 0;
 
     /* iterates over the element count in the document to
     process it and generate the correct print instructions */
@@ -163,6 +173,8 @@ int print(bool showDialog, char *data) {
         int result;
         int textX;
         int textY;
+        int textYBottom;
+        double textYBottomMillimeter;
         int weight;
         char *text;
         char *image;
@@ -173,9 +185,8 @@ int print(bool showDialog, char *data) {
         char path[MAX_PATH];
         int imageX;
         int imageY;
-        int horizontalResolution;
-        int verticalResolution;
-        int pixelDensity;
+        int imageYBottom;
+        double imageYBottomMillimeter;
         int previousMode;
         double divisor;
         double multiplier;
@@ -186,6 +197,8 @@ int print(bool showDialog, char *data) {
         BITMAP bitmap;
         float scaledWidth;
         float scaledHeight;
+        int newPage;
+        double pageSizeTwips;
 
         /* switches over the element type to generate the
         appropriate print instructions */
@@ -221,6 +234,9 @@ int print(bool showDialog, char *data) {
                 );
                 SelectObject(context, font);
 
+                /* retrieves the vertical size for the current
+                verticalSize = GetDeviceCaps(context, VERTSIZE);
+
                 /* converts the text into the appropriate windows unicode
                 representation (may represent all charset) */
                 textUnicode = new wchar_t[lstrlen(text) + 1];
@@ -250,6 +266,35 @@ int print(bool showDialog, char *data) {
 
                 /* sets the text y as the current position context y */
                 textY = textElementHeader->position.y;
+
+                /* calculates the y position for the bottom position of the
+                text and then converts it into a milimiter type */
+                textYBottom = textY - textSize.cy;
+                textYBottomMillimeter = (double) textYBottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+
+                /* uses the bottom position of the text in milimiters and
+                divides (integer division) it over the page size to check
+                the current page number (index) */
+                newPage = (int) (textYBottomMillimeter / verticalSize);
+
+                /* checks if there is a new page for writing, in case
+                there is a new page must be "constructed" */
+                if(newPage != currentPage) {
+                    /* ends the current page and starts a new
+                    on (page break operation) */
+                    EndPage(context);
+                    StartPage(context);
+
+                    /* updates the current page variable with
+                    the new page value */
+                    currentPage = newPage;
+                }
+
+                /* calculates the size of the page size in twips units
+                and uses it to re-calculate the text y position, taking
+                into account the already "used" pages (modulus) */
+                pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
+                textY += (int) ((double) newPage * pageSizeTwips);
 
                 /* outputs the text to the current drawing context */
                 TextOutW(context, textX, textY, textUnicode, lstrlenW(textUnicode));
@@ -287,15 +332,9 @@ int print(bool showDialog, char *data) {
                 /* removes the temporary image file (it's no longer reuired)`*/
                 remove(path);
 
-                /* retrieve the horizontal and vertical resolution and pixel
-                density capabilities */
-                horizontalResolution = GetDeviceCaps(context, HORZRES);
-                verticalResolution = GetDeviceCaps(context, VERTRES);
-                pixelDensity = GetDeviceCaps(context, LOGPIXELSY);
-
                 /* calculates the pixel divisor (resizing for text mode) and
                 calculates the multipler for the image size */
-                divisor = 1440.0 / pixelDensity;
+                divisor = TWIPS_PER_INCH / pixelDensity;
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
                 /* in case the text align is left */
@@ -316,9 +355,38 @@ int print(bool showDialog, char *data) {
                 scaledWidth = (float) bitmap.bmWidth * (float) multiplier;
                 scaledHeight = (float) bitmap.bmHeight * (float) multiplier;
 
-                /* sets the iamge y as the current position context y using
+                /* calculates the y position for the bottom position of the
+                image and then converts it into a milimiter type */
+                imageYBottom = imageElementHeader->position.y + (int) (scaledHeight * divisor);
+                imageYBottomMillimeter = (double) imageYBottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+
+                /* uses the bottom position of the image in milimiters and
+                divides (integer division) it over the page size to check
+                the current page number (index) */
+                newPage = (int) (imageYBottomMillimeter / verticalSize);
+
+                /* checks if there is a new page for writing, in case
+                there is a new page must be "constructed" */
+                if(newPage != currentPage) {
+                    /* ends the current page and starts a new
+                    on (page break operation) */
+                    EndPage(context);
+                    StartPage(context);
+
+                    /* updates the current page variable with
+                    the new page value */
+                    currentPage = newPage;
+                }
+
+                /* calculates the size of the page size in twips units
+                and uses it to re-calculate the image y position, taking
+                into account the already "used" pages (modulus) */
+                pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
+                imageY = (int) ((double) imageElementHeader->position.y + ((double) newPage * pageSizeTwips));
+
+                /* sets the image y as the current position context y using
                 the divisor for text mode scale */
-                imageY = (int) ((double) imageElementHeader->position.y / divisor) * -1;
+                imageY = (int) ((double) imageY / divisor) * -1;
 
                 /* switches the map mode to text (pixel oriented) and writes
                 the image into the current context, then switches back to the

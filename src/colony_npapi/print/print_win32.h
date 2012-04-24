@@ -34,6 +34,18 @@
 #define BUFFER_SIZE 1024
 
 /**
+ * The coeficient for conversion between
+ * millimeter and inch.
+ */
+#define MM_PER_INCH 25.4
+
+/**
+ * The coeficient for conversion between
+ * twips and inch.
+ */
+#define TWIPS_PER_INCH 1440.0
+
+/**
  * The scale factor to be used to resize the
  * fonts into the actual size to be used in
  * the document (for printing).

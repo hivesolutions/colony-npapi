@@ -293,6 +293,11 @@ int print(bool showDialog, char *data) {
                 pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
                 textY += (int) ((double) newPage * pageSizeTwips);
 
+				/* resets the text y position in case the value is greater
+				than the maximum zero value, otherwise uses the "normal" text
+				y position value (default case) */
+				textY = textY > 0 ? 0 : textY;
+
                 /* outputs the text to the current drawing context */
                 TextOutW(context, textX, textY, textUnicode, lstrlenW(textUnicode));
 
@@ -380,6 +385,11 @@ int print(bool showDialog, char *data) {
                 into account the already "used" pages (modulus) */
                 pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
                 imageY = (int) ((double) imageElementHeader->position.y + ((double) newPage * pageSizeTwips));
+
+				/* resets the image y position in case the value is greater
+				than the maximum zero value, otherwise uses the "normal" image
+				y position value (default case) */
+				imageY = imageY > 0 ? 0 : imageY;
 
                 /* sets the image y as the current position context y using
                 the divisor for text mode scale */

@@ -1,7 +1,7 @@
 {
     "name" : "Colony Gateway",
     "id" : "00123456789ABCDEF0123456789ABCDEF0123456",
-    "version" : "1.0.2",
+    "version" : "1.0.4",
     "description" : "Gateway plugin for interaction with colony framework native tools",
     "icons" : {
         "16" : "images/colony_icon_16.png",

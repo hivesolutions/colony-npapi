@@ -101,13 +101,20 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#ifdef COLONY_PLATFORM_WIN32
+#include <gecko/npapi.h>
+#include <gecko/npupp.h>
+#include <gecko/npruntime.h>
+#else
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
+#endif
 
-unsigned char *nameColonyNpapi();
-unsigned char *versionColonyNpapi();
-unsigned char *descriptionColonyNpapi();
+unsigned char *name_colony_npapi();
+unsigned char *version_colony_npapi();
+unsigned char *description_colony_npapi();
 
 static NPObject *so = NULL;
 static NPNetscapeFuncs *npnfuncs = NULL;

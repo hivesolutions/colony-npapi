@@ -37,33 +37,33 @@
  */
 #define METHODS_COUNT 6
 
-bool hasMethod(NPObject* obj, NPIdentifier methodName);
-bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invokeStatus(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invokeVersion(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invokeAlert(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invokePrint(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool hasProperty(NPObject *obj, NPIdentifier propertyName);
-bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result);
+bool has_method(NPObject* obj, NPIdentifier method_name);
+bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+bool has_property(NPObject *obj, NPIdentifier property_name);
+bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
 
-NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
 NPError destroy(NPP instance, NPSavedData **save);
-NPError getValue(NPP instance, NPPVariable variable, void *value);
-NPError handleEvent(NPP instance, void *ev);
-NPError setWindow(NPP instance, NPWindow* pNPWindow);
+NPError get_value(NPP instance, NPPVariable variable, void *value);
+NPError handle_event(NPP instance, void *ev);
+NPError set_window(NPP instance, NPWindow *window);
 
-static NPClass npcRefObject = {
+static NPClass ref_object = {
     NP_CLASS_STRUCT_VERSION,
     NULL,
     NULL,
     NULL,
-    hasMethod,
+    has_method,
     invoke,
-    invokeDefault,
-    hasProperty,
-    getProperty,
+    invoke_default,
+    has_property,
+    get_property,
     NULL,
     NULL,
 };

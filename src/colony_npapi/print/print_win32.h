@@ -70,90 +70,90 @@
  * Structure defining a position int a two axis
  * based system.
  */
-typedef struct Position_t {
+typedef struct position_t {
     int x;
     int y;
-} Position;
+} position;
 
 /**
  * Structure describing the header of an element
  * of the binie file.
  */
-typedef struct ElementHeader_t {
+typedef struct element_header_t {
     unsigned int type;
     unsigned int length;
-} ElementHeader;
+} element_header;
 
 /**
  * Structure describing an element in the binie
  * file.
  */
-typedef struct Element_t {
-    struct ElementHeader_t header;
+typedef struct element_t {
+    struct element_header_t header;
     void *contents;
-} Element;
+} element;
 
 /**
  * Structure describing the header of a text element
  * of the binie file.
  */
-typedef struct TextElementHeader_t {
-    struct ElementHeader_t header;
-    struct Position_t position;
+typedef struct text_element_header_t {
+    struct element_header_t header;
+    struct position_t position;
     char font[256];
-    unsigned int fontSize;
-    unsigned int textAlign;
-    unsigned int textWeight;
-    unsigned int textItalic;
-    unsigned int marginLeft;
-    unsigned int marginRight;
+    unsigned int font_size;
+    unsigned int text_align;
+    unsigned int text_weight;
+    unsigned int text_italic;
+    unsigned int margin_left;
+    unsigned int margin_right;
     unsigned int length;
-} TextElementHeader;
+} text_element_header;
 
 /**
  * Structure describing a text element in the binie
  * file.
  */
-typedef struct TextElement_t {
-    struct TextElementHeader_t header;
+typedef struct text_element_t {
+    struct text_element_header_t header;
     char *text;
-} TextElement;
+} text_element;
 
 /**
  * Structure describing the header of an image element
  * of the binie file.
  */
-typedef struct ImageElementHeader_t {
-    struct ElementHeader_t header;
-    struct Position_t position;
-    unsigned int textAlign;
+typedef struct image_element_header_t {
+    struct element_header_t header;
+    struct position_t position;
+    unsigned int text_align;
     unsigned int length;
-} ImageElementHeader;
+} image_element_header;
 
 /**
  * Structure describing an image element in the binie
  * file.
  */
-typedef struct ImageElement_t {
-    struct TextElementHeader_t header;
+typedef struct image_element_t {
+    struct text_element_header_t header;
     char *data;
-} ImageElement;
+} image_element;
 
 /**
  * Structure describing the header of the binie document.
  */
-typedef struct DocumentHeader_t {
+typedef struct document_header_t {
     char title[256];
-    unsigned int elementCount;
-} DocumentHeader;
+    unsigned int element_count;
+} document_header;
 
 /**
  * Structure describing the binie document.
  */
-typedef struct Document_t {
-    struct DocumentHeader_t header;
+typedef struct document_t {
+    struct document_header_t header;
     char *elements;
-} Document;
+} document;
 
 /**
  * Retrieves the context handle to the default printer
@@ -163,17 +163,17 @@ typedef struct Document_t {
  * @return The handle for the the drawing context of the
  * default printer.
  */
-HDC getDefaultPrinter();
+HDC get_default_printer();
 
 /**
  * Shows the printing dialog for printer selction, the return
  * value reflects the success of the calling.
  *
- * @param printDialogPointer A pointer to the print dialog
+ * @param print_dialog_pointer A pointer to the print dialog
  * structure describing the configuration for the dialog box.
  * @return A boolean with the success result of the print dialog.
  */
-BOOL showPrintDialog(PRINTDLG *printDialogPointer);
+BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
 
 /**
  * Prints a document using the default printer or in case the show
@@ -184,11 +184,11 @@ BOOL showPrintDialog(PRINTDLG *printDialogPointer);
  * file specification, that specifies a series of basic printing
  * primitive routines.
  *
- * @param showDialog If the printing dialog should be display for
+ * @param show_dialog If the printing dialog should be display for
  * selection of the printer.
  * @param data The buffer of data encoded in binie format describing
  * the document to be printed.
  * @return The result of the printing processm if success a value
  * greater than zero should be returned.
  */
-int print(bool showDialog, char *data);
+int print(bool show_dialog, char *data);

@@ -29,13 +29,13 @@
 
 #include "base.h"
 
-bool hasMethod(NPObject* obj, NPIdentifier methodName) {
+bool has_method(NPObject* obj, NPIdentifier method_name) {
     /* logs the function call */
-    log("npcolony: hasMethod\n");
+    log("npcolony: has_method\n");
 
     /* retrieves the correct string for the method name
     as a normal comparision structure */
-    char *name = npnfuncs->utf8fromidentifier(methodName);
+    char *name = npnfuncs->utf8fromidentifier(method_name);
 
     /* iterates over all the methods in the static structure
     to compare them against the requesed method */
@@ -49,51 +49,51 @@ bool hasMethod(NPObject* obj, NPIdentifier methodName) {
     return false;
 }
 
-bool invokeDefault(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* logs the function call and sets the result as
     the default magic value (answer to the universe) */
-    log("npcolony: invokeDefault\n");
+    log("npcolony: invoke_default\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
     return true;
 }
 
-bool invokeStatus(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     result->type = NPVariantType_Bool;
     result->value.boolValue = true;
     return true;
 }
 
-bool invokeVersion(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the hello message and
     then allocates npapi space for it */
     const char version[] = "1.0.10";
-    char *versionMessage = (char *) npnfuncs->memalloc(strlen(version));
+    char *version_message = (char *) npnfuncs->memalloc(strlen(version));
 
     /* copes the version value into the javascript owned
     version message */
-    memcpy(versionMessage, version, strlen(version));
+    memcpy(version_message, version, strlen(version));
 
     /* allocates space for the version string and populates
     it with the just copied version message and the length of it */
-    NPString versionString;
-    versionString.utf8characters = versionMessage;
-    versionString.utf8length = strlen(version);
+    NPString version_string;
+    version_string.utf8characters = version_message;
+    version_string.utf8length = strlen(version);
 
     /* sets the version string value in the return value */
     result->type = NPVariantType_String;
-    result->value.stringValue = versionString;
+    result->value.stringValue = version_string;
 
     /* returns in success */
     return true;
 }
 
-bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
-    if(argCount == 1 && args[0].type == NPVariantType_Object) {
+bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
+    if(arg_count == 1 && args[0].type == NPVariantType_Object) {
         /* allocates space for both the parameter and the return
         value variant values */
         static NPVariant parameter;
-        static NPVariant returnValue;
+        static NPVariant return_value;
 
         /* allocates static space for the hello message and
         then allocates npapi space for it */
@@ -107,9 +107,9 @@ bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPV
 
         /* invokes the callback fnction and then returns the value of the
         invoke default function */
-        if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &returnValue)) {
+        if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &return_value)) {
             /* returns the result of the default invoking */
-            return invokeDefault(obj, args, argCount, result);
+            return invoke_default(obj, args, arg_count, result);
         }
     }
 
@@ -117,22 +117,22 @@ bool invokeCallback(NPObject *obj, const NPVariant *args, uint32_t argCount, NPV
     return true;
 }
 
-bool invokeAlert(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* retrieves the first argument as an utf8 string */
-    struct _NPString messageString = NPVARIANT_TO_STRING(args[0]);
+    struct _NPString message_string = NPVARIANT_TO_STRING(args[0]);
 
     /* allocates space for both the title and the message
     of the alert box then converts them from the base string
     encoded utf8 values to the win32 api unicode representation */
     wchar_t *title = new wchar_t[6];
-    wchar_t *message = new wchar_t[messageString.utf8length + 1];
+    wchar_t *message = new wchar_t[message_string.utf8length + 1];
     MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-    size_t count = MultiByteToWideChar(CP_UTF8, NULL, messageString.utf8characters, messageString.utf8length, message, messageString.utf8length);
+    size_t count = MultiByteToWideChar(CP_UTF8, NULL, message_string.utf8characters, message_string.utf8length, message, message_string.utf8length);
     message[count] = '\0';
 
     /* creates the alert box with the "just" converted title
     and message values (both encoded in unicode) */
-    int returnValue = MessageBoxW(
+    int return_value = MessageBoxW(
         NULL,
         message,
         title,
@@ -146,21 +146,21 @@ bool invokeAlert(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVari
     return true;
 }
 
-bool invokePrint(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* retrieves both the show dialog and the data string
     values to be used in the printing operation */
-    bool showDialog = NPVARIANT_TO_BOOLEAN(args[0]);
-    struct _NPString dataString = NPVARIANT_TO_STRING(args[1]);
+    bool show_dialog = NPVARIANT_TO_BOOLEAN(args[0]);
+    struct _NPString data_string = NPVARIANT_TO_STRING(args[1]);
 
     /* allocates space for the decoded data buffer and for
     the storage of the length (size) of it */
     char *data;
-    size_t dataLength;
+    size_t data_length;
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
-    decodeBase64((unsigned char *) dataString.utf8characters, dataString.utf8length, (unsigned char **) &data, &dataLength);
-    print(showDialog, (char *) data);
+    decode_base64((unsigned char *) data_string.utf8characters, data_string.utf8length, (unsigned char **) &data, &data_length);
+    print(show_dialog, (char *) data);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
@@ -168,30 +168,30 @@ bool invokePrint(NPObject *obj, const NPVariant *args, uint32_t argCount, NPVari
     return true;
 }
 
-bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint32_t argCount, NPVariant *result) {
+bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     log("npcolony: invoke\n");
     int error = 1;
-    char *name = npnfuncs->utf8fromidentifier(methodName);
+    char *name = npnfuncs->utf8fromidentifier(method_name);
 
     if(name) {
         if(!strcmp(name, "status")) {
            /* returns the result of the status invoking */
-            return invokeStatus(obj, args, argCount, result);
+            return invoke_status(obj, args, arg_count, result);
         } else if(!strcmp(name, "version")) {
            /* returns the result of the version invoking */
-            return invokeVersion(obj, args, argCount, result);
+            return invoke_version(obj, args, arg_count, result);
         } else if(!strcmp(name, "foo")) {
             /* returns the result of the default invoking */
-            return invokeDefault(obj, args, argCount, result);
+            return invoke_default(obj, args, arg_count, result);
         } else if(!strcmp(name, "callback")) {
             /* returns the result of the callback invoking */
-            return invokeCallback(obj, args, argCount, result);
+            return invoke_callback(obj, args, arg_count, result);
         } else if(!strcmp(name, "alert")) {
             /* returns the result of the alert invoking */
-            return invokeAlert(obj, args, argCount, result);
+            return invoke_alert(obj, args, arg_count, result);
         } else if(!strcmp(name, "print")) {
             /* returns the result of the print invoking */
-            return invokePrint(obj, args, argCount, result);
+            return invoke_print(obj, args, arg_count, result);
         }
     }
 
@@ -202,17 +202,17 @@ bool invoke(NPObject* obj, NPIdentifier methodName, const NPVariant *args, uint3
     return false;
 }
 
-bool hasProperty(NPObject *obj, NPIdentifier propertyName) {
-    log("npcolony: hasProperty\n");
+bool has_property(NPObject *obj, NPIdentifier property_name) {
+    log("npcolony: has_property\n");
     return false;
 }
 
-bool getProperty(NPObject *obj, NPIdentifier propertyName, NPVariant *result) {
-    log("npcolony: getProperty\n");
+bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result) {
+    log("npcolony: get_property\n");
     return false;
 }
 
-NPError nevv(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
     log("npcolony: new\n");
     inst = instance;
     return NPERR_NO_ERROR;
@@ -231,7 +231,7 @@ NPError destroy(NPP instance, NPSavedData **save) {
     return NPERR_NO_ERROR;
 }
 
-NPError getValue(NPP instance, NPPVariable variable, void *value) {
+NPError get_value(NPP instance, NPPVariable variable, void *value) {
     inst = instance;
 
     switch(variable) {
@@ -244,7 +244,7 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
             break;
 
         case NPPVpluginScriptableNPObject:
-            if(!so) { so = npnfuncs->createobject(instance, &npcRefObject); }
+            if(!so) { so = npnfuncs->createobject(instance, &ref_object); }
             npnfuncs->retainobject(so);
             * (NPObject **) value = so;
             break;
@@ -261,15 +261,15 @@ NPError getValue(NPP instance, NPPVariable variable, void *value) {
 }
 
 /* expected by Safari on Darwin */
-NPError handleEvent(NPP instance, void *ev) {
-    log("npcolony: handleEvent\n");
+NPError handle_event(NPP instance, void *ev) {
+    log("npcolony: handle_event\n");
     inst = instance;
     return NPERR_NO_ERROR;
 }
 
 /* expected by Opera */
-NPError setWindow(NPP instance, NPWindow* pNPWindow) {
-    log("npcolony: setWindow\n");
+NPError set_window(NPP instance, NPWindow *window) {
+    log("npcolony: set_window\n");
     inst = instance;
     return NPERR_NO_ERROR;
 }
@@ -282,9 +282,9 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
     nppfuncs->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     nppfuncs->newp = nevv;
     nppfuncs->destroy = destroy;
-    nppfuncs->getvalue = getValue;
-    nppfuncs->event = handleEvent;
-    nppfuncs->setwindow = setWindow;
+    nppfuncs->getvalue = get_value;
+    nppfuncs->event = handle_event;
+    nppfuncs->setwindow = set_window;
 
     return NPERR_NO_ERROR;
 }
@@ -320,7 +320,7 @@ char *NP_GetMIMEDescription() {
 
 NPError OSCALL NP_GetValue(void *npp, NPPVariable variable, void *value) {
     inst = (NPP) npp;
-    return getValue((NPP) npp, variable, value);
+    return get_value((NPP) npp, variable, value);
 }
 
 #ifdef __cplusplus

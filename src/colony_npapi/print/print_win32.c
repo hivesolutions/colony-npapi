@@ -29,7 +29,7 @@
 
 #include "print_win32.h"
 
-HDC getDefaultPrinter() {
+HDC get_default_printer() {
     /* allocates a new buffer in the stack
     and then set a long variable with the size
     of it to be used in the printer call */
@@ -39,54 +39,54 @@ HDC getDefaultPrinter() {
     /* retrieves the default printer and then
     and then uses it to create the apropriate context */
     GetDefaultPrinter(buffer, &size);
-    HDC hPrinterDC = CreateDC("WINSPOOL\0", buffer, NULL, NULL);
+    HDC handle_printer = CreateDC("WINSPOOL\0", buffer, NULL, NULL);
 
     /* retrieves the just created context */
-    return hPrinterDC;
+    return handle_printer;
 }
 
-BOOL showPrintDialog(PRINTDLG *printDialogPointer) {
+BOOL show_print_dialog(PRINTDLG *print_dialog_pointer) {
     /* populates the print dialog structure
     with the appropriate values */
-    printDialogPointer->lStructSize = sizeof(PRINTDLG);
-    printDialogPointer->hwndOwner = NULL;
-    printDialogPointer->hDevMode = NULL;
-    printDialogPointer->hDevNames = NULL;
-    printDialogPointer->Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
-    printDialogPointer->nCopies = 1;
-    printDialogPointer->nFromPage = 0xffff;
-    printDialogPointer->nToPage = 0xffff;
-    printDialogPointer->nMinPage = 1;
-    printDialogPointer->nMaxPage = 0xffff;
+    print_dialog_pointer->lStructSize = sizeof(PRINTDLG);
+    print_dialog_pointer->hwndOwner = NULL;
+    print_dialog_pointer->hDevMode = NULL;
+    print_dialog_pointer->hDevNames = NULL;
+    print_dialog_pointer->Flags = PD_USEDEVMODECOPIESANDCOLLATE | PD_RETURNDC;
+    print_dialog_pointer->nCopies = 1;
+    print_dialog_pointer->nFromPage = 0xffff;
+    print_dialog_pointer->nToPage = 0xffff;
+    print_dialog_pointer->nMinPage = 1;
+    print_dialog_pointer->nMaxPage = 0xffff;
 
     /* shows the print dialog and then retrieves
     the result of the execution of it, returning it
     to the caller function */
-    BOOL result = PrintDlg(printDialogPointer);
+    BOOL result = PrintDlg(print_dialog_pointer);
     return result;
 }
 
-int print(bool showDialog, char *data) {
+int print(bool show_dialog, char *data) {
     /* reserves space for the printing context to be
     used in the current operation */
     HDC context;
 
     /* in case the printer dialog is meant to be shown
     the proper show dialog function must be called*/
-    if(showDialog) {
+    if(show_dialog) {
         /* allocates and resets the print dialog structure
         according to the windows rules */
-        PRINTDLG printDialog;
-        ZeroMemory(&printDialog, sizeof(PRINTDLG));
-        BOOL result = showPrintDialog(&printDialog);
+        PRINTDLG print_dialog;
+        ZeroMemory(&print_dialog, sizeof(PRINTDLG));
+        BOOL result = show_print_dialog(&print_dialog);
         if(!result) { return -1; }
-        context = printDialog.hDC;
+        context = print_dialog.hDC;
     }
     /* otherwise the default printer is retrieved */
     else {
         /* retrieves the default printer as the
         the default context for printing */
-        context = getDefaultPrinter();
+        context = get_default_printer();
     }
 
     /* allocates space for the buffer to be used during
@@ -122,19 +122,19 @@ int print(bool showDialog, char *data) {
 
     /* casts the initial part of the buffer into a document
     header element */
-    struct DocumentHeader_t *documentHeader = (struct DocumentHeader_t *) buffer;
+    struct document_header_t *document_header = (struct document_header_t *) buffer;
 
     /* declares a document information structure
     and populate it */
-    DOCINFO documentInformation;
-    documentInformation.cbSize = sizeof(DOCINFO);
-    documentInformation.lpszDocName = documentHeader->title;
-    documentInformation.lpszOutput = NULL;
-    documentInformation.fwType = 0;
+    DOCINFO document_information;
+    document_information.cbSize = sizeof(DOCINFO);
+    document_information.lpszDocName = document_header->title;
+    document_information.lpszOutput = NULL;
+    document_information.fwType = 0;
 
     /* contructs the document information and prints
     it on finishing it (print on close document) */
-    StartDoc(context, &documentInformation);
+    StartDoc(context, &document_information);
     StartPage(context);
 
     /* sets the map mode of the document to twips */
@@ -146,83 +146,83 @@ int print(bool showDialog, char *data) {
     SelectObject(context, pen);
 
     /* retrieves the initial document element  header */
-    struct ElementHeader_t *elementHeader = (struct ElementHeader_t *) (buffer + sizeof(struct DocumentHeader_t));
+    struct element_header_t *element_header = (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
     /* retrieves the horizontal and vertical resolution and pixel
     density capabilities */
-    int horizontalResolution = GetDeviceCaps(context, HORZRES);
+    int horizontal_resolution = GetDeviceCaps(context, HORZRES);
     int verticalResolution = GetDeviceCaps(context, VERTRES);
-    int verticalSize = GetDeviceCaps(context, VERTSIZE);
-    int pixelDensity = GetDeviceCaps(context, LOGPIXELSY);
+    int vertical_size = GetDeviceCaps(context, VERTSIZE);
+    int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
 
     /* start the current page value at the initial value */
-    int currentPage = 0;
+    int current_page = 0;
 
     /* iterates over the element count in the document to
     process it and generate the correct print instructions */
-    for(size_t index = 0; index < documentHeader->elementCount; index++) {
+    for(size_t index = 0; index < document_header->element_count; index++) {
         /* retrieves the type and length of the element */
-        unsigned short elementType = elementHeader->type;
-        unsigned int elementLength = elementHeader->length;
+        unsigned short element_type = element_header->type;
+        unsigned int element_length = element_header->length;
 
-        /* allocates space fot the various elements to be used
+        /* allocates space for the various elements to be used
         along the switch instruction */
-        SIZE textSize;
-        RECT clipBox;
+        SIZE text_size;
+        RECT clip_box;
         HFONT font;
         int result;
-        int textX;
-        int textY;
-        int textYBottom;
-        double textYBottomMillimeter;
+        int text_x;
+        int text_y;
+        int text_y_bottom;
+        double text_y_bottom_millimeter;
         int weight;
         char *text;
         char *image;
-        wchar_t *textUnicode;
-        struct TextElementHeader_t *textElementHeader;
-        struct ImageElementHeader_t *imageElementHeader;
-        char directoryBuffer[1024];
+        wchar_t *text_unicode;
+        struct text_element_header_t *text_element_header;
+        struct image_element_header_t *image_element_header;
+        char directory_buffer[1024];
         char path[MAX_PATH];
-        int imageX;
-        int imageY;
-        int imageYBottom;
-        double imageYBottomMillimeter;
-        int previousMode;
+        int image_x;
+        int image_y;
+        int image_y_bottom;
+        double image_y_bottom_millimeter;
+        int previous_mode;
         double divisor;
         double multiplier;
-        HDC imageContext;
-        HBITMAP handleImage;
-        HANDLE handleImageNew;
-        FILE *imageFile;
+        HDC image_context;
+        HBITMAP handle_image;
+        HANDLE handle_image_new;
+        FILE *image_file;
         BITMAP bitmap;
-        float scaledWidth;
-        float scaledHeight;
-        int newPage;
-        double pageSizeTwips;
+        float scaled_width;
+        float scaled_height;
+        int new_page;
+        double page_size_twips;
 
         /* switches over the element type to generate the
         appropriate print instructions */
-        switch(elementType) {
+        switch(element_type) {
             case 1:
                 /* "casts" the element header as text element header an retrieves
                 the text part from it, then sets the default text weight as normal */
-                textElementHeader = (struct TextElementHeader_t *) elementHeader;
-                text = (char *) textElementHeader + sizeof(struct TextElementHeader_t);
+                text_element_header = (struct text_element_header_t *) element_header;
+                text = (char *) text_element_header + sizeof(struct text_element_header_t);
                 weight = FW_DONTCARE;
 
                 /* in case the text weight is greater than zero it's
                 considered to be bold sized */
-                if(textElementHeader->textWeight > 0) { weight = FW_BOLD; }
+                if(text_element_header->text_weight > 0) { weight = FW_BOLD; }
 
                 /* creates the correct front to display the current text
                 instruction, and then selects it */
                 font = CreateFont(
-                    textElementHeader->fontSize * FONT_SCALE_FACTOR,
+                    text_element_header->font_size * FONT_SCALE_FACTOR,
                     0,
                     0,
                     0,
                     weight,
-                    textElementHeader->textItalic,
+                    text_element_header->text_italic,
                     FALSE,
                     FALSE,
                     DEFAULT_CHARSET,
@@ -230,53 +230,53 @@ int print(bool showDialog, char *data) {
                     CLIP_DEFAULT_PRECIS,
                     CLEARTYPE_QUALITY,
                     VARIABLE_PITCH,
-                    textElementHeader->font
+                    text_element_header->font
                 );
                 SelectObject(context, font);
 
                 /* converts the text into the appropriate windows unicode
                 representation (may represent all charset) */
-                textUnicode = new wchar_t[lstrlen(text) + 1];
-                result = MultiByteToWideChar(CP_UTF8, NULL, text, -1, textUnicode, lstrlen(text) + 1);
+                text_unicode = new wchar_t[lstrlen(text) + 1];
+                result = MultiByteToWideChar(CP_UTF8, NULL, text, -1, text_unicode, lstrlen(text) + 1);
 
                 /* retrieves the extension (size) of the text for the current
                 font using the current settings */
-                GetTextExtentPointW(context, textUnicode, lstrlenW(textUnicode), &textSize);
-                GetClipBox(context, &clipBox);
+                GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
+                GetClipBox(context, &clip_box);
 
                 /* calculates the text initial x position (deducting the margins)
                 and using the current font scale factor */
-                textX = (textElementHeader->marginLeft - textElementHeader->marginRight) * FONT_SCALE_FACTOR;
+                text_x = (text_element_header->margin_left - text_element_header->margin_right) * FONT_SCALE_FACTOR;
 
                 /* in case the text align is left */
-                if(textElementHeader->textAlign == LEFT_TEXT_ALIGN_VALUE) {
-                    textX += 0;
+                if(text_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
+                    text_x += 0;
                 }
                 /* in case the text align is right */
-                else if(textElementHeader->textAlign == RIGHT_TEXT_ALIGN_VALUE) {
-                    textX += clipBox.right - textSize.cx;
+                else if(text_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
+                    text_x += clip_box.right - text_size.cx;
                 }
                 /* in case the text align is left */
-                else if(textElementHeader->textAlign == CENTER_TEXT_ALIGN_VALUE) {
-                    textX += clipBox.right / 2 - textSize.cx / 2;
+                else if(text_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
+                    text_x += clip_box.right / 2 - text_size.cx / 2;
                 }
 
                 /* sets the text y as the current position context y */
-                textY = textElementHeader->position.y;
+                text_y = text_element_header->position.y;
 
                 /* calculates the y position for the bottom position of the
                 text and then converts it into a milimiter type */
-                textYBottom = textY - textSize.cy;
-                textYBottomMillimeter = (double) textYBottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+                text_y_bottom = text_y - text_size.cy;
+                text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
 
                 /* uses the bottom position of the text in milimiters and
                 divides (integer division) it over the page size to check
                 the current page number (index) */
-                newPage = (int) (textYBottomMillimeter / verticalSize);
+                new_page = (int) (text_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
                 there is a new page must be "constructed" */
-                if(newPage != currentPage) {
+                if(new_page != current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
                     EndPage(context);
@@ -284,25 +284,25 @@ int print(bool showDialog, char *data) {
 
                     /* updates the current page variable with
                     the new page value */
-                    currentPage = newPage;
+                    current_page = new_page;
                 }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the text y position, taking
                 into account the already "used" pages (modulus) */
-                pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
-                textY += (int) ((double) newPage * pageSizeTwips);
+                page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
+                text_y += (int) ((double) new_page * page_size_twips);
 
                 /* resets the text y position in case the value is greater
                 than the maximum zero value, otherwise uses the "normal" text
                 y position value (default case) */
-                textY = textY > 0 ? 0 : textY;
+                text_y = text_y > 0 ? 0 : text_y;
 
                 /* outputs the text to the current drawing context */
-                TextOutW(context, textX, textY, textUnicode, lstrlenW(textUnicode));
+                TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
                 /* releases the unicode representation of the text */
-                delete textUnicode;
+                delete text_unicode;
 
                 /* breaks the switch */
                 break;
@@ -310,66 +310,66 @@ int print(bool showDialog, char *data) {
             case 2:
                 /* "casts" the element header as image element header an retrieves
                 the image part from it */
-                imageElementHeader = (struct ImageElementHeader_t *) elementHeader;
-                image = (char *) imageElementHeader + sizeof(struct ImageElementHeader_t);
+                image_element_header = (struct image_element_header_t *) element_header;
+                image = (char *) image_element_header + sizeof(struct image_element_header_t);
 
                 /* retrieves the temporary path (directory) and then uses it to
                 generate a temporary path for out image file */
-                GetTempPath(1024, directoryBuffer);
-                GetTempFileName(directoryBuffer, "default", 0, path);
+                GetTempPath(1024, directory_buffer);
+                GetTempFileName(directory_buffer, "default", 0, path);
 
                 /* opens the image file for binary writing, writes the image contents
                 to it and then closes the file*/
-                fopen_s(&imageFile, path, "wb");
-                fwrite(image, sizeof(char), imageElementHeader->length, imageFile);
-                fclose(imageFile);
+                fopen_s(&image_file, path, "wb");
+                fwrite(image, sizeof(char), image_element_header->length, image_file);
+                fclose(image_file);
 
                 /* loads the (bitmap) image from the file and creates the appropriate in
                 memory image handler */
-                handleImageNew = LoadImage(0, (LPCTSTR) path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
-                imageContext = CreateCompatibleDC(NULL);
-                handleImage = SelectBitmap(imageContext, handleImageNew);
-                GetObject(handleImageNew, sizeof(bitmap), &bitmap);
+                handle_image_new = LoadImage(0, (LPCTSTR) path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
+                image_context = CreateCompatibleDC(NULL);
+                handle_image = SelectBitmap(image_context, handle_image_new);
+                GetObject(handle_image_new, sizeof(bitmap), &bitmap);
 
                 /* removes the temporary image file (it's no longer reuired)`*/
                 remove(path);
 
                 /* calculates the pixel divisor (resizing for text mode) and
                 calculates the multipler for the image size */
-                divisor = TWIPS_PER_INCH / pixelDensity;
+                divisor = TWIPS_PER_INCH / pixel_density;
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
                 /* in case the text align is left */
-                if(imageElementHeader->textAlign == LEFT_TEXT_ALIGN_VALUE) {
-                    imageX = 0;
+                if(image_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
+                    image_x = 0;
                 }
                 /* in case the text align is right */
-                else if(imageElementHeader->textAlign == RIGHT_TEXT_ALIGN_VALUE) {
-                    imageX = horizontalResolution - bitmap.bmWidth;
+                else if(image_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
+                    image_x = horizontal_resolution - bitmap.bmWidth;
                 }
                 /* in case the text align is left */
-                else if(imageElementHeader->textAlign == CENTER_TEXT_ALIGN_VALUE) {
-                    imageX = (int) ((float) horizontalResolution / 2.0) - (int) ((float) bitmap.bmWidth * (float) multiplier / 2.0);
+                else if(image_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
+                    image_x = (int) ((float) horizontal_resolution / 2.0) - (int) ((float) bitmap.bmWidth * (float) multiplier / 2.0);
                 }
 
                 /* calculates the scaled with and height taking into account the
                 "just" calculated multiplier value */
-                scaledWidth = (float) bitmap.bmWidth * (float) multiplier;
-                scaledHeight = (float) bitmap.bmHeight * (float) multiplier;
+                scaled_width = (float) bitmap.bmWidth * (float) multiplier;
+                scaled_height = (float) bitmap.bmHeight * (float) multiplier;
 
                 /* calculates the y position for the bottom position of the
                 image and then converts it into a milimiter type */
-                imageYBottom = imageElementHeader->position.y + (int) (scaledHeight * divisor);
-                imageYBottomMillimeter = (double) imageYBottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+                image_y_bottom = image_element_header->position.y + (int) (scaled_height * divisor);
+                image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
 
                 /* uses the bottom position of the image in milimiters and
                 divides (integer division) it over the page size to check
                 the current page number (index) */
-                newPage = (int) (imageYBottomMillimeter / verticalSize);
+                new_page = (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
                 there is a new page must be "constructed" */
-                if(newPage != currentPage) {
+                if(new_page != current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
                     EndPage(context);
@@ -377,36 +377,36 @@ int print(bool showDialog, char *data) {
 
                     /* updates the current page variable with
                     the new page value */
-                    currentPage = newPage;
+                    current_page = new_page;
                 }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the image y position, taking
                 into account the already "used" pages (modulus) */
-                pageSizeTwips = (verticalSize / MM_PER_INCH * TWIPS_PER_INCH);
-                imageY = (int) ((double) imageElementHeader->position.y + ((double) newPage * pageSizeTwips));
+                page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
+                image_y = (int) ((double) image_element_header->position.y + ((double) new_page * page_size_twips));
 
                 /* resets the image y position in case the value is greater
                 than the maximum zero value, otherwise uses the "normal" image
                 y position value (default case) */
-                imageY = imageY > 0 ? 0 : imageY;
+                image_y = image_y > 0 ? 0 : image_y;
 
                 /* sets the image y as the current position context y using
                 the divisor for text mode scale */
-                imageY = (int) ((double) imageY / divisor) * -1;
+                image_y = (int) ((double) image_y / divisor) * -1;
 
                 /* switches the map mode to text (pixel oriented) and writes
                 the image into the current context, then switches back to the
                 previous map mode */
-                previousMode = GetMapMode(context);
+                previous_mode = GetMapMode(context);
                 SetMapMode(context, MM_TEXT);
-                StretchBlt(context, imageX, imageY, (int) scaledWidth, (int) scaledHeight, imageContext, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
-                SetMapMode(context, previousMode);
+                StretchBlt(context, image_x, image_y, (int) scaled_width, (int) scaled_height, image_context, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+                SetMapMode(context, previous_mode);
 
                 /* selectes the bitmap for the context and then deletes the
                 "just" generated drawing context */
-                SelectBitmap(imageContext, handleImage);
-                DeleteDC(imageContext);
+                SelectBitmap(image_context, handle_image);
+                DeleteDC(image_context);
 
                 /* breaks the switch */
                 break;
@@ -414,7 +414,7 @@ int print(bool showDialog, char *data) {
 
         /* retrieves te next element header, taking into account the size
         of the current element (this is the increment delta to be used) */
-        elementHeader = (struct ElementHeader_t *) ((char *) elementHeader + sizeof(struct ElementHeader_t) + elementLength);
+        element_header = (struct element_header_t *) ((char *) element_header + sizeof(struct element_header_t) + element_length);
     }
 
     /* ends the current page and the document for the

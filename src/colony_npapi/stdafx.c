@@ -31,6 +31,6 @@ static unsigned char name[] = "colony_npapi";
 static unsigned char version[] = "1.0.0";
 static unsigned char description[] = "Colony NPAPI";
 
-unsigned char *nameColonyNpapi() { return name; }
-unsigned char *versionColonyNpapi() { return version; }
-unsigned char *descriptionColonyNpapi() { return description; }
+unsigned char *name_colony_npapi() { return name; }
+unsigned char *version_colony_npapi() { return version; }
+unsigned char *description_colony_npapi() { return description; }

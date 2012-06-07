@@ -151,7 +151,7 @@ int print(bool show_dialog, char *data) {
     /* retrieves the horizontal and vertical resolution and pixel
     density capabilities */
     int horizontal_resolution = GetDeviceCaps(context, HORZRES);
-    int verticalResolution = GetDeviceCaps(context, VERTRES);
+    int vertical_resolution = GetDeviceCaps(context, VERTRES);
     int vertical_size = GetDeviceCaps(context, VERTSIZE);
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
 

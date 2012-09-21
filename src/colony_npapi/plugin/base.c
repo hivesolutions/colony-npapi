@@ -67,7 +67,7 @@ bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPV
 bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the hello message and
     then allocates npapi space for it */
-    const char version[] = "1.0.10";
+    const char version[] = "1.0.11";
     char *version_message = (char *) npnfuncs->memalloc(strlen(version));
 
     /* copes the version value into the javascript owned

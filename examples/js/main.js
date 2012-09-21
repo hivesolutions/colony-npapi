@@ -23,6 +23,25 @@
 // __copyright__ = Copyright (c) 2008-2012 Hive Solutions Lda.
 // __license__   = GNU General Public License (GPL), Version 3
 
+var HELLO_WORD_B64 = "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAA\AAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAA\
+AMAEAAAAAAAAAAAAAQ2FsaWJyaQAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+AAAAAAAkAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAB\
+IZWxsbyBXb3JsZAA=";
+
 function version() {
     try {
         var gateway = document.getElementById("colony-gateway");
@@ -55,7 +74,7 @@ function callback() {
 function _alert() {
     try {
         var gateway = document.getElementById("colony-gateway");
-        gateway.alert("João Magalhães");
+        gateway.alert("Hello World :: Olá Mundo");
     } catch (exception) {
         alert(exception);
     }
@@ -64,7 +83,7 @@ function _alert() {
 function _print() {
     try {
         var gateway = document.getElementById("colony-gateway");
-        gateway.print(true);
+        gateway.print(true, HELLO_WORD_B64);
     } catch (exception) {
         alert(exception);
     }

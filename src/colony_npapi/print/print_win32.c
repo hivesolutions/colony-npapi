@@ -103,6 +103,8 @@ int print(bool show_dialog, char *data) {
     /* otherwise the data must be read from the local
     file system */
     else {
+		/* creates the file object reference and opens
+		the target (default) file */
         FILE *file;
         fopen_s(&file, "default.binie", "rb");
 

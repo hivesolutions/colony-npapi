@@ -40,8 +40,8 @@ void log(const char *message) {
 
     /* in case the file was not correclty
     opened, avoid any operation, returns
-	immediately cannot write in it */
-	if(file == NULL) { return; }
+    immediately cannot write in it */
+    if(file == NULL) { return; }
 
     /* prints the message into file (printing)
     and then closes it immediately */

@@ -1,6 +1,6 @@
 /*
  Hive Colony Framework
- Copyright (C) 2008 Hive Solutions Lda.
+ Copyright (C) 2008-2012 Hive Solutions Lda.
 
  This file is part of Hive Colony Framework.
 
@@ -21,7 +21,7 @@
  __version__   = 1.0.0
  __revision__  = $LastChangedRevision$
  __date__      = $LastChangedDate$
- __copyright__ = Copyright (c) 2008 Hive Solutions Lda.
+ __copyright__ = Copyright (c) 2008-2012 Hive Solutions Lda.
  __license__   = GNU General Public License (GPL), Version 3
 */
 
@@ -39,11 +39,9 @@ void log(const char *message) {
     fopen_s(&file, "\\npcolony.log", "a");
 
     /* in case the file was not correclty
-    opened, avoid any operation */
-    if(file == NULL) {
-        /* returns immediately */
-        return;
-    }
+    opened, avoid any operation, returns
+	immediately cannot write in it */
+	if(file == NULL) { return; }
 
     /* prints the message into file (printing)
     and then closes it immediately */

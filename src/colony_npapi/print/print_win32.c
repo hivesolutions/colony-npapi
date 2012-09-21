@@ -205,7 +205,7 @@ int print(bool show_dialog, char *data) {
         /* switches over the element type to generate the
         appropriate print instructions */
         switch(element_type) {
-            case 1:
+            case TEXT_VALUE:
                 /* "casts" the element header as text element header an retrieves
                 the text part from it, then sets the default text weight as normal */
                 text_element_header = (struct text_element_header_t *) element_header;
@@ -309,7 +309,7 @@ int print(bool show_dialog, char *data) {
                 /* breaks the switch */
                 break;
 
-            case 2:
+            case IMAGE_VALUE:
                 /* "casts" the element header as image element header an retrieves
                 the image part from it */
                 image_element_header = (struct image_element_header_t *) element_header;

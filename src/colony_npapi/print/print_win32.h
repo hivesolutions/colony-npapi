@@ -59,6 +59,13 @@
 #define IMAGE_SCALE_FACTOR 10
 
 /**
+ * The various element type values to be used
+ * for the processing.
+ */
+#define TEXT_VALUE 1
+#define IMAGE_VALUE 2
+
+/**
  * The various alignment values to be used in
  * the display of the text.
  */

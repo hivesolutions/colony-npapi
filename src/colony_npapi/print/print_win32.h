@@ -191,4 +191,4 @@ COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
  * @return The result of the printing processm if success a value
  * greater than zero should be returned.
  */
-COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);
+extern "C" COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);

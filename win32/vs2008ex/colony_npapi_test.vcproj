@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="colony_npapi"
-	ProjectGUID="{A3E24E4A-16BA-438E-AB7F-CF246B2AD317}"
-	RootNamespace="colony_npapi"
+	Name="colony_npapi_test"
+	ProjectGUID="{67A4B563-1011-4C36-BDAB-EE6B4E567098}"
+	RootNamespace="colony_npapi_test"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -20,7 +20,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="0"
 			>
 			<Tool
@@ -28,7 +28,6 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				CommandLine=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -42,12 +41,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="XULRUNNER_SDK;WIN32;_DEBUG;_WINDOWS;_USRDLL;COLONY_NPAPI_EXPORTS;COLONY_DEBUG"
+				PreprocessorDefinitions="XULRUNNER_SDK;WIN32;_DEBUG;_CONSOLE;COLONY_NPAPI_EXPORTS;COLONY_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
-				ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="2"
@@ -63,11 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\npcolony.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.def"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -90,14 +86,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="$(SolutionDir)..\..\scripts\make_all.bat $(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName) bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
@@ -120,11 +115,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="XULRUNNER_SDK;WIN32;NDEBUG;_WINDOWS;_USRDLL;COLONY_NPAPI_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
-				ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="2"
@@ -140,11 +134,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\npcolony.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.def"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -169,11 +161,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="$(SolutionDir)..\..\scripts\make_all.bat $(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName) bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
 			/>
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{A3E24E4A-16BA-438E-AB7F-CF246B2AD317}"
+			RelativePathToProject=".\colony_npapi.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -182,7 +177,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\colony_npapi\stdafx.c"
+				RelativePath="..\..\src\colony_npapi_test\main.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\colony_npapi_test\stdafx.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -201,38 +200,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<Filter
-				Name="Global"
-				>
-			</Filter>
-			<Filter
-				Name="Plugin"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\plugin\base.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\plugin\util.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Print"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\print\print_win32.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Encoding"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\encoding\base_64.c"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -240,106 +207,18 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\colony_npapi\_config_win32.h"
+				RelativePath="..\..\src\colony_npapi_test\stdafx.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\src\colony_npapi\colony_npapi.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\colony_npapi\stdafx.h"
-				>
-			</File>
-			<Filter
-				Name="Global"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\compilation.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\compiler.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\cpu.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\definitions.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\platforms.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\resource.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\global\targetver.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Plugin"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\plugin\base.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\plugin\plugin.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\plugin\util.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Print"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\print\print.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\print\print_win32.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Encoding"
-				>
-				<File
-					RelativePath="..\..\src\colony_npapi\encoding\base_64.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\colony_npapi\encoding\encoding.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath="..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.def"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.rc"
-				>
-			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\src\colony_npapi\ReadMe.txt"
+			RelativePath="..\..\src\colony_npapi_test\ReadMe.txt"
 			>
 		</File>
 	</Files>

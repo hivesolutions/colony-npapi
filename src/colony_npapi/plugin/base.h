@@ -37,16 +37,16 @@
  */
 #define METHODS_COUNT 6
 
-bool has_method(NPObject* obj, NPIdentifier method_name);
-bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
-bool has_property(NPObject *obj, NPIdentifier property_name);
-bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
+COLONY_EXPORT_PREFIX bool has_method(NPObject* obj, NPIdentifier method_name);
+COLONY_EXPORT_PREFIX bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool has_property(NPObject *obj, NPIdentifier property_name);
+COLONY_EXPORT_PREFIX bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
 
 NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
 NPError destroy(NPP instance, NPSavedData **save);

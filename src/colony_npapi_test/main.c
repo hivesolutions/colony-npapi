@@ -27,7 +27,7 @@
 
 #include "stdafx.h"
 
-#define HELLO_WORD_B64 "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
+#define HELLO_WORLD_B64 "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
@@ -54,7 +54,7 @@ void print_hello() {
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
-    decode_base64((unsigned char *) HELLO_WORD_B64, strlen(HELLO_WORD_B64), (unsigned char **) &data, &data_length);
+    decode_base64((unsigned char *) HELLO_WORLD_B64, strlen(HELLO_WORLD_B64), (unsigned char **) &data, &data_length);
     print(true, (char *) data);
 
     /* releases the decoded buffer (avoids memory leak)

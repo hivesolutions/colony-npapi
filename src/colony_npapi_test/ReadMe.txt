@@ -1,33 +1,24 @@
-========================================================================
-    CONSOLE APPLICATION : colony_npapi_test Project Overview
-========================================================================
+// Hive Colony Framework
+// Copyright (C) 2008-2012 Hive Solutions Lda.
+//
+// This file is part of Hive Colony Framework.
+//
+// Hive Colony Framework is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Hive Colony Framework is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Hive Colony Framework. If not, see <http://www.gnu.org/licenses/>.
 
-AppWizard has created this colony_npapi_test application for you.
-
-This file contains a summary of what you will find in each of the files that
-make up your colony_npapi_test application.
-
-
-colony_npapi_test.vcproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
-
-colony_npapi_test.cpp
-    This is the main application source file.
-
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named colony_npapi_test.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
+// __author__    = João Magalhães <joamag@hive.pt>
+// __version__   = 1.0.0
+// __revision__  = $LastChangedRevision$
+// __date__      = $LastChangedDate$
+// __copyright__ = Copyright (c) 2008-2012 Hive Solutions Lda.
+// __license__   = GNU General Public License (GPL), Version 3

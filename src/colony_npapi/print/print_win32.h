@@ -163,7 +163,7 @@ typedef struct document_t {
  * @return The handle for the the drawing context of the
  * default printer.
  */
-HDC get_default_printer();
+COLONY_EXPORT_PREFIX HDC get_default_printer();
 
 /**
  * Shows the printing dialog for printer selction, the return
@@ -173,7 +173,7 @@ HDC get_default_printer();
  * structure describing the configuration for the dialog box.
  * @return A boolean with the success result of the print dialog.
  */
-BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
+COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
 
 /**
  * Prints a document using the default printer or in case the show
@@ -191,4 +191,4 @@ BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
  * @return The result of the printing processm if success a value
  * greater than zero should be returned.
  */
-int print(bool show_dialog, char *data);
+COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);

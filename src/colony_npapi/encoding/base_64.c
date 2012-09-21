@@ -305,3 +305,7 @@ unsigned char _lookup_fast_base64(unsigned char value) {
     /* returns the default value */
     return 0;
 }
+
+void _free_base64(unsigned char *pointer) {
+	free(pointer);
+}

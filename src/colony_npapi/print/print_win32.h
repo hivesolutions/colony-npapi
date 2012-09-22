@@ -182,6 +182,10 @@ COLONY_EXPORT_PREFIX HDC get_default_printer();
  */
 COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Prints a document using the default printer or in case the show
  * dialog option is set using the printer selected in the printing
@@ -198,4 +202,8 @@ COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
  * @return The result of the printing processm if success a value
  * greater than zero should be returned.
  */
-extern "C" COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);
+COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);
+
+#ifdef __cplusplus
+}
+#endif

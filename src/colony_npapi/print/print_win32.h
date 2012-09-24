@@ -114,6 +114,10 @@ typedef struct text_element_header_t {
     unsigned int text_italic;
     unsigned int margin_left;
     unsigned int margin_right;
+	unsigned int position_x;
+	unsigned int position_y;
+	unsigned int block_width;
+	unsigned int block_height;
     unsigned int length;
 } text_element_header;
 
@@ -151,6 +155,8 @@ typedef struct image_element_t {
  */
 typedef struct document_header_t {
     char title[256];
+	unsigned int width;
+	unsigned int height;
     unsigned int element_count;
 } document_header;
 
@@ -167,10 +173,16 @@ typedef struct document_t {
  * This function is useful for situations where no print
  * dialog is wanted (fast printing).
  *
+ * @param width Optional parameter that allows the retrieved
+ * context to be configured with the desired width (in decimal
+ * parts of millimiter).
+ * @param height Optional parameter that allows the retrieved
+ * context to be configured with the desired height (in decimal
+ * parts of millimiter).
  * @return The handle for the the drawing context of the
  * default printer.
  */
-COLONY_EXPORT_PREFIX HDC get_default_printer();
+COLONY_EXPORT_PREFIX HDC get_default_printer(int width, int height);
 
 /**
  * Shows the printing dialog for printer selction, the return

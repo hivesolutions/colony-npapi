@@ -29,17 +29,58 @@
 
 #include "print_win32.h"
 
-HDC get_default_printer() {
+HDC get_default_printer(int width, int height) {
+	/* allocates space for the dev mode related
+	structures used to customize the default values
+	of the printing operation */
+	HANDLE printer;
+	size_t dev_mode_size;
+	PDEVMODEA dev_mode;
+
+	/* allocates space fot the flag that will
+	define if the dimension values should be set */
+	unsigned char set_values;
+
     /* allocates a new buffer in the stack
     and then set a long variable with the size
     of it to be used in the printer call */
     char buffer[BUFFER_SIZE];
     unsigned long size = BUFFER_SIZE;
 
+    /* creats the array of definitions to the default
+	values of the printer */
+	PRINTER_DEFAULTS printer_defaults = {
+		NULL, NULL, PRINTER_ACCESS_USE
+	};
+
+	/* checks if the default value should be set (they
+	are both valid values) */
+	set_values = width > 0 && height > 0;
+
     /* retrieves the default printer and then
     and then uses it to create the apropriate context */
     GetDefaultPrinter(buffer, &size);
-    HDC handle_printer = CreateDC("WINSPOOL\0", buffer, NULL, NULL);
+	OpenPrinter(buffer, &printer, &printer_defaults);
+
+    /* tries to retrieves an empty document properties to
+	"gather" the size of the underlying structure and then
+	allocates the associated dev mode */
+	dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
+	dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
+
+	/* retrieves the current print dev mode structure (out mode)
+	then updates the structure with the default values and set
+	these values again in the dev structure and then creates the
+	drawing context for the "resulting" printer */
+	DocumentProperties(NULL, printer, buffer, dev_mode, NULL, DM_OUT_BUFFER);
+	dev_mode->dmPaperSize = DMPAPER_USER;
+	dev_mode->dmPaperLength = width;
+	dev_mode->dmPaperWidth = height;
+	dev_mode->dmFields = DM_PAPERSIZE | DM_PAPERLENGTH | DM_PAPERWIDTH;
+	if(set_values) {
+		DocumentProperties(NULL, printer, buffer, dev_mode, dev_mode, DM_IN_BUFFER | DM_OUT_BUFFER);
+	}
+    HDC handle_printer = CreateDC("WINSPOOL\0", buffer, NULL, dev_mode);
 
     /* retrieves the just created context */
     return handle_printer;
@@ -107,8 +148,8 @@ int print(bool show_dialog, char *data) {
     /* otherwise the data must be read from the local
     file system */
     else {
-		/* creates the file object reference and opens
-		the target (default) file */
+        /* creates the file object reference and opens
+        the target (default) file */
         FILE *file;
         fopen_s(&file, "default.binie", "rb");
 
@@ -155,7 +196,7 @@ int print(bool show_dialog, char *data) {
     struct element_header_t *element_header = (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
     /* retrieves the horizontal and vertical resolution and pixel
-    density capabilities */
+    density capabilities from the current device */
     int horizontal_resolution = GetDeviceCaps(context, HORZRES);
     int vertical_resolution = GetDeviceCaps(context, VERTRES);
     int vertical_size = GetDeviceCaps(context, VERTSIZE);
@@ -250,13 +291,22 @@ int print(bool show_dialog, char *data) {
                 GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
                 GetClipBox(context, &clip_box);
 
+				/* in case the block width and height are defined a block is
+				defined and so the clip box must be changed accordingly */
+				if(text_element_header->block_width != 0 && text_element_header->block_height != 0) {
+					clip_box.left = text_element_header->position_x;
+					clip_box.top = text_element_header->position_y * -1;
+					clip_box.right = text_element_header->position_x + text_element_header->block_width;
+					clip_box.bottom = (text_element_header->position_y + text_element_header->block_height) * -1;
+				}
+
                 /* calculates the text initial x position (deducting the margins)
                 and using the current font scale factor */
                 text_x = (text_element_header->margin_left - text_element_header->margin_right) * FONT_SCALE_FACTOR;
 
                 /* in case the text align is left */
                 if(text_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
-                    text_x += 0;
+                    text_x += clip_box.left;
                 }
                 /* in case the text align is right */
                 else if(text_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
@@ -264,11 +314,12 @@ int print(bool show_dialog, char *data) {
                 }
                 /* in case the text align is left */
                 else if(text_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
-                    text_x += clip_box.right / 2 - text_size.cx / 2;
+                    text_x += clip_box.left + (clip_box.right - clip_box.left) / 2 - text_size.cx / 2;
                 }
 
-                /* sets the text y as the current position context y */
-                text_y = text_element_header->position.y;
+                /* sets the text y as the current position context y
+				incremented by the clip box top position */
+                text_y = clip_box.top + text_element_header->position.y;
 
                 /* calculates the y position for the bottom position of the
                 text and then converts it into a milimiter type */

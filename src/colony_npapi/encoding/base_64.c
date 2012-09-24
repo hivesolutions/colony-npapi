@@ -307,5 +307,5 @@ unsigned char _lookup_fast_base64(unsigned char value) {
 }
 
 void _free_base64(unsigned char *pointer) {
-	free(pointer);
+    free(pointer);
 }

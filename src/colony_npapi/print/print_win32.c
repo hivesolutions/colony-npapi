@@ -269,7 +269,7 @@ int print(bool show_dialog, char *data) {
                 /* calculates the y position for the bottom position of the
                 text and then converts it into a milimiter type */
                 text_y_bottom = text_y - text_size.cy;
-                text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+                text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
 
                 /* uses the bottom position of the text in milimiters and
                 divides (integer division) it over the page size to check
@@ -362,7 +362,7 @@ int print(bool show_dialog, char *data) {
                 /* calculates the y position for the bottom position of the
                 image and then converts it into a milimiter type */
                 image_y_bottom = image_element_header->position.y + (int) (scaled_height * divisor);
-                image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * -1.0 * MM_PER_INCH;
+                image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
 
                 /* uses the bottom position of the image in milimiters and
                 divides (integer division) it over the page size to check

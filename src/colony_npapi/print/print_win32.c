@@ -74,8 +74,8 @@ HDC get_default_printer(int width, int height) {
 	drawing context for the "resulting" printer */
 	DocumentProperties(NULL, printer, buffer, dev_mode, NULL, DM_OUT_BUFFER);
 	dev_mode->dmPaperSize = DMPAPER_USER;
-	dev_mode->dmPaperLength = width;
-	dev_mode->dmPaperWidth = height;
+	dev_mode->dmPaperLength = height;
+	dev_mode->dmPaperWidth = width;
 	dev_mode->dmFields = DM_PAPERSIZE | DM_PAPERLENGTH | DM_PAPERWIDTH;
 	if(set_values) {
 		DocumentProperties(NULL, printer, buffer, dev_mode, dev_mode, DM_IN_BUFFER | DM_OUT_BUFFER);

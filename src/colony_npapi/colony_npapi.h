@@ -35,8 +35,8 @@
 
 #ifdef COLONY_PLATFORM_MSC
 #ifdef COLONY_DEBUG
-#pragma comment(lib, "viriatum_commons_d.lib")
+#pragma comment(lib, "npcolony.lib")
 #else
-#pragma comment(lib, "viriatum_commons.lib")
+#pragma comment(lib, "npcolony.lib")
 #endif
 #endif

@@ -34,7 +34,7 @@ HDC get_default_printer(int width, int height) {
 	structures used to customize the default values
 	of the printing operation */
 	HANDLE printer;
-	size_t dev_mode_size;
+	LONG dev_mode_size;
 	PDEVMODEA dev_mode;
 
 	/* allocates space fot the flag that will
@@ -66,6 +66,7 @@ HDC get_default_printer(int width, int height) {
 	"gather" the size of the underlying structure and then
 	allocates the associated dev mode */
 	dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
+	if(dev_mode_size < 0) { return NULL; }
 	dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
 
 	/* retrieves the current print dev mode structure (out mode)

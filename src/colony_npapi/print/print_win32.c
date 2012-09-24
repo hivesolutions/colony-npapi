@@ -66,6 +66,10 @@ BOOL show_print_dialog(PRINTDLG *print_dialog_pointer) {
     return result;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int print(bool show_dialog, char *data) {
     /* reserves space for the printing context to be
     used in the current operation */
@@ -434,3 +438,7 @@ int print(bool show_dialog, char *data) {
     /* returns with no error */
     return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif

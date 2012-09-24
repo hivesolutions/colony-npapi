@@ -82,6 +82,11 @@ HDC get_default_printer(int width, int height) {
 	}
     HDC handle_printer = CreateDC("WINSPOOL\0", buffer, NULL, dev_mode);
 
+	/* releases the dev mode structure and then closes the printer
+	structure releasing all its internal values */
+	LocalFree(dev_mode);
+	ClosePrinter(printer);
+
     /* retrieves the just created context */
     return handle_printer;
 }
@@ -115,24 +120,6 @@ int print(bool show_dialog, char *data) {
     /* reserves space for the printing context to be
     used in the current operation */
     HDC context;
-
-    /* in case the printer dialog is meant to be shown
-    the proper show dialog function must be called*/
-    if(show_dialog) {
-        /* allocates and resets the print dialog structure
-        according to the windows rules */
-        PRINTDLG print_dialog;
-        ZeroMemory(&print_dialog, sizeof(PRINTDLG));
-        BOOL result = show_print_dialog(&print_dialog);
-        if(!result) { return -1; }
-        context = print_dialog.hDC;
-    }
-    /* otherwise the default printer is retrieved */
-    else {
-        /* retrieves the default printer as the
-        the default context for printing */
-        context = get_default_printer();
-    }
 
     /* allocates space for the buffer to be used during
     the parsing stage */
@@ -170,6 +157,24 @@ int print(bool show_dialog, char *data) {
     /* casts the initial part of the buffer into a document
     header element */
     struct document_header_t *document_header = (struct document_header_t *) buffer;
+
+    /* in case the printer dialog is meant to be shown
+    the proper show dialog function must be called*/
+    if(show_dialog) {
+        /* allocates and resets the print dialog structure
+        according to the windows rules */
+        PRINTDLG print_dialog;
+        ZeroMemory(&print_dialog, sizeof(PRINTDLG));
+        BOOL result = show_print_dialog(&print_dialog);
+        if(!result) { return -1; }
+        context = print_dialog.hDC;
+    }
+    /* otherwise the default printer is retrieved */
+    else {
+        /* retrieves the default printer as the
+        the default context for printing */
+		context = get_default_printer(document_header->width, document_header->height);
+    }
 
     /* declares a document information structure
     and populate it */
@@ -479,7 +484,7 @@ int print(bool show_dialog, char *data) {
     EndPage(context);
     EndDoc(context);
 
-    /* deletes the print context (avoids leaking ofmemory) */
+    /* deletes the print context (avoids leaking of memory) */
     DeleteDC(context);
 
     /* releases the buffer that contains the binie document,

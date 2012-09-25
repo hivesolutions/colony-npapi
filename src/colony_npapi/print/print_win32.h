@@ -138,6 +138,10 @@ typedef struct image_element_header_t {
     struct element_header_t header;
     struct position_t position;
     unsigned int text_align;
+	unsigned int position_x;
+	unsigned int position_y;
+	unsigned int block_width;
+	unsigned int block_height;
     unsigned int length;
 } image_element_header;
 

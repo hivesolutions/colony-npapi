@@ -415,7 +415,7 @@ int print(bool show_dialog, char *data) {
 
 				/* in case the block width and height are defined a block is defined
 				so the variable defining the block should be set */
-				is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
+				is_block = image_element_header->block_width != 0 && image_element_header->block_height != 0;
 
 				/* in case the current image is defined inside a block the
 				clip box must be changed accordingly */

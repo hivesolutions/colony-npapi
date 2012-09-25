@@ -218,10 +218,11 @@ int print(bool show_dialog, char *data) {
         unsigned short element_type = element_header->type;
         unsigned int element_length = element_header->length;
 
-        /* allocates space for the various elements to be used
+		/* allocates space for the various elements to be used
         along the switch instruction */
         SIZE text_size;
         RECT clip_box;
+		RECT clip_box_pixel;
         HFONT font;
         int result;
         int text_x;
@@ -252,6 +253,7 @@ int print(bool show_dialog, char *data) {
         float scaled_height;
         int new_page;
         double page_size_twips;
+		char is_block ;
 
         /* switches over the element type to generate the
         appropriate print instructions */
@@ -297,9 +299,13 @@ int print(bool show_dialog, char *data) {
                 GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
                 GetClipBox(context, &clip_box);
 
-				/* in case the block width and height are defined a block is
-				defined and so the clip box must be changed accordingly */
-				if(text_element_header->block_width != 0 && text_element_header->block_height != 0) {
+				/* in case the block width and height are defined a block is defined
+				so the variable defining the block should be set */
+				is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
+
+				/* in case the current text is defined inside a block the
+				clip box must be changed accordingly */
+				if(is_block) {
 					clip_box.left = text_element_header->position_x;
 					clip_box.top = text_element_header->position_y * -1;
 					clip_box.right = text_element_header->position_x + text_element_header->block_width;
@@ -394,42 +400,69 @@ int print(bool show_dialog, char *data) {
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
-
-                /* removes the temporary image file (it's no longer reuired)`*/
+			
+                /* removes the temporary image file (it's no longer required)`*/
                 remove(path);
 
-                /* calculates the pixel divisor (resizing for text mode) and
+				/* calculates the pixel divisor (resizing for text mode) and
                 calculates the multipler for the image size */
                 divisor = TWIPS_PER_INCH / pixel_density;
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
-                /* in case the text align is left */
-                if(image_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
-                    image_x = 0;
-                }
-                /* in case the text align is right */
-                else if(image_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
-                    image_x = horizontal_resolution - bitmap.bmWidth;
-                }
-                /* in case the text align is left */
-                else if(image_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
-                    image_x = (int) ((float) horizontal_resolution / 2.0) - (int) ((float) bitmap.bmWidth * (float) multiplier / 2.0);
-                }
+				/* retrieves the current clip box rectangle defined for the
+				image context */
+				GetClipBox(context, &clip_box);
+
+				/* in case the block width and height are defined a block is defined
+				so the variable defining the block should be set */
+				is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
+
+				/* in case the current image is defined inside a block the
+				clip box must be changed accordingly */
+				if(is_block) {
+					clip_box.left = image_element_header->position_x;
+					clip_box.top = image_element_header->position_y * -1;
+					clip_box.right = image_element_header->position_x + image_element_header->block_width;
+					clip_box.bottom = (image_element_header->position_y + image_element_header->block_height) * -1;
+				}
+
+				/* updates the clip box pixel definitions using the clip box
+				values and dividing them by the divisor value */
+				clip_box_pixel.left = (int) ((float) clip_box.left / divisor);
+				clip_box_pixel.top = (int) ((float) clip_box.top / divisor);
+				clip_box_pixel.right = (int) ((float) clip_box.right / divisor);
+				clip_box_pixel.bottom = (int) ((float) clip_box.bottom / divisor);
 
                 /* calculates the scaled with and height taking into account the
                 "just" calculated multiplier value */
                 scaled_width = (float) bitmap.bmWidth * (float) multiplier;
                 scaled_height = (float) bitmap.bmHeight * (float) multiplier;
 
+                /* in case the text align is left */
+                if(image_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
+                    image_x = clip_box_pixel.left;
+                }
+                /* in case the text align is right */
+                else if(image_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
+                    image_x = clip_box_pixel.right - (int) scaled_width;
+                }
+                /* in case the text align is left */
+                else if(image_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
+                    image_x = clip_box_pixel.left + (clip_box_pixel.right - clip_box_pixel.left) / 2 -
+						(int) (scaled_width / 2);
+                }
+
                 /* calculates the y position for the bottom position of the
                 image and then converts it into a milimiter type */
-                image_y_bottom = image_element_header->position.y + (int) (scaled_height * divisor);
-                image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
+                image_y_bottom = clip_box.top - image_element_header->position.y - (int) (scaled_height * divisor);
+                image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH;
 
                 /* uses the bottom position of the image in milimiters and
                 divides (integer division) it over the page size to check
-                the current page number (index) */
-                new_page = (int) (image_y_bottom_millimeter / vertical_size);
+                the current page number (index) note that if the current
+				image is inside a block no page is changed (default layout
+				rules, clipping should apply)*/
+                new_page = is_block ? current_page : (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
                 there is a new page must be "constructed" */
@@ -448,7 +481,7 @@ int print(bool show_dialog, char *data) {
                 and uses it to re-calculate the image y position, taking
                 into account the already "used" pages (modulus) */
                 page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
-                image_y = (int) ((double) image_element_header->position.y + ((double) new_page * page_size_twips));
+                image_y = (int) ((double) clip_box.top + (double) image_element_header->position.y + ((double) new_page * page_size_twips));
 
                 /* resets the image y position in case the value is greater
                 than the maximum zero value, otherwise uses the "normal" image

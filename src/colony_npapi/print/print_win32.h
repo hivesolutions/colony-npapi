@@ -114,10 +114,10 @@ typedef struct text_element_header_t {
     unsigned int text_italic;
     unsigned int margin_left;
     unsigned int margin_right;
-	unsigned int position_x;
-	unsigned int position_y;
-	unsigned int block_width;
-	unsigned int block_height;
+    unsigned int position_x;
+    unsigned int position_y;
+    unsigned int block_width;
+    unsigned int block_height;
     unsigned int length;
 } text_element_header;
 
@@ -138,10 +138,10 @@ typedef struct image_element_header_t {
     struct element_header_t header;
     struct position_t position;
     unsigned int text_align;
-	unsigned int position_x;
-	unsigned int position_y;
-	unsigned int block_width;
-	unsigned int block_height;
+    unsigned int position_x;
+    unsigned int position_y;
+    unsigned int block_width;
+    unsigned int block_height;
     unsigned int length;
 } image_element_header;
 
@@ -159,8 +159,8 @@ typedef struct image_element_t {
  */
 typedef struct document_header_t {
     char title[256];
-	unsigned int width;
-	unsigned int height;
+    unsigned int width;
+    unsigned int height;
     unsigned int element_count;
 } document_header;
 

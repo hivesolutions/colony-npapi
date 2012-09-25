@@ -30,16 +30,16 @@
 #include "print_win32.h"
 
 HDC get_default_printer(int width, int height) {
-	/* allocates space for the dev mode related
-	structures used to customize the default values
-	of the printing operation */
-	HANDLE printer;
-	LONG dev_mode_size;
-	PDEVMODEA dev_mode;
+    /* allocates space for the dev mode related
+    structures used to customize the default values
+    of the printing operation */
+    HANDLE printer;
+    LONG dev_mode_size;
+    PDEVMODEA dev_mode;
 
-	/* allocates space fot the flag that will
-	define if the dimension values should be set */
-	unsigned char set_values;
+    /* allocates space fot the flag that will
+    define if the dimension values should be set */
+    unsigned char set_values;
 
     /* allocates a new buffer in the stack
     and then set a long variable with the size
@@ -48,45 +48,45 @@ HDC get_default_printer(int width, int height) {
     unsigned long size = BUFFER_SIZE;
 
     /* creats the array of definitions to the default
-	values of the printer */
-	PRINTER_DEFAULTS printer_defaults = {
-		NULL, NULL, PRINTER_ACCESS_USE
-	};
+    values of the printer */
+    PRINTER_DEFAULTS printer_defaults = {
+        NULL, NULL, PRINTER_ACCESS_USE
+    };
 
-	/* checks if the default value should be set (they
-	are both valid values) */
-	set_values = width > 0 && height > 0;
+    /* checks if the default value should be set (they
+    are both valid values) */
+    set_values = width > 0 && height > 0;
 
     /* retrieves the default printer and then
     and then uses it to create the apropriate context */
     GetDefaultPrinter(buffer, &size);
-	OpenPrinter(buffer, &printer, &printer_defaults);
+    OpenPrinter(buffer, &printer, &printer_defaults);
 
     /* tries to retrieves an empty document properties to
-	"gather" the size of the underlying structure and then
-	allocates the associated dev mode */
-	dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
-	if(dev_mode_size < 0) { return NULL; }
-	dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
+    "gather" the size of the underlying structure and then
+    allocates the associated dev mode */
+    dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
+    if(dev_mode_size < 0) { return NULL; }
+    dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
 
-	/* retrieves the current print dev mode structure (out mode)
-	then updates the structure with the default values and set
-	these values again in the dev structure and then creates the
-	drawing context for the "resulting" printer */
-	DocumentProperties(NULL, printer, buffer, dev_mode, NULL, DM_OUT_BUFFER);
-	dev_mode->dmPaperSize = DMPAPER_USER;
-	dev_mode->dmPaperLength = height;
-	dev_mode->dmPaperWidth = width;
-	dev_mode->dmFields = DM_PAPERSIZE | DM_PAPERLENGTH | DM_PAPERWIDTH;
-	if(set_values) {
-		DocumentProperties(NULL, printer, buffer, dev_mode, dev_mode, DM_IN_BUFFER | DM_OUT_BUFFER);
-	}
+    /* retrieves the current print dev mode structure (out mode)
+    then updates the structure with the default values and set
+    these values again in the dev structure and then creates the
+    drawing context for the "resulting" printer */
+    DocumentProperties(NULL, printer, buffer, dev_mode, NULL, DM_OUT_BUFFER);
+    dev_mode->dmPaperSize = DMPAPER_USER;
+    dev_mode->dmPaperLength = height;
+    dev_mode->dmPaperWidth = width;
+    dev_mode->dmFields = DM_PAPERSIZE | DM_PAPERLENGTH | DM_PAPERWIDTH;
+    if(set_values) {
+        DocumentProperties(NULL, printer, buffer, dev_mode, dev_mode, DM_IN_BUFFER | DM_OUT_BUFFER);
+    }
     HDC handle_printer = CreateDC("WINSPOOL\0", buffer, NULL, dev_mode);
 
-	/* releases the dev mode structure and then closes the printer
-	structure releasing all its internal values */
-	LocalFree(dev_mode);
-	ClosePrinter(printer);
+    /* releases the dev mode structure and then closes the printer
+    structure releasing all its internal values */
+    LocalFree(dev_mode);
+    ClosePrinter(printer);
 
     /* retrieves the just created context */
     return handle_printer;
@@ -174,7 +174,7 @@ int print(bool show_dialog, char *data) {
     else {
         /* retrieves the default printer as the
         the default context for printing */
-		context = get_default_printer(document_header->width, document_header->height);
+        context = get_default_printer(document_header->width, document_header->height);
     }
 
     /* declares a document information structure
@@ -218,11 +218,11 @@ int print(bool show_dialog, char *data) {
         unsigned short element_type = element_header->type;
         unsigned int element_length = element_header->length;
 
-		/* allocates space for the various elements to be used
+        /* allocates space for the various elements to be used
         along the switch instruction */
         SIZE text_size;
         RECT clip_box;
-		RECT clip_box_pixel;
+        RECT clip_box_pixel;
         HFONT font;
         int result;
         int text_x;
@@ -253,7 +253,7 @@ int print(bool show_dialog, char *data) {
         float scaled_height;
         int new_page;
         double page_size_twips;
-		char is_block;
+        char is_block;
 
         /* switches over the element type to generate the
         appropriate print instructions */
@@ -299,18 +299,18 @@ int print(bool show_dialog, char *data) {
                 GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
                 GetClipBox(context, &clip_box);
 
-				/* in case the block width and height are defined a block is defined
-				so the variable defining the block should be set */
-				is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
+                /* in case the block width and height are defined a block is defined
+                so the variable defining the block should be set */
+                is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
 
-				/* in case the current text is defined inside a block the
-				clip box must be changed accordingly */
-				if(is_block) {
-					clip_box.left = text_element_header->position_x;
-					clip_box.top = text_element_header->position_y * -1;
-					clip_box.right = text_element_header->position_x + text_element_header->block_width;
-					clip_box.bottom = (text_element_header->position_y + text_element_header->block_height) * -1;
-				}
+                /* in case the current text is defined inside a block the
+                clip box must be changed accordingly */
+                if(is_block) {
+                    clip_box.left = text_element_header->position_x;
+                    clip_box.top = text_element_header->position_y * -1;
+                    clip_box.right = text_element_header->position_x + text_element_header->block_width;
+                    clip_box.bottom = (text_element_header->position_y + text_element_header->block_height) * -1;
+                }
 
                 /* calculates the text initial x position (deducting the margins)
                 and using the current font scale factor */
@@ -330,13 +330,13 @@ int print(bool show_dialog, char *data) {
                 }
 
                 /* sets the text y as the current position context y
-				incremented by the clip box top position */
+                incremented by the clip box top position */
                 text_y = clip_box.top + text_element_header->position.y;
 
                 /* calculates the y position for the bottom position of the
                 text and then converts it into a milimiter type */
                 text_y_bottom = text_y - text_size.cy;
-				text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
+                text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
 
                 /* uses the bottom position of the text in milimiters and
@@ -400,38 +400,38 @@ int print(bool show_dialog, char *data) {
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
-			
+
                 /* removes the temporary image file (it's no longer required)`*/
                 remove(path);
 
-				/* calculates the pixel divisor (resizing for text mode) and
+                /* calculates the pixel divisor (resizing for text mode) and
                 calculates the multipler for the image size */
                 divisor = TWIPS_PER_INCH / pixel_density;
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
-				/* retrieves the current clip box rectangle defined for the
-				image context */
-				GetClipBox(context, &clip_box);
+                /* retrieves the current clip box rectangle defined for the
+                image context */
+                GetClipBox(context, &clip_box);
 
-				/* in case the block width and height are defined a block is defined
-				so the variable defining the block should be set */
-				is_block = image_element_header->block_width != 0 && image_element_header->block_height != 0;
+                /* in case the block width and height are defined a block is defined
+                so the variable defining the block should be set */
+                is_block = image_element_header->block_width != 0 && image_element_header->block_height != 0;
 
-				/* in case the current image is defined inside a block the
-				clip box must be changed accordingly */
-				if(is_block) {
-					clip_box.left = image_element_header->position_x;
-					clip_box.top = image_element_header->position_y * -1;
-					clip_box.right = image_element_header->position_x + image_element_header->block_width;
-					clip_box.bottom = (image_element_header->position_y + image_element_header->block_height) * -1;
-				}
+                /* in case the current image is defined inside a block the
+                clip box must be changed accordingly */
+                if(is_block) {
+                    clip_box.left = image_element_header->position_x;
+                    clip_box.top = image_element_header->position_y * -1;
+                    clip_box.right = image_element_header->position_x + image_element_header->block_width;
+                    clip_box.bottom = (image_element_header->position_y + image_element_header->block_height) * -1;
+                }
 
-				/* updates the clip box pixel definitions using the clip box
-				values and dividing them by the divisor value */
-				clip_box_pixel.left = (int) ((float) clip_box.left / divisor);
-				clip_box_pixel.top = (int) ((float) clip_box.top / divisor);
-				clip_box_pixel.right = (int) ((float) clip_box.right / divisor);
-				clip_box_pixel.bottom = (int) ((float) clip_box.bottom / divisor);
+                /* updates the clip box pixel definitions using the clip box
+                values and dividing them by the divisor value */
+                clip_box_pixel.left = (int) ((float) clip_box.left / divisor);
+                clip_box_pixel.top = (int) ((float) clip_box.top / divisor);
+                clip_box_pixel.right = (int) ((float) clip_box.right / divisor);
+                clip_box_pixel.bottom = (int) ((float) clip_box.bottom / divisor);
 
                 /* calculates the scaled with and height taking into account the
                 "just" calculated multiplier value */
@@ -449,7 +449,7 @@ int print(bool show_dialog, char *data) {
                 /* in case the text align is left */
                 else if(image_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
                     image_x = clip_box_pixel.left + (clip_box_pixel.right - clip_box_pixel.left) / 2 -
-						(int) (scaled_width / 2);
+                        (int) (scaled_width / 2);
                 }
 
                 /* calculates the y position for the bottom position of the
@@ -460,8 +460,8 @@ int print(bool show_dialog, char *data) {
                 /* uses the bottom position of the image in milimiters and
                 divides (integer division) it over the page size to check
                 the current page number (index) note that if the current
-				image is inside a block no page is changed (default layout
-				rules, clipping should apply)*/
+                image is inside a block no page is changed (default layout
+                rules, clipping should apply)*/
                 new_page = is_block ? current_page : (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case

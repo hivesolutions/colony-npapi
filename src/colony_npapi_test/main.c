@@ -46,49 +46,49 @@ void print_hello() {
 }
 
 void print_base64(char *file_path) {
-	/* allocates space for both the "resolved" data
-	buffer and for the buffer that will hold the file
-	contents */
-	char *data;
-	unsigned char *buffer;
+    /* allocates space for both the "resolved" data
+    buffer and for the buffer that will hold the file
+    contents */
+    char *data;
+    unsigned char *buffer;
 
-	/* allocates space for the value of the size of the
-	file and the data buffer */
-	size_t file_size;
-	size_t data_length;
+    /* allocates space for the value of the size of the
+    file and the data buffer */
+    size_t file_size;
+    size_t data_length;
 
-	/* allocates space for the pointer to the file object
-	to be used in the reading */
-	FILE *file;
-	
-	/* opens the target file for read operations in
-	the binary form */
-	fopen_s(&file, file_path, "rb");
+    /* allocates space for the pointer to the file object
+    to be used in the reading */
+    FILE *file;
 
-	/* seeks to the final position in the file and
-	checks the current offset (this value should be
-	the size of the file in bytes) */
-	fseek(file, 0, SEEK_END);
-	file_size = ftell(file);
-	fseek(file, 0, SEEK_SET);
+    /* opens the target file for read operations in
+    the binary form */
+    fopen_s(&file, file_path, "rb");
 
-	/* allocates enought space for the buffer to hold
-	the complete set of contents of the file */
-	buffer = (unsigned char *) malloc(file_size);
+    /* seeks to the final position in the file and
+    checks the current offset (this value should be
+    the size of the file in bytes) */
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
 
-	/* reads the complete set of contents from the file
-	and then sends then decodes them as base 64 */
-	fread(buffer, sizeof(char), file_size, file);
-	decode_base64(buffer, file_size, (unsigned char **) &data, &data_length);
+    /* allocates enought space for the buffer to hold
+    the complete set of contents of the file */
+    buffer = (unsigned char *) malloc(file_size);
+
+    /* reads the complete set of contents from the file
+    and then sends then decodes them as base 64 */
+    fread(buffer, sizeof(char), file_size, file);
+    decode_base64(buffer, file_size, (unsigned char **) &data, &data_length);
     print(FALSE, data);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
     _free_base64((unsigned char *) data);
 
-	/* releases the buffer holding the contents of the just
-	read file (avoids leaking of memory) */
-	free(buffer);
+    /* releases the buffer holding the contents of the just
+    read file (avoids leaking of memory) */
+    free(buffer);
 }
 
 int main(int argc, char *argv[]) {

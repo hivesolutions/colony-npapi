@@ -253,7 +253,7 @@ int print(bool show_dialog, char *data) {
         float scaled_height;
         int new_page;
         double page_size_twips;
-		char is_block ;
+		char is_block;
 
         /* switches over the element type to generate the
         appropriate print instructions */

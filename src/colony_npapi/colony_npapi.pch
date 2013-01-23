@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'colony_npapi' target in the 'colony_npapi' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

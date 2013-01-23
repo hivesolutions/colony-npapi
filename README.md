@@ -1,4 +1,4 @@
-# Colony Gateway (NPAPI Plugin)
+# [Colony Gateway (NPAPI Plugin)](http://getcolony.com)
 
 NPAPI based plugin that provides a series of native features like:
 

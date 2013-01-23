@@ -89,31 +89,44 @@ bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
 }
 
 bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    if(arg_count == 1 && args[0].type == NPVariantType_Object) {
-        /* allocates space for both the parameter and the return
-        value variant values */
-        static NPVariant parameter;
-        static NPVariant return_value;
+	/* validates that the number of arguments is one and that
+	the provided argument is an object (callback function) */
+	if(arg_count != 1 || args[0].type != NPVariantType_Object) {
+		return true;
+	}
 
-        /* allocates static space for the hello message and
-        then allocates npapi space for it */
-        const char hello[] = "Hello World";
-        char *message = (char *) npnfuncs->memalloc(strlen(hello));
+	/* allocates space for the result of the callback call */
+	bool result_c;
 
-        /* copies the hello message into the allocated message
-        and then converts it into a variant value */
-        memcpy(message, hello, strlen(hello));
-        STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
+    /* allocates space for both the parameter and the return
+    value variant values */
+    static NPVariant parameter;
+    static NPVariant return_value;
 
-        /* invokes the callback fnction and then returns the value of the
-        invoke default function */
-        if(npnfuncs->invokeDefault(inst, NPVARIANT_TO_OBJECT(args[0]), &parameter, 1, &return_value)) {
-            /* returns the result of the default invoking */
-            return invoke_default(obj, args, arg_count, result);
-        }
-    }
+    /* allocates static space for the hello message and
+    then allocates npapi space for it */
+    const char hello[] = "Hello World";
+    char *message = (char *) npnfuncs->memalloc(strlen(hello));
 
-    /* returns true by default */
+    /* copies the hello message into the allocated message
+    and then converts it into a variant value */
+    memcpy(message, hello, strlen(hello));
+    STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
+
+    /* invokes the callback function and then returns the value of the
+    invoke default function */
+    result_c = npnfuncs->invokeDefault(
+	    inst,
+		NPVARIANT_TO_OBJECT(args[0]),
+		&parameter,
+		1,
+		&return_value
+	);
+	if(!result_c) { return true; }
+
+	/* sets the result of the call as null
+	and returns the function with a valid value */
+	result->type = NPVariantType_Null;
     return true;
 }
 
@@ -127,7 +140,14 @@ bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     wchar_t *title = new wchar_t[6];
     wchar_t *message = new wchar_t[message_string.utf8length + 1];
     MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-    size_t count = MultiByteToWideChar(CP_UTF8, NULL, message_string.utf8characters, message_string.utf8length, message, message_string.utf8length);
+    size_t count = MultiByteToWideChar(
+        CP_UTF8,
+		NULL,
+		message_string.utf8characters,
+		message_string.utf8length,
+		message,
+		message_string.utf8length
+	);
     message[count] = '\0';
 
     /* creates the alert box with the "just" converted title
@@ -159,7 +179,12 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
-    decode_base64((unsigned char *) data_string.utf8characters, data_string.utf8length, (unsigned char **) &data, &data_length);
+    decode_base64(
+		(unsigned char *) data_string.utf8characters,
+		data_string.utf8length,
+		(unsigned char **) &data,
+		&data_length
+	);
     print(show_dialog, (char *) data);
 
     /* releases the decoded buffer (avoids memory leak)

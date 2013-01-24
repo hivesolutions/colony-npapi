@@ -101,40 +101,14 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#ifdef COLONY_PLATFORM_WIN32
-#include <gecko/npapi.h>
-#include <gecko/npupp.h>
-#include <gecko/npruntime.h>
-#endif
-
-#ifdef COLONY_PLATFORM_UNIX
-#ifdef COLONY_PLATFORM_MACOSX
-#include <Webkit/npapi.h>
-#include <Webkit/npfunctions.h>
-#include <Webkit/npruntime.h>
-#else
-#include <npapi.h>
-#include <npupp.h>
-#include <npruntime.h>
-#endif
-#endif
+#include "npapi/npapi.h"
+#include "npapi/npfunctions.h"
 
 #ifndef OSCALL
 #define OSCALL
-#endif
-
-#ifdef COLONY_PLATFORM_MACOSX
-#define GET_UTF8_CHARACTERS(structure) structure.UTF8Characters
-#define GET_UTF8_LENGTH(structure) structure.UTF8Length
-#define SET_UTF8_CHARACTERS(structure, characters) structure.UTF8Characters = version_message
-#define SET_UTF8_LENGTH(structure, length) structure.UTF8Length = length
-#else
-#define GET_UTF8_CHARACTERS(structure) structure.utf8characters
-#define GET_UTF8_LENGTH(structure) structure.utf8length
-#define SET_UTF8_CHARACTERS(structure, characters) structure.utf8characters = characters
-#define SET_UTF8_LENGTH(structure, length) structure.utf8length = length
 #endif
 
 unsigned char *name_colony_npapi();

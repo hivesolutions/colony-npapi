@@ -77,8 +77,8 @@ bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
     /* allocates space for the version string and populates
     it with the just copied version message and the length of it */
     NPString version_string;
-    SET_UTF8_CHARACTERS(version_string, version_message);
-    SET_UTF8_LENGTH(version_string, strlen(version));
+    version_string.UTF8Characters = version_message;
+	version_string.UTF8Length = strlen(version);
 
     /* sets the version string value in the return value */
     result->type = NPVariantType_String;
@@ -140,15 +140,15 @@ bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     of the alert box then converts them from the base string
     encoded utf8 values to the win32 api unicode representation */
     wchar_t *title = new wchar_t[6];
-    wchar_t *message = new wchar_t[message_string.utf8length + 1];
+    wchar_t *message = new wchar_t[message_string.UTF8Length + 1];
     MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
     size_t count = MultiByteToWideChar(
         CP_UTF8,
 		NULL,
-		message_string.utf8characters,
-		message_string.utf8length,
+		message_string.UTF8Characters,
+		message_string.UTF8Length,
 		message,
-		message_string.utf8length
+		message_string.UTF8Length
 	);
     message[count] = '\0';
 
@@ -192,8 +192,8 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
     decode_base64(
-		(unsigned char *) GET_UTF8_CHARACTERS(data_string),
-		GET_UTF8_LENGTH(data_string),
+		(unsigned char *) data_string.UTF8Characters,
+		data_string.UTF8Length,
 		(unsigned char **) &data,
 		&data_length
 	);
@@ -248,7 +248,7 @@ bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result) 
     return false;
 }
 
-NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved) {
     log("npcolony: new\n");
     inst = instance;
     return NPERR_NO_ERROR;
@@ -283,10 +283,6 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
             if(!so) { so = npnfuncs->createobject(instance, &ref_object); }
             npnfuncs->retainobject(so);
             * (NPObject **) value = so;
-            break;
-
-        case NPPVpluginNeedsXEmbed:
-            *((PRBool *) value) = PR_FALSE;
             break;
 
         default:
@@ -350,7 +346,7 @@ NPError OSCALL NP_Shutdown() {
     return NPERR_NO_ERROR;
 }
 
-char *NP_GetMIMEDescription() {
+const char *NP_GetMIMEDescription() {
     return "application/x-colony-gateway:.colony:gateway@getcolony.com";
 }
 

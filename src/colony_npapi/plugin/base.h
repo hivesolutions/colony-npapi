@@ -48,7 +48,7 @@ COLONY_EXPORT_PREFIX bool invoke(NPObject* obj, NPIdentifier method_name, const 
 COLONY_EXPORT_PREFIX bool has_property(NPObject *obj, NPIdentifier property_name);
 COLONY_EXPORT_PREFIX bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
 
-NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, sint16 argc, char *argn[], char *argv[], NPSavedData *saved);
 NPError destroy(NPP instance, NPSavedData **save);
 NPError get_value(NPP instance, NPPVariable variable, void *value);
 NPError handle_event(NPP instance, void *ev);

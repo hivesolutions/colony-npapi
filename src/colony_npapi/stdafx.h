@@ -126,10 +126,6 @@
 #endif
 
 #ifdef COLONY_PLATFORM_MACOSX
-#define int16 sint16
-#endif
-
-#ifdef COLONY_PLATFORM_MACOSX
 #define GET_UTF8_CHARACTERS(structure) structure.UTF8Characters
 #define GET_UTF8_LENGTH(structure) structure.UTF8Length
 #define SET_UTF8_CHARACTERS(structure, characters) structure.UTF8Characters = version_message

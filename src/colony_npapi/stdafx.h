@@ -125,6 +125,22 @@
 #define OSCALL
 #endif
 
+#ifdef COLONY_PLATFORM_MACOSX
+#define int16 sint16
+#endif
+
+#ifdef COLONY_PLATFORM_MACOSX
+#define GET_UTF8_CHARACTERS(structure) structure.UTF8Characters
+#define GET_UTF8_LENGTH(structure) structure.UTF8Length
+#define SET_UTF8_CHARACTERS(structure, characters) structure.UTF8Characters = version_message
+#define SET_UTF8_LENGTH(structure, length) structure.UTF8Length = length
+#else
+#define GET_UTF8_CHARACTERS(structure) structure.utf8characters
+#define GET_UTF8_LENGTH(structure) structure.utf8length
+#define SET_UTF8_CHARACTERS(structure, characters) structure.utf8characters = characters
+#define SET_UTF8_LENGTH(structure, length) structure.utf8length = length
+#endif
+
 unsigned char *name_colony_npapi();
 unsigned char *version_colony_npapi();
 unsigned char *description_colony_npapi();

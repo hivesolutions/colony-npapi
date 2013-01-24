@@ -77,8 +77,8 @@ bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
     /* allocates space for the version string and populates
     it with the just copied version message and the length of it */
     NPString version_string;
-    version_string.UTF8Characters = version_message;
-    version_string.UTF8Length = strlen(version);
+    SET_UTF8_CHARACTERS(version_string, version_message);
+    SET_UTF8_LENGTH(version_string, strlen(version));
 
     /* sets the version string value in the return value */
     result->type = NPVariantType_String;
@@ -111,9 +111,7 @@ bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     /* copies the hello message into the allocated message
     and then converts it into a variant value */
     memcpy(message, hello, strlen(hello));
-    
-    // @TODO TENHO DE FAZER ISTO MELHOR
-//    STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
+    STRINGN_TO_NPVARIANT(message, strlen(hello), parameter);
 
     /* invokes the callback function and then returns the value of the
     invoke default function */
@@ -194,8 +192,8 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
     decode_base64(
-		(unsigned char *) data_string.UTF8Characters,
-		data_string.UTF8Length,
+		(unsigned char *) GET_UTF8_CHARACTERS(data_string),
+		GET_UTF8_LENGTH(data_string),
 		(unsigned char **) &data,
 		&data_length
 	);
@@ -250,7 +248,7 @@ bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result) 
     return false;
 }
 
-NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, sint16 argc, char *argn[], char *argv[], NPSavedData *saved) {
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved) {
     log("npcolony: new\n");
     inst = instance;
     return NPERR_NO_ERROR;
@@ -288,8 +286,7 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
             break;
 
         case NPPVpluginNeedsXEmbed:
-            // @TODO: CHECK THIS OUT !!!
-          //  *((PRBool *) value) = PR_FALSE;
+            *((PRBool *) value) = PR_FALSE;
             break;
 
         default:

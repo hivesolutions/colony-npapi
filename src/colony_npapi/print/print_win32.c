@@ -27,6 +27,8 @@
 
 #include "stdafx.h"
 
+#ifdef COLONY_PLATFORM_WIN32
+
 #include "print_win32.h"
 
 HDC get_default_printer(int width, int height) {
@@ -532,4 +534,6 @@ int print(bool show_dialog, char *data) {
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

@@ -27,6 +27,8 @@
 
 #pragma once
 
+#ifdef COLONY_PLATFORM_WIN32
+
 /**
  * The default size to be used in the creation
  * of internal string buffers.
@@ -207,7 +209,7 @@ extern "C" {
  * dialog option is set using the printer selected in the printing
  * dialog.
  *
- * The provided data buffer must be encoded using the binie sbinary
+ * The provided data buffer must be encoded using the binie binary
  * file specification, that specifies a series of basic printing
  * primitive routines.
  *
@@ -222,4 +224,6 @@ COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

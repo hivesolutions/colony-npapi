@@ -78,7 +78,7 @@ bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
     it with the just copied version message and the length of it */
     NPString version_string;
     version_string.UTF8Characters = version_message;
-	version_string.UTF8Length = strlen(version);
+    version_string.UTF8Length = strlen(version);
 
     /* sets the version string value in the return value */
     result->type = NPVariantType_String;
@@ -89,14 +89,14 @@ bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
 }
 
 bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-	/* validates that the number of arguments is one and that
-	the provided argument is an object (callback function) */
-	if(arg_count != 1 || args[0].type != NPVariantType_Object) {
-		return true;
-	}
+    /* validates that the number of arguments is one and that
+    the provided argument is an object (callback function) */
+    if(arg_count != 1 || args[0].type != NPVariantType_Object) {
+        return true;
+    }
 
-	/* allocates space for the result of the callback call */
-	bool result_c;
+    /* allocates space for the result of the callback call */
+    bool result_c;
 
     /* allocates space for both the parameter and the return
     value variant values */
@@ -116,17 +116,17 @@ bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     /* invokes the callback function and then returns the value of the
     invoke default function */
     result_c = npnfuncs->invokeDefault(
-	    inst,
-		NPVARIANT_TO_OBJECT(args[0]),
-		&parameter,
-		1,
-		&return_value
-	);
-	if(!result_c) { return true; }
+        inst,
+        NPVARIANT_TO_OBJECT(args[0]),
+        &parameter,
+        1,
+        &return_value
+    );
+    if(!result_c) { return true; }
 
-	/* sets the result of the call as null
-	and returns the function with a valid value */
-	result->type = NPVariantType_Null;
+    /* sets the result of the call as null
+    and returns the function with a valid value */
+    result->type = NPVariantType_Null;
     return true;
 }
 
@@ -144,12 +144,12 @@ bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
     size_t count = MultiByteToWideChar(
         CP_UTF8,
-		NULL,
-		message_string.UTF8Characters,
-		message_string.UTF8Length,
-		message,
-		message_string.UTF8Length
-	);
+        NULL,
+        message_string.UTF8Characters,
+        message_string.UTF8Length,
+        message,
+        message_string.UTF8Length
+    );
     message[count] = '\0';
 
     /* creates the alert box with the "just" converted title
@@ -192,11 +192,11 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
     decode_base64(
-		(unsigned char *) data_string.UTF8Characters,
-		data_string.UTF8Length,
-		(unsigned char **) &data,
-		&data_length
-	);
+        (unsigned char *) data_string.UTF8Characters,
+        data_string.UTF8Length,
+        (unsigned char **) &data,
+        &data_length
+    );
     print(show_dialog, (char *) data);
 
     /* releases the decoded buffer (avoids memory leak)

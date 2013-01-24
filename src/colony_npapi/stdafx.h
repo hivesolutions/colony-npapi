@@ -121,6 +121,10 @@
 #endif
 #endif
 
+#ifndef OSCALL
+#define OSCALL
+#endif
+
 unsigned char *name_colony_npapi();
 unsigned char *version_colony_npapi();
 unsigned char *description_colony_npapi();

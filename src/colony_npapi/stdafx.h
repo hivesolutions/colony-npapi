@@ -97,6 +97,7 @@
 
 #ifdef COLONY_PLATFORM_UNIX
 #include <unistd.h>
+#include <sys/types.h>
 #endif
 
 #include <stdio.h>
@@ -106,10 +107,18 @@
 #include <gecko/npapi.h>
 #include <gecko/npupp.h>
 #include <gecko/npruntime.h>
+#endif
+
+#ifdef COLONY_PLATFORM_UNIX
+#ifdef COLONY_PLATFORM_MACOSX
+#include <Webkit/npapi.h>
+#include <Webkit/npfunctions.h>
+#include <Webkit/npruntime.h>
 #else
 #include <npapi.h>
 #include <npupp.h>
 #include <npruntime.h>
+#endif
 #endif
 
 unsigned char *name_colony_npapi();

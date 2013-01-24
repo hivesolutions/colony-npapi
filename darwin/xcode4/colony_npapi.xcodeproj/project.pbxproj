@@ -14,6 +14,27 @@
 		C248666516B0A350001DC4BB /* stdafx.c in Sources */ = {isa = PBXBuildFile; fileRef = C248664D16B0A350001DC4BB /* stdafx.c */; };
 		C248666616B0A350001DC4BB /* stdafx.h in Headers */ = {isa = PBXBuildFile; fileRef = C248664E16B0A350001DC4BB /* stdafx.h */; };
 		C248666716B0A350001DC4BB /* targetver.h in Headers */ = {isa = PBXBuildFile; fileRef = C248664F16B0A350001DC4BB /* targetver.h */; };
+		C2487DD016B0AB55001DC4BB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2487DCF16B0AB55001DC4BB /* WebKit.framework */; };
+		C2487DDA16B0AC53001DC4BB /* compilation.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD316B0AC53001DC4BB /* compilation.h */; };
+		C2487DDB16B0AC53001DC4BB /* compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD416B0AC53001DC4BB /* compiler.h */; };
+		C2487DDC16B0AC53001DC4BB /* cpu.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD516B0AC53001DC4BB /* cpu.h */; };
+		C2487DDD16B0AC53001DC4BB /* definitions.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD616B0AC53001DC4BB /* definitions.h */; };
+		C2487DDE16B0AC53001DC4BB /* platforms.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD716B0AC53001DC4BB /* platforms.h */; };
+		C2487DDF16B0AC53001DC4BB /* resource.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD816B0AC53001DC4BB /* resource.h */; };
+		C2487DE016B0AC53001DC4BB /* targetver.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DD916B0AC53001DC4BB /* targetver.h */; };
+		C2487DF616B0ACF2001DC4BB /* base_64.c in Sources */ = {isa = PBXBuildFile; fileRef = C2487DE216B0ACF2001DC4BB /* base_64.c */; };
+		C2487DF716B0ACF2001DC4BB /* base_64.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DE316B0ACF2001DC4BB /* base_64.h */; };
+		C2487DF816B0ACF2001DC4BB /* encoding.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DE416B0ACF2001DC4BB /* encoding.h */; };
+		C2487DF916B0ACF2001DC4BB /* base.c in Sources */ = {isa = PBXBuildFile; fileRef = C2487DE616B0ACF2001DC4BB /* base.c */; };
+		C2487DFA16B0ACF2001DC4BB /* base.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DE716B0ACF2001DC4BB /* base.h */; };
+		C2487DFB16B0ACF2001DC4BB /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DE816B0ACF2001DC4BB /* plugin.h */; };
+		C2487DFC16B0ACF2001DC4BB /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = C2487DE916B0ACF2001DC4BB /* util.c */; };
+		C2487DFD16B0ACF2001DC4BB /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DEA16B0ACF2001DC4BB /* util.h */; };
+		C2487DFE16B0ACF2001DC4BB /* print.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DEC16B0ACF2001DC4BB /* print.h */; };
+		C2487DFF16B0ACF2001DC4BB /* print_win32.c in Sources */ = {isa = PBXBuildFile; fileRef = C2487DED16B0ACF2001DC4BB /* print_win32.c */; };
+		C2487E0016B0ACF2001DC4BB /* print_win32.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487DEE16B0ACF2001DC4BB /* print_win32.h */; };
+		C2487E0F16B0B137001DC4BB /* print_unix.c in Sources */ = {isa = PBXBuildFile; fileRef = C2487E0D16B0B137001DC4BB /* print_unix.c */; };
+		C2487E1016B0B137001DC4BB /* print_unix.h in Headers */ = {isa = PBXBuildFile; fileRef = C2487E0E16B0B137001DC4BB /* print_unix.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +50,30 @@
 		C248664D16B0A350001DC4BB /* stdafx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stdafx.c; sourceTree = "<group>"; };
 		C248664E16B0A350001DC4BB /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
 		C248664F16B0A350001DC4BB /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
+		C2487DCF16B0AB55001DC4BB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		C2487DD316B0AC53001DC4BB /* compilation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compilation.h; sourceTree = "<group>"; };
+		C2487DD416B0AC53001DC4BB /* compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compiler.h; sourceTree = "<group>"; };
+		C2487DD516B0AC53001DC4BB /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
+		C2487DD616B0AC53001DC4BB /* definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = definitions.h; sourceTree = "<group>"; };
+		C2487DD716B0AC53001DC4BB /* platforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platforms.h; sourceTree = "<group>"; };
+		C2487DD816B0AC53001DC4BB /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		C2487DD916B0AC53001DC4BB /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
+		C2487DE216B0ACF2001DC4BB /* base_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base_64.c; sourceTree = "<group>"; };
+		C2487DE316B0ACF2001DC4BB /* base_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_64.h; sourceTree = "<group>"; };
+		C2487DE416B0ACF2001DC4BB /* encoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
+		C2487DE616B0ACF2001DC4BB /* base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base.c; sourceTree = "<group>"; };
+		C2487DE716B0ACF2001DC4BB /* base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base.h; sourceTree = "<group>"; };
+		C2487DE816B0ACF2001DC4BB /* plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plugin.h; sourceTree = "<group>"; };
+		C2487DE916B0ACF2001DC4BB /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
+		C2487DEA16B0ACF2001DC4BB /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		C2487DEC16B0ACF2001DC4BB /* print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = print.h; sourceTree = "<group>"; };
+		C2487DED16B0ACF2001DC4BB /* print_win32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = print_win32.c; sourceTree = "<group>"; };
+		C2487DEE16B0ACF2001DC4BB /* print_win32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = print_win32.h; sourceTree = "<group>"; };
+		C2487DF116B0ACF2001DC4BB /* colony_icon_48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colony_icon_48.png; sourceTree = "<group>"; };
+		C2487DF416B0ACF2001DC4BB /* colony_npapi.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = colony_npapi.def; sourceTree = "<group>"; };
+		C2487DF516B0ACF2001DC4BB /* colony_npapi.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = colony_npapi.rc; sourceTree = "<group>"; };
+		C2487E0D16B0B137001DC4BB /* print_unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = print_unix.c; sourceTree = "<group>"; };
+		C2487E0E16B0B137001DC4BB /* print_unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = print_unix.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2487DD016B0AB55001DC4BB /* WebKit.framework in Frameworks */,
 				C248657C16B09C6B001DC4BB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +109,7 @@
 		C248657A16B09C6B001DC4BB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C2487DCF16B0AB55001DC4BB /* WebKit.framework */,
 				C248657B16B09C6B001DC4BB /* Cocoa.framework */,
 				C248658D16B09C6B001DC4BB /* SenTestingKit.framework */,
 				C248657D16B09C6B001DC4BB /* Other Frameworks */,
@@ -97,9 +144,101 @@
 		C248666816B0A44C001DC4BB /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C2487DE116B0ACF2001DC4BB /* encoding */,
+				C2487DE516B0ACF2001DC4BB /* plugin */,
+				C2487DEB16B0ACF2001DC4BB /* print */,
+				C2487DEF16B0ACF2001DC4BB /* resources */,
+				C2487DD216B0AC53001DC4BB /* global */,
 				C248662116B0A350001DC4BB /* colony_npapi */,
 			);
 			name = Classes;
+			sourceTree = "<group>";
+		};
+		C2487DD216B0AC53001DC4BB /* global */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DD316B0AC53001DC4BB /* compilation.h */,
+				C2487DD416B0AC53001DC4BB /* compiler.h */,
+				C2487DD516B0AC53001DC4BB /* cpu.h */,
+				C2487DD616B0AC53001DC4BB /* definitions.h */,
+				C2487DD716B0AC53001DC4BB /* platforms.h */,
+				C2487DD816B0AC53001DC4BB /* resource.h */,
+				C2487DD916B0AC53001DC4BB /* targetver.h */,
+			);
+			name = global;
+			path = ../../src/colony_npapi/global;
+			sourceTree = "<group>";
+		};
+		C2487DE116B0ACF2001DC4BB /* encoding */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DE216B0ACF2001DC4BB /* base_64.c */,
+				C2487DE316B0ACF2001DC4BB /* base_64.h */,
+				C2487DE416B0ACF2001DC4BB /* encoding.h */,
+			);
+			name = encoding;
+			path = ../../src/colony_npapi/encoding;
+			sourceTree = "<group>";
+		};
+		C2487DE516B0ACF2001DC4BB /* plugin */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DE616B0ACF2001DC4BB /* base.c */,
+				C2487DE716B0ACF2001DC4BB /* base.h */,
+				C2487DE816B0ACF2001DC4BB /* plugin.h */,
+				C2487DE916B0ACF2001DC4BB /* util.c */,
+				C2487DEA16B0ACF2001DC4BB /* util.h */,
+			);
+			name = plugin;
+			path = ../../src/colony_npapi/plugin;
+			sourceTree = "<group>";
+		};
+		C2487DEB16B0ACF2001DC4BB /* print */ = {
+			isa = PBXGroup;
+			children = (
+				C2487E0D16B0B137001DC4BB /* print_unix.c */,
+				C2487E0E16B0B137001DC4BB /* print_unix.h */,
+				C2487DEC16B0ACF2001DC4BB /* print.h */,
+				C2487DED16B0ACF2001DC4BB /* print_win32.c */,
+				C2487DEE16B0ACF2001DC4BB /* print_win32.h */,
+			);
+			name = print;
+			path = ../../src/colony_npapi/print;
+			sourceTree = "<group>";
+		};
+		C2487DEF16B0ACF2001DC4BB /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DF016B0ACF2001DC4BB /* images */,
+				C2487DF216B0ACF2001DC4BB /* win32 */,
+			);
+			name = resources;
+			path = ../../src/colony_npapi/resources;
+			sourceTree = "<group>";
+		};
+		C2487DF016B0ACF2001DC4BB /* images */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DF116B0ACF2001DC4BB /* colony_icon_48.png */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
+		C2487DF216B0ACF2001DC4BB /* win32 */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DF316B0ACF2001DC4BB /* vs2008ex */,
+			);
+			path = win32;
+			sourceTree = "<group>";
+		};
+		C2487DF316B0ACF2001DC4BB /* vs2008ex */ = {
+			isa = PBXGroup;
+			children = (
+				C2487DF416B0ACF2001DC4BB /* colony_npapi.def */,
+				C2487DF516B0ACF2001DC4BB /* colony_npapi.rc */,
+			);
+			path = vs2008ex;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -114,6 +253,21 @@
 				C248665216B0A350001DC4BB /* colony_npapi.pch in Headers */,
 				C248666616B0A350001DC4BB /* stdafx.h in Headers */,
 				C248666716B0A350001DC4BB /* targetver.h in Headers */,
+				C2487DDA16B0AC53001DC4BB /* compilation.h in Headers */,
+				C2487DDB16B0AC53001DC4BB /* compiler.h in Headers */,
+				C2487DDC16B0AC53001DC4BB /* cpu.h in Headers */,
+				C2487DDD16B0AC53001DC4BB /* definitions.h in Headers */,
+				C2487DDE16B0AC53001DC4BB /* platforms.h in Headers */,
+				C2487DDF16B0AC53001DC4BB /* resource.h in Headers */,
+				C2487DE016B0AC53001DC4BB /* targetver.h in Headers */,
+				C2487DF716B0ACF2001DC4BB /* base_64.h in Headers */,
+				C2487DF816B0ACF2001DC4BB /* encoding.h in Headers */,
+				C2487DFA16B0ACF2001DC4BB /* base.h in Headers */,
+				C2487DFB16B0ACF2001DC4BB /* plugin.h in Headers */,
+				C2487DFD16B0ACF2001DC4BB /* util.h in Headers */,
+				C2487DFE16B0ACF2001DC4BB /* print.h in Headers */,
+				C2487E0016B0ACF2001DC4BB /* print_win32.h in Headers */,
+				C2487E1016B0B137001DC4BB /* print_unix.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +323,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C248666516B0A350001DC4BB /* stdafx.c in Sources */,
+				C2487DF616B0ACF2001DC4BB /* base_64.c in Sources */,
+				C2487DF916B0ACF2001DC4BB /* base.c in Sources */,
+				C2487DFC16B0ACF2001DC4BB /* util.c in Sources */,
+				C2487DFF16B0ACF2001DC4BB /* print_win32.c in Sources */,
+				C2487E0F16B0B137001DC4BB /* print_unix.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

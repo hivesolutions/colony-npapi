@@ -25,12 +25,12 @@
 
 include $(top_srcdir)/Common.am
 
-lib_LTLIBRARIES = npcolony.la
+lib_LTLIBRARIES = libnpcolony.la
 
-npcolony_la_CFLAGS = $(AM_CFLAGS)
-npcolony_la_CXXFLAGS = $(AM_CXXFLAGS)
+libnpcolony_la_CFLAGS = $(AM_CFLAGS)
+libnpcolony_la_CXXFLAGS = $(AM_CXXFLAGS)
 
-npcolony_la_SOURCES = stdafx.c \
+libnpcolony_la_SOURCES = stdafx.c \
 colony_npapi.c \
 encoding/base_64.c \
 plugin/base.c \

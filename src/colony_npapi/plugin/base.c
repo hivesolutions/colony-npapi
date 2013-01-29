@@ -31,7 +31,7 @@
 
 bool has_method(NPObject* obj, NPIdentifier method_name) {
     /* logs the function call */
-    log("npcolony: has_method\n");
+    log_m("npcolony: has_method\n");
 
     /* retrieves the correct string for the method name
     as a normal comparision structure */
@@ -52,7 +52,7 @@ bool has_method(NPObject* obj, NPIdentifier method_name) {
 bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* logs the function call and sets the result as
     the default magic value (answer to the universe) */
-    log("npcolony: invoke_default\n");
+    log_m("npcolony: invoke_default\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
     return true;
@@ -206,7 +206,7 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
 }
 
 bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    log("npcolony: invoke\n");
+    log_m("npcolony: invoke\n");
     char *name = npnfuncs->utf8fromidentifier(method_name);
 
     if(name) {
@@ -239,22 +239,41 @@ bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint
 }
 
 bool has_property(NPObject *obj, NPIdentifier property_name) {
-    log("npcolony: has_property\n");
+    log_m("npcolony: has_property\n");
     return false;
 }
 
 bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result) {
-    log("npcolony: get_property\n");
+    log_m("npcolony: get_property\n");
     return false;
 }
 
 NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved) {
-    log("npcolony: new\n");
+    log_m("npcolony: new\n");
     inst = instance;
+    
+#ifdef COLONY_PLATFORM_MACOSX
+    NPBool has_cg = false;
+    if (npnfuncs->getvalue(instance, NPNVsupportsCoreGraphicsBool, &has_cg) == NPERR_NO_ERROR && has_cg) {
+        npnfuncs->setvalue(instance, NPPVpluginDrawingModel, (void *) NPDrawingModelCoreGraphics);
+    } else {
+        return NPERR_INCOMPATIBLE_VERSION_ERROR;
+    }
+
+    NPBool has_cocoa = false;
+    if (npnfuncs->getvalue(instance, NPNVsupportsCocoaBool, &has_cocoa) == NPERR_NO_ERROR && has_cocoa) {
+        npnfuncs->setvalue(instance, NPPVpluginEventModel, (void *) NPEventModelCocoa);
+    } else {
+        return NPERR_INCOMPATIBLE_VERSION_ERROR;
+    }
+#endif
+    
     return NPERR_NO_ERROR;
 }
 
 NPError destroy(NPP instance, NPSavedData **save) {
+    log_m("npcolony: destroy\n");
+    
     /* in case the shared object is defined
     releases it from memory (avoids leaking) */
     if(so) { npnfuncs->releaseobject(so); }
@@ -268,6 +287,7 @@ NPError destroy(NPP instance, NPSavedData **save) {
 }
 
 NPError get_value(NPP instance, NPPVariable variable, void *value) {
+    log_m("npcolony: get_value\n");
     inst = instance;
 
     switch(variable) {
@@ -292,18 +312,54 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
     return NPERR_NO_ERROR;
 }
 
-/* expected by Safari on Darwin */
+NPError set_value(NPP instance, NPNVariable variable, void *value) {
+    log_m("npcolony: set_value\n");
+    return NPERR_GENERIC_ERROR;
+}
+
 NPError handle_event(NPP instance, void *ev) {
-    log("npcolony: handle_event\n");
+    log_m("npcolony: handle_event\n");
     inst = instance;
     return NPERR_NO_ERROR;
 }
 
-/* expected by Opera */
 NPError set_window(NPP instance, NPWindow *window) {
-    log("npcolony: set_window\n");
+    log_m("npcolony: set_window\n");
     inst = instance;
     return NPERR_NO_ERROR;
+}
+
+NPError new_stream(NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype) {
+    log_m("npcolony: new_stream\n");
+    *stype = NP_ASFILEONLY;
+    return NPERR_NO_ERROR;
+}
+
+NPError destroy_stream(NPP instance, NPStream *stream, NPReason reason) {
+    log_m("npcolony: destroy_stream\n");
+    return NPERR_NO_ERROR;
+}
+
+int32_t write_ready(NPP instance, NPStream *stream) {
+    log_m("npcolony: write_ready\n");
+    return 0;
+}
+
+int32_t nwrite(NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer) {
+    log_m("npcolony: nwrite\n");
+    return 0;
+}
+
+void as_file(NPP instance, NPStream *stream, const char *fname) {
+    log_m("npcolony: as_file\n");
+}
+
+void nprint(NPP instance, NPPrint *platform_print) {
+    log_m("npcolony: nprint\n");
+}
+
+void nurl_notify(NPP instance, const char *url, NPReason reason, void *notify_data) {
+    log_m("npcolony: nurl_notify\n");
 }
 
 #ifdef __cplusplus
@@ -311,17 +367,29 @@ extern "C" {
 #endif
 
 NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
+    log_m("npcolony: NP_GetEntryPoints\n");
+
     nppfuncs->version = (NP_VERSION_MAJOR << 8) | NP_VERSION_MINOR;
     nppfuncs->newp = nevv;
     nppfuncs->destroy = destroy;
+    nppfuncs->newstream = new_stream;
+    nppfuncs->destroystream = destroy_stream;
+    nppfuncs->asfile = as_file;
+    nppfuncs->writeready = write_ready;
+    nppfuncs->write = (NPP_WriteProcPtr) nwrite;
     nppfuncs->getvalue = get_value;
+    nppfuncs->setvalue = set_value;
     nppfuncs->event = handle_event;
     nppfuncs->setwindow = set_window;
+    nppfuncs->print = nprint;
+    nppfuncs->urlnotify = nurl_notify;
 
     return NPERR_NO_ERROR;
 }
 
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
+    log_m("npcolony: NP_Initialize\n");
+    
     /* in case the functions table is not valid,
     must return in error */
     if(npnf == NULL) {
@@ -343,14 +411,17 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
 }
 
 NPError OSCALL NP_Shutdown() {
+    log_m("npcolony: NP_Shutdown\n");
     return NPERR_NO_ERROR;
 }
 
 const char *NP_GetMIMEDescription() {
+    log_m("npcolony: NP_GetMIMEDescription\n");
     return "application/x-colony-gateway:.colony:gateway@getcolony.com";
 }
 
 NPError OSCALL NP_GetValue(void *npp, NPPVariable variable, void *value) {
+    log_m("npcolony: NP_GetValue\n");
     inst = (NPP) npp;
     return get_value((NPP) npp, variable, value);
 }

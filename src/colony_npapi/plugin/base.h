@@ -48,11 +48,19 @@ COLONY_EXPORT_PREFIX bool invoke(NPObject* obj, NPIdentifier method_name, const 
 COLONY_EXPORT_PREFIX bool has_property(NPObject *obj, NPIdentifier property_name);
 COLONY_EXPORT_PREFIX bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
 
-NPError nevv(NPMIMEType plugin_type, NPP instance, int16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved);
+NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved);
 NPError destroy(NPP instance, NPSavedData **save);
 NPError get_value(NPP instance, NPPVariable variable, void *value);
+NPError set_value(NPP instance, NPNVariable variable, void *value);
 NPError handle_event(NPP instance, void *ev);
 NPError set_window(NPP instance, NPWindow *window);
+NPError new_stream(NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype);
+NPError destroy_stream(NPP instance, NPStream *stream, NPReason reason);
+int32_t write_ready(NPP instance, NPStream *stream);
+int32_t nwrite(NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer);
+void as_file(NPP instance, NPStream *stream, const char *fname);
+void nprint(NPP instance, NPPrint *platform_print);
+void nurl_notify(NPP instance, const char *url, NPReason reason, void *notify_data);
 
 static NPClass ref_object = {
     NP_CLASS_STRUCT_VERSION,

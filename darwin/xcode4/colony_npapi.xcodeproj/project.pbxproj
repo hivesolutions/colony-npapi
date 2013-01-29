@@ -55,7 +55,7 @@
 		C38949F716B81088007D73A5 /* stdafx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stdafx.c; sourceTree = "<group>"; };
 		C38949F816B81088007D73A5 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
 		C38949F916B81088007D73A5 /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
-		C38949FB16B81195007D73A5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3FDE4A016B8301B006D0BC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../src/colony_npapi/Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +92,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C3FDE4A016B8301B006D0BC4 /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -99,7 +100,6 @@
 		08FB77ADFE841716C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C38949FB16B81195007D73A5 /* Info.plist */,
 				C38949EA16B80E25007D73A5 /* global */,
 				C38949BE16B80E17007D73A5 /* encoding */,
 				C38949C216B80E17007D73A5 /* global */,
@@ -320,7 +320,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ../../src/colony_npapi/colony_npapi.pch;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = ../../src/colony_npapi/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				PRODUCT_NAME = colony_npapi;
 				WRAPPER_EXTENSION = bundle;
@@ -336,7 +336,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ../../src/colony_npapi/colony_npapi.pch;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = ../../src/colony_npapi/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				PRODUCT_NAME = colony_npapi;
 				WRAPPER_EXTENSION = bundle;

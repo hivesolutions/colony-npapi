@@ -38,10 +38,21 @@ extern "C" {
 int print(bool show_dialog, char *data) {
     /* allocates space for the various variables that
     are going to be used for the print operation and
-    then retrieves the name of the default printer */
+    then retrieves the various available destinies */
+    size_t index;
     int num_options = 0;
+    cups_dest_t *dest;
+    cups_dest_t *dests;
     cups_option_t *options = NULL;
-    const char *name = cupsGetDefault();
+    int num_dests = cupsGetDests(&dests);
+    
+    /* iterates over the complete set of destinies to try
+    to find the one that is considered the default one */
+    for(index = 0; index < num_dests; index++, dests++) {
+        dest = dests;
+        if(dest->is_default == 0) { continue; }
+        break;
+    }
     
     /* creates the buffer that will contain the various
     files that are meant to be printed */
@@ -52,13 +63,17 @@ int print(bool show_dialog, char *data) {
     /* sends the print job to the target printer and received
     the associated job identifier to be used */
     cupsPrintFiles(
-        name,
+        dest->name,
         1,
         (const char **) files,
         "Colony Gateway",
         num_options,
         options
     );
+    
+    /* releases the memory used for the listing
+    of the various destinations */
+    cupsFreeDests(num_dests, dests);
     
     /* returns with no error */
     return 0;

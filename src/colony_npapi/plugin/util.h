@@ -27,4 +27,4 @@
 
 #pragma once
 
-COLONY_EXPORT_PREFIX void log(const char *message);
+COLONY_EXPORT_PREFIX void log_m(const char *message);

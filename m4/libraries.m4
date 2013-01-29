@@ -25,11 +25,11 @@
 
 # sets the default values for the various library
 # control variables
-have_python=true
+have_cups=true
 
 # checks for libraries
 AC_CHECK_LIB([viriatum], [main])
-AC_CHECK_LIB([python2.7], [main], [], [AC_MSG_ERROR([python 2.7 library is required])])
+AC_CHECK_LIB([cups], [main], [], [AC_MSG_ERROR([cups library is required])])
 
 # library variables activation
-AM_CONDITIONAL(LINK_PYTHON, [test "$have_python" != "false"])
+AM_CONDITIONAL(LINK_CUPS, [test "$have_cups" != "false"])

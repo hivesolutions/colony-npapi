@@ -31,7 +31,6 @@ libnpcolony_la_CFLAGS = $(AM_CFLAGS)
 libnpcolony_la_CXXFLAGS = $(AM_CXXFLAGS)
 
 libnpcolony_la_SOURCES = stdafx.c \
-colony_npapi.c \
 encoding/base_64.c \
 plugin/base.c \
 plugin/util.c \

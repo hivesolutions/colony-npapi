@@ -217,7 +217,7 @@ extern "C" {
  * selection of the printer.
  * @param data The buffer of data encoded in binie format describing
  * the document to be printed.
- * @return The result of the printing processm if success a value
+ * @return The result of the printing process if success a value
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);

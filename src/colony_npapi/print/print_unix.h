@@ -38,15 +38,15 @@ extern "C" {
  * dialog option is set using the printer selected in the printing
  * dialog.
  *
- * The provided data buffer must be encoded using the binie binary
+ * The provided data buffer must be encoded using the pdf binary
  * file specification, that specifies a series of basic printing
- * primitive routines.
+ * primitive routines from adobe.
  *
  * @param show_dialog If the printing dialog should be display for
  * selection of the printer.
- * @param data The buffer of data encoded in binie format describing
+ * @param data The buffer of data encoded in pdf format describing
  * the document to be printed.
- * @return The result of the printing processm if success a value
+ * @return The result of the printing process if success a value
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);

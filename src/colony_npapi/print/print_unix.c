@@ -36,6 +36,30 @@ extern "C" {
 #endif
 
 int print(bool show_dialog, char *data) {
+    /* allocates space for the various variables that
+    are going to be used for the print operation and
+    then retrieves the name of the default printer */
+    int num_options = 0;
+    cups_option_t *options = NULL;
+    const char *name = cupsGetDefault();
+    
+    /* creates the buffer that will contain the various
+    files that are meant to be printed */
+    char *files[1] = {
+        "/Users/administrator/base.pdf"
+    };
+    
+    /* sends the print job to the target printer and received
+    the associated job identifier to be used */
+    cupsPrintFiles(
+        name,
+        1,
+        (const char **) files,
+        "Colony Gateway",
+        num_options,
+        options
+    );
+    
     /* returns with no error */
     return 0;
 }

@@ -17,6 +17,7 @@
 		C38949E816B80E17007D73A5 /* colony_npapi.def in Resources */ = {isa = PBXBuildFile; fileRef = C38949E016B80E17007D73A5 /* colony_npapi.def */; };
 		C38949E916B80E17007D73A5 /* colony_npapi.rc in Resources */ = {isa = PBXBuildFile; fileRef = C38949E116B80E17007D73A5 /* colony_npapi.rc */; };
 		C38949FA16B81088007D73A5 /* stdafx.c in Sources */ = {isa = PBXBuildFile; fileRef = C38949F716B81088007D73A5 /* stdafx.c */; };
+		C3FDE4A316B83217006D0BC4 /* libcups.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FDE4A216B83217006D0BC4 /* libcups.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		C38949F816B81088007D73A5 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
 		C38949F916B81088007D73A5 /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
 		C3FDE4A016B8301B006D0BC4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../src/colony_npapi/Info.plist; sourceTree = "<group>"; };
+		C3FDE4A216B83217006D0BC4 /* libcups.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcups.dylib; path = /usr/lib/libcups.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3FDE4A316B83217006D0BC4 /* libcups.dylib in Frameworks */,
 				8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,6 +87,7 @@
 		089C1671FE841209C02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C3FDE4A216B83217006D0BC4 /* libcups.dylib */,
 				08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */,
 			);
 			name = Frameworks;

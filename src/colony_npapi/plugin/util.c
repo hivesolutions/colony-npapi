@@ -30,7 +30,7 @@
 #include "util.h"
 
 #ifdef COLONY_DEBUG
-void log(const char *message) {
+void log_m(const char *message) {
     /* allocates space for a file reference */
     FILE *file;
 
@@ -49,5 +49,5 @@ void log(const char *message) {
     fclose(file);
 }
 #else
-void log(const char *message) { }
+void log_m(const char *message) { }
 #endif

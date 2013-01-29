@@ -24,8 +24,8 @@
 # __license__   = GNU General Public License (GPL), Version 3
 
 # defines the version values
-m4_define([mod_wsgi_major_version], [1])
-m4_define([mod_wsgi_minor_version], [0])
-m4_define([mod_wsgi_micro_version], [0])
-m4_define([mod_wsgi_version], m4_format(%s.%s.%s, mod_wsgi_major_version, mod_wsgi_minor_version, mod_wsgi_micro_version))
-m4_define([mod_wsgi_makefiles], [Makefile m4/Makefile src/Makefile src/hive_viriatum_mod_wsgi/Makefile])
+m4_define([colony_npapi_major_version], [1])
+m4_define([colony_npapi_minor_version], [0])
+m4_define([colony_npapi_micro_version], [0])
+m4_define([colony_npapi_version], m4_format(%s.%s.%s, colony_npapi_major_version, colony_npapi_minor_version, colony_npapi_micro_version))
+m4_define([colony_npapi_makefiles], [Makefile m4/Makefile src/Makefile src/hive_viriatum_colony_npapi/Makefile])

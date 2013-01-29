@@ -369,6 +369,10 @@
                 Name="Print"
                 >
                 <File
+                    RelativePath="..\..\src\colony_npapi\print\print_unix.c"
+                    >
+                </File>
+                <File
                     RelativePath="..\..\src\colony_npapi\print\print_win32.c"
                     >
                 </File>
@@ -452,6 +456,10 @@
                 >
                 <File
                     RelativePath="..\..\src\colony_npapi\print\print.h"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\print\print_unix.h"
                     >
                 </File>
                 <File

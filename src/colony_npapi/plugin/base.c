@@ -251,7 +251,7 @@ bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result) 
 NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved) {
     log_m("npcolony: new\n");
     inst = instance;
-    
+
 #ifdef COLONY_PLATFORM_MACOSX
     NPBool has_cg = false;
     if (npnfuncs->getvalue(instance, NPNVsupportsCoreGraphicsBool, &has_cg) == NPERR_NO_ERROR && has_cg) {
@@ -267,13 +267,13 @@ NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, 
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 #endif
-    
+
     return NPERR_NO_ERROR;
 }
 
 NPError destroy(NPP instance, NPSavedData **save) {
     log_m("npcolony: destroy\n");
-    
+
     /* in case the shared object is defined
     releases it from memory (avoids leaking) */
     if(so) { npnfuncs->releaseobject(so); }
@@ -389,7 +389,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
 
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
     log_m("npcolony: NP_Initialize\n");
-    
+
     /* in case the functions table is not valid,
     must return in error */
     if(npnf == NULL) {

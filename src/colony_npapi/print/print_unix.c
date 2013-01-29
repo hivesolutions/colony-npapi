@@ -45,7 +45,7 @@ int print(bool show_dialog, char *data) {
     cups_dest_t *dests;
     cups_option_t *options = NULL;
     int num_dests = cupsGetDests(&dests);
-    
+
     /* iterates over the complete set of destinies to try
     to find the one that is considered the default one */
     for(index = 0; index < num_dests; index++, dests++) {
@@ -53,13 +53,13 @@ int print(bool show_dialog, char *data) {
         if(dest->is_default == 0) { continue; }
         break;
     }
-    
+
     /* creates the buffer that will contain the various
     files that are meant to be printed */
     char *files[1] = {
         "/Users/administrator/base.pdf"
     };
-    
+
     /* sends the print job to the target printer and received
     the associated job identifier to be used */
     cupsPrintFiles(
@@ -70,11 +70,11 @@ int print(bool show_dialog, char *data) {
         num_options,
         options
     );
-    
+
     /* releases the memory used for the listing
     of the various destinations */
     cupsFreeDests(num_dests, dests);
-    
+
     /* returns with no error */
     return 0;
 }

@@ -27,4 +27,4 @@
 AC_CHECK_HEADERS([stdlib.h assert.h])
 
 # checks for specific header files
-AC_CHECK_HEADERS([cups.h], [], [AC_MSG_ERROR([cups headers are required])])
+AC_CHECK_HEADERS([cups/cups.h], [], [AC_MSG_ERROR([cups headers are required])])

@@ -28,7 +28,6 @@
 have_cups=true
 
 # checks for libraries
-AC_CHECK_LIB([viriatum], [main])
 AC_CHECK_LIB([cups], [main], [], [AC_MSG_ERROR([cups library is required])])
 
 # library variables activation

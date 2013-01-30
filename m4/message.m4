@@ -24,7 +24,7 @@
 # __license__   = GNU General Public License (GPL), Version 3
 
 echo
-echo "Module Configuration"
+echo "Colony NPAPI Configuration"
 echo "========================"
 echo
 echo " + Host                  $host_os"
@@ -37,5 +37,5 @@ echo Instructions
 echo "========================"
 echo
 echo "Run 'make && make install' to install Colony NPAPI."
-echo "Thank you for using Viratum Module."
+echo "Thank you for using Colony NPAPI."
 echo

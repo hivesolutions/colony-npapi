@@ -402,6 +402,22 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 
+#ifdef COLONY_PLATFORM_LINUX
+    npnf->newp = nevv;
+    npnf->destroy = destroy;
+    npnf->newstream = new_stream;
+    npnf->destroystream = destroy_stream;
+    npnf->asfile = as_file;
+    npnf->writeready = write_ready;
+    npnf->write = (NPP_WriteProcPtr) nwrite;
+    npnf->getvalue = get_value;
+    npnf->setvalue = set_value;
+    npnf->event = handle_event;
+    npnf->setwindow = set_window;
+    npnf->print = nprint;
+    npnf->urlnotify = nurl_notify;
+#endif
+
     /* save the functions in a global variable
     and returns in no error */
     npnfuncs = npnf;

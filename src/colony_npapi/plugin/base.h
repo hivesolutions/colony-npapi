@@ -35,7 +35,7 @@
  * The number of methods (smbols) to be exposed
  * by the gateway to the javascript interface.
  */
-#define METHODS_COUNT 6
+#define METHODS_COUNT 7
 
 COLONY_EXPORT_PREFIX bool has_method(NPObject* obj, NPIdentifier method_name);
 COLONY_EXPORT_PREFIX bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
@@ -43,6 +43,7 @@ COLONY_EXPORT_PREFIX bool invoke_status(NPObject *obj, const NPVariant *args, ui
 COLONY_EXPORT_PREFIX bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool has_property(NPObject *obj, NPIdentifier property_name);
@@ -82,5 +83,6 @@ static char *methods[METHODS_COUNT] = {
     "foo",
     "callback",
     "alert",
+    "pformat",
     "print"
 };

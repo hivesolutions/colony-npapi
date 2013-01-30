@@ -32,6 +32,15 @@ function version() {
     }
 }
 
+function pformat() {
+    try {
+        var gateway = document.getElementById("colony-gateway");
+        alert(gateway.pformat());
+    } catch (exception) {
+        alert(exception);
+    }
+}
+
 function foo() {
     try {
         var gateway = document.getElementById("colony-gateway");
@@ -64,7 +73,19 @@ function _alert() {
 function _print() {
     try {
         var gateway = document.getElementById("colony-gateway");
-        gateway.print(true, HELLO_WORD_BINIE_B64);
+        var format = gateway.pformat();
+        switch (format) {
+            case "binie" :
+                gateway.print(true, HELLO_WORD_BINIE_B64);
+                break;
+
+            case "pdf" :
+                gateway.print(true, HELLO_WORD_PDF_B64);
+                break;
+
+            default :
+                break;
+        }
     } catch (exception) {
         alert(exception);
     }

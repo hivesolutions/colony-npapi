@@ -69,7 +69,7 @@ bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPV
 }
 
 bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    /* allocates static space for the hello message and
+    /* allocates static space for the version message and
     then allocates npapi space for it */
     const char version[] = NPCOLONY_VERSION;
     char *version_message = (char *) npnfuncs->memalloc(strlen(version));
@@ -135,7 +135,6 @@ bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
 }
 
 #ifdef COLONY_PLATFORM_WIN32
-
 bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* retrieves the first argument as an utf8 string */
     struct _NPString message_string = NPVARIANT_TO_STRING(args[0]);
@@ -171,15 +170,64 @@ bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     delete title;
     return true;
 }
-
 #endif
 
 #ifdef COLONY_PLATFORM_UNIX
-
 bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     return true;
 }
+#endif
 
+#ifdef COLONY_PLATFORM_WIN32
+bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
+    /* allocates static space for the print format message and
+    then allocates npapi space for it */
+    const char pformat[] = NPCOLONY_BINIE;
+    char *pformat_message = (char *) npnfuncs->memalloc(strlen(pformat));
+
+    /* copes the print format value into the javascript owned
+    print format message */
+    memcpy(pformat_message, pformat, strlen(pformat));
+
+    /* allocates space for the print format string and populates
+    it with the just copied print format message and the length of it */
+    NPString pformat_string;
+    pformat_string.UTF8Characters = pformat_message;
+    pformat_string.UTF8Length = strlen(pformat);
+
+    /* sets the pformat string value in the return value */
+    result->type = NPVariantType_String;
+    result->value.stringValue = pformat_string;
+
+    /* returns in success */
+    return true;
+}
+#endif
+
+#ifdef COLONY_PLATFORM_UNIX
+bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
+    /* allocates static space for the print format message and
+    then allocates npapi space for it */
+    const char pformat[] = NPCOLONY_PDF;
+    char *pformat_message = (char *) npnfuncs->memalloc(strlen(pformat));
+
+    /* copes the print format value into the javascript owned
+    print format message */
+    memcpy(pformat_message, pformat, strlen(pformat));
+
+    /* allocates space for the print format string and populates
+    it with the just copied print format message and the length of it */
+    NPString pformat_string;
+    pformat_string.UTF8Characters = pformat_message;
+    pformat_string.UTF8Length = strlen(pformat);
+
+    /* sets the pformat string value in the return value */
+    result->type = NPVariantType_String;
+    result->value.stringValue = pformat_string;
+
+    /* returns in success */
+    return true;
+}
 #endif
 
 bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
@@ -229,6 +277,9 @@ bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint
         } else if(!strcmp(name, "alert")) {
             /* returns the result of the alert invoking */
             return invoke_alert(obj, args, arg_count, result);
+        } else if(!strcmp(name, "pformat")) {
+            /* returns the result of the pformat invoking */
+            return invoke_pformat(obj, args, arg_count, result);
         } else if(!strcmp(name, "print")) {
             /* returns the result of the print invoking */
             return invoke_print(obj, args, arg_count, result);
@@ -399,7 +450,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
 }
 
 #ifdef COLONY_PLATFORM_LINUX
-NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf, NPPluginFuncs* nppfuncs) {
+NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf, NPPluginFuncs *nppfuncs) {
 #else
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
 #endif

@@ -303,6 +303,12 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
             *((char **)value) = "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin.";
             break;
 
+        case NPPVpluginScriptableNPObject:
+            if(!so) { so = npnfuncs->createobject(instance, &ref_object); }
+            npnfuncs->retainobject(so);
+            * (NPObject **) value = so;
+            break;
+
         default:
             return NPERR_GENERIC_ERROR;
     }

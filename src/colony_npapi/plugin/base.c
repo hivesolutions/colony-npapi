@@ -296,17 +296,11 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
 
     switch(variable) {
         case NPPVpluginNameString:
-            *((char **)value) = "ColonyGatewayPlugin";
+            *((char **)value) = "Colony Gateway Plugin";
             break;
 
         case NPPVpluginDescriptionString:
             *((char **)value) = "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin.";
-            break;
-
-        case NPPVpluginScriptableNPObject:
-            if(!so) { so = npnfuncs->createobject(instance, &ref_object); }
-            npnfuncs->retainobject(so);
-            * (NPObject **) value = so;
             break;
 
         default:
@@ -421,7 +415,7 @@ NPError OSCALL NP_Shutdown() {
 
 const char *NP_GetMIMEDescription() {
     log_m("npcolony: NP_GetMIMEDescription\n");
-    return "application/x-colony-gateway:.colony:gateway@getcolony.com";
+    return "application/x-colony-gateway:colony:gateway@getcolony.com";
 }
 
 NPError OSCALL NP_GetValue(void *npp, NPPVariable variable, void *value) {

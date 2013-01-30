@@ -259,7 +259,7 @@ typedef struct _NPAsyncSurface
 #if defined(XP_WIN)
     HANDLE sharedHandle;
 #endif
-  };
+  } NPAsyncSurfaceUnion;
 } NPAsyncSurface;
 
 /* Return values for NPP_HandleEvent */

@@ -49,8 +49,8 @@ int print(bool show_dialog, char *data, size_t size) {
 
     /* iterates over the complete set of destinies to try
     to find the one that is considered the default one */
-    for(index = 0; index < num_dests; index++, dests++) {
-        dest = dests;
+    for(index = 0; index < num_dests; index++) {
+        dest = &dests[index];
         if(dest->is_default == 0) { continue; }
         break;
     }
@@ -58,7 +58,7 @@ int print(bool show_dialog, char *data, size_t size) {
     /* copies the base (file) template to the file path and
     uses it it to create the final path to the temporary path
     then verifies it has been correctly opened */
-    strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE));
+    strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE) + 1);
     int fd = mkstemp(file_path);
     if(fd < 0) { return -1; }
     

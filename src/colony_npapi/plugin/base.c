@@ -29,6 +29,10 @@
 
 #include "base.h"
 
+NPObject *so = NULL;
+NPNetscapeFuncs *npnfuncs = NULL;
+NPP inst = NULL;
+
 bool has_method(NPObject* obj, NPIdentifier method_name) {
     /* logs the function call */
     log_m("npcolony: has_method\n");
@@ -395,6 +399,13 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
     if(npnf == NULL) {
         /* returns in error (invalid function table) */
         return NPERR_INVALID_FUNCTABLE_ERROR;
+    }
+
+    /* checks if there are incompatible version for
+    the plugin interface */
+    if(HIBYTE(npnf->version) > NP_VERSION_MAJOR) {
+        /* returns in error (incompatbile version) */
+        return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 
     /* save the functions in a global variable

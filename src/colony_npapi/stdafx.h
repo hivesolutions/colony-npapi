@@ -116,10 +116,6 @@ unsigned char *name_colony_npapi();
 unsigned char *version_colony_npapi();
 unsigned char *description_colony_npapi();
 
-static NPObject *so = NULL;
-static NPNetscapeFuncs *npnfuncs = NULL;
-static NPP inst = NULL;
-
 #ifndef HIBYTE
-#define HIBYTE(x) ((((uint32)(x)) & 0xff00) >> 8)
+#define HIBYTE(x) ((((uint32_t)(x)) & 0xff00) >> 8)
 #endif

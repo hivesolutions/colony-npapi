@@ -71,7 +71,7 @@ bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPV
 bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the hello message and
     then allocates npapi space for it */
-	const char version[] = NPCOLONY_VERSION;
+    const char version[] = NPCOLONY_VERSION;
     char *version_message = (char *) npnfuncs->memalloc(strlen(version));
 
     /* copes the version value into the javascript owned
@@ -257,7 +257,7 @@ NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, 
     inst = instance;
 
 #ifdef COLONY_PLATFORM_UNIX
-	NPBool has_windowless = false;
+    NPBool has_windowless = false;
     npnfuncs->getvalue(instance, NPNVSupportsWindowless, &has_windowless);
     if(!has_windowless) { return NPERR_GENERIC_ERROR; }
     npnfuncs->setvalue(instance, NPPVpluginWindowBool, (void*) false);
@@ -447,8 +447,8 @@ NPError OSCALL NP_Shutdown() {
 }
 
 const char *NP_GetPluginVersion() {
-	log_m("npcolony: NP_GetPluginVersion\n");
-	return NPCOLONY_VERSION;
+    log_m("npcolony: NP_GetPluginVersion\n");
+    return NPCOLONY_VERSION;
 }
 
 const char *NP_GetMIMEDescription() {

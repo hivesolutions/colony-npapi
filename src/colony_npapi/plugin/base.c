@@ -71,7 +71,7 @@ bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPV
 bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the hello message and
     then allocates npapi space for it */
-    const char version[] = "1.0.11";
+	const char version[] = NPCOLONY_VERSION;
     char *version_message = (char *) npnfuncs->memalloc(strlen(version));
 
     /* copes the version value into the javascript owned
@@ -296,11 +296,11 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
 
     switch(variable) {
         case NPPVpluginNameString:
-            *((char **)value) = "Colony Gateway Plugin";
+            *((char **)value) = NPCOLONY_NAME;
             break;
 
         case NPPVpluginDescriptionString:
-            *((char **)value) = "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin.";
+            *((char **)value) = NPCOLONY_DESCRIPTION;
             break;
 
         case NPPVpluginScriptableNPObject:
@@ -391,7 +391,11 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs *nppfuncs) {
     return NPERR_NO_ERROR;
 }
 
+#ifdef COLONY_PLATFORM_LINUX
+NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf, NPPluginFuncs* nppfuncs) {
+#else
 NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
+#endif
     log_m("npcolony: NP_Initialize\n");
 
     /* in case the functions table is not valid,
@@ -409,19 +413,19 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
     }
 
 #ifdef COLONY_PLATFORM_LINUX
-    npnf->newp = nevv;
-    npnf->destroy = destroy;
-    npnf->newstream = new_stream;
-    npnf->destroystream = destroy_stream;
-    npnf->asfile = as_file;
-    npnf->writeready = write_ready;
-    npnf->write = (NPP_WriteProcPtr) nwrite;
-    npnf->getvalue = get_value;
-    npnf->setvalue = set_value;
-    npnf->event = handle_event;
-    npnf->setwindow = set_window;
-    npnf->print = nprint;
-    npnf->urlnotify = nurl_notify;
+    nppfuncs->newp = nevv;
+    nppfuncs->destroy = destroy;
+    nppfuncs->newstream = new_stream;
+    nppfuncs->destroystream = destroy_stream;
+    nppfuncs->asfile = as_file;
+    nppfuncs->writeready = write_ready;
+    nppfuncs->write = (NPP_WriteProcPtr) nwrite;
+    nppfuncs->getvalue = get_value;
+    nppfuncs->setvalue = set_value;
+    nppfuncs->event = handle_event;
+    nppfuncs->setwindow = set_window;
+    nppfuncs->print = nprint;
+    nppfuncs->urlnotify = nurl_notify;
 #endif
 
     /* save the functions in a global variable
@@ -435,9 +439,14 @@ NPError OSCALL NP_Shutdown() {
     return NPERR_NO_ERROR;
 }
 
+const char *NP_GetPluginVersion() {
+	log_m("npcolony: NP_GetPluginVersion\n");
+	return NPCOLONY_VERSION;
+}
+
 const char *NP_GetMIMEDescription() {
     log_m("npcolony: NP_GetMIMEDescription\n");
-    return "application/x-colony-gateway:colony:gateway@getcolony.com";
+    return NPCOLONY_MIME;
 }
 
 NPError OSCALL NP_GetValue(void *npp, NPPVariable variable, void *value) {

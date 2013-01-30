@@ -119,3 +119,8 @@ unsigned char *description_colony_npapi();
 #ifndef HIBYTE
 #define HIBYTE(x) ((((uint32_t)(x)) & 0xff00) >> 8)
 #endif
+
+#define NPCOLONY_NAME "Colony Gateway Plugin"
+#define NPCOLONY_DESCRIPTION "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin."
+#define NPCOLONY_VERSION "1.0.6"
+#define NPCOLONY_MIME "application/x-colony-gateway:colony:gateway@getcolony.com";

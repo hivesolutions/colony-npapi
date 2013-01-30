@@ -257,6 +257,23 @@ NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, 
     inst = instance;
 
 #ifdef COLONY_PLATFORM_UNIX
+	  NPBool browserSupportsWindowless = false;
+sBrowserFuncs->getvalue(instance, NPNVSupportsWindowless, &browserSupportsWindowless);
+  if (!browserSupportsWindowless) {
+    printf("Windowless mode not supported by the browser\n");
+    return NPERR_GENERIC_ERROR;
+  }
+
+  sBrowserFuncs->setvalue(instance, NPPVpluginWindowBool, (void*)false);
+
+  // set up our our instance data
+  InstanceData* instanceData = (InstanceData*)malloc(sizeof(InstanceData));
+  if (!instanceData)
+    return NPERR_OUT_OF_MEMORY_ERROR;
+  memset(instanceData, 0, sizeof(InstanceData));
+  instanceData->npp = instance;
+  instance->pdata = instanceData;
+
 #endif
 
 #ifdef COLONY_PLATFORM_MACOSX

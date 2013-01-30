@@ -41,8 +41,8 @@ int print(bool show_dialog, char *data) {
     then retrieves the various available destinies */
     size_t index;
     int num_options = 0;
-    cups_dest_t *dest;
-    cups_dest_t *dests;
+    cups_dest_t *dest = NULL;
+    cups_dest_t *dests = NULL;
     cups_option_t *options = NULL;
     int num_dests = cupsGetDests(&dests);
 

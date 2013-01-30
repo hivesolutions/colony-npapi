@@ -256,6 +256,9 @@ NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, 
     log_m("npcolony: new\n");
     inst = instance;
 
+#ifdef COLONY_PLATFORM_UNIX
+#endif
+
 #ifdef COLONY_PLATFORM_MACOSX
     NPBool has_cg = false;
     if (npnfuncs->getvalue(instance, NPNVsupportsCoreGraphicsBool, &has_cg) == NPERR_NO_ERROR && has_cg) {
@@ -310,7 +313,7 @@ NPError get_value(NPP instance, NPPVariable variable, void *value) {
             break;
 
         default:
-            return NPERR_GENERIC_ERROR;
+            return NPERR_INVALID_PARAM;
     }
 
     return NPERR_NO_ERROR;

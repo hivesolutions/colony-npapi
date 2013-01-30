@@ -29,7 +29,6 @@ echo "========================"
 echo
 echo " + Host                  $host_os"
 echo " + Install prefix        $prefix"
-echo " + Modules directory     $prefix/lib/viriatum/modules"
 echo " + CFLAGS                $CFLAGS"
 echo " + DEBUG                 $have_debug"
 echo " + CUPS                  $have_cups"
@@ -37,6 +36,6 @@ echo
 echo Instructions
 echo "========================"
 echo
-echo "Run 'make && make install' to install Viratum Module."
+echo "Run 'make && make install' to install Colony NPAPI."
 echo "Thank you for using Viratum Module."
 echo

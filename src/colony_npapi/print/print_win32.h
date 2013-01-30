@@ -217,10 +217,12 @@ extern "C" {
  * selection of the printer.
  * @param data The buffer of data encoded in binie format describing
  * the document to be printed.
+ * @param size The size of the buffer od encoded data that was
+ * passed as an argument.
  * @return The result of the printing process if success a value
  * greater than zero should be returned.
  */
-COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data);
+COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
 
 #ifdef __cplusplus
 }

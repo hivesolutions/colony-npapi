@@ -126,3 +126,5 @@ unsigned char *description_colony_npapi();
 #define NPCOLONY_MIME "application/x-colony-gateway:colony:gateway@getcolony.com";
 #define NPCOLONY_BINIE "binie"
 #define NPCOLONY_PDF "pdf"
+#define NPCOLONY_TEMPLATE "/tmp/npcolony-XXXXXX"
+#define NPCOLONY_PATH_SIZE 1024

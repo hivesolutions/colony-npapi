@@ -35,11 +35,12 @@
 extern "C" {
 #endif
 
-int print(bool show_dialog, char *data) {
+int print(bool show_dialog, char *data, size_t size) {
     /* allocates space for the various variables that
     are going to be used for the print operation and
     then retrieves the various available destinies */
     size_t index;
+    char file_path[NPCOLONY_PATH_SIZE];
     int num_options = 0;
     cups_dest_t *dest = NULL;
     cups_dest_t *dests = NULL;
@@ -54,10 +55,23 @@ int print(bool show_dialog, char *data) {
         break;
     }
 
+    /* copies the base (file) template to the file path and
+    uses it it to create the final path to the temporary path
+    then verifies it has been correctly opened */
+    strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE));
+    int fd = mkstemp(file_path);
+    if(fd < 0) { return -1; }
+    
+    /* writes the read contents from the pdf into the created
+    temporary file and in case the result of the write operation
+    is not the expected returns in error */
+    size_t result = write(fd, data, size);
+    if(result == -1) { return -1; }
+    
     /* creates the buffer that will contain the various
     files that are meant to be printed */
     char *files[1] = {
-        "/Users/administrator/base.pdf"
+        file_path
     };
 
     /* sends the print job to the target printer and received
@@ -74,7 +88,11 @@ int print(bool show_dialog, char *data) {
     /* releases the memory used for the listing
     of the various destinations */
     cupsFreeDests(num_dests, dests);
-
+    
+    /* unlinks the created temporary file so that
+    it's abel to be removed from the file system */
+    unlink(file_path);
+    
     /* returns with no error */
     return 0;
 }

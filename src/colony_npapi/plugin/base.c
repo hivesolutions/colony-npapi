@@ -397,13 +397,6 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs *npnf) {
         return NPERR_INVALID_FUNCTABLE_ERROR;
     }
 
-    /* checks if there are incompatible version for
-    the plugin interface */
-    /*if(HIBYTE(npnf->version) > NP_VERSION_MAJOR) {*/
-        /* returns in error (incompatbile version) */
-        /*return NPERR_INCOMPATIBLE_VERSION_ERROR;
-    }*/
-
     /* save the functions in a global variable
     and returns in no error */
     npnfuncs = npnf;

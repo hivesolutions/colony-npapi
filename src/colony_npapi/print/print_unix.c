@@ -35,6 +35,10 @@
 extern "C" {
 #endif
 
+const char *pformat() {
+	return NPCOLONY_PDF;
+}
+
 int print(bool show_dialog, char *data, size_t size) {
     /* allocates space for the various variables that
     are going to be used for the print operation and

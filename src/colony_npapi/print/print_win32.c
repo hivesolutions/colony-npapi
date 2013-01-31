@@ -119,6 +119,10 @@ BOOL show_print_dialog(PRINTDLG *print_dialog_pointer) {
 extern "C" {
 #endif
 
+const char *pformat() {
+	return NPCOLONY_BINIE;
+}
+
 int print(bool show_dialog, char *data, size_t size) {
     /* reserves space for the printing context to be
     used in the current operation */

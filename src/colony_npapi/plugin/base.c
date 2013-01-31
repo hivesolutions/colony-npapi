@@ -178,22 +178,22 @@ bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
 }
 #endif
 
-#ifdef COLONY_PLATFORM_WIN32
 bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the print format message and
     then allocates npapi space for it */
-    const char pformat[] = NPCOLONY_BINIE;
-    char *pformat_message = (char *) npnfuncs->memalloc(strlen(pformat));
+    const char *format = pformat();
+	size_t format_size = strlen(format);
+    char *pformat_message = (char *) npnfuncs->memalloc(format_size);
 
     /* copes the print format value into the javascript owned
     print format message */
-    memcpy(pformat_message, pformat, strlen(pformat));
+    memcpy(pformat_message, format, format_size);
 
     /* allocates space for the print format string and populates
     it with the just copied print format message and the length of it */
     NPString pformat_string;
     pformat_string.UTF8Characters = pformat_message;
-    pformat_string.UTF8Length = strlen(pformat);
+    pformat_string.UTF8Length = format_size;
 
     /* sets the pformat string value in the return value */
     result->type = NPVariantType_String;
@@ -202,33 +202,6 @@ bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
     /* returns in success */
     return true;
 }
-#endif
-
-#ifdef COLONY_PLATFORM_UNIX
-bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    /* allocates static space for the print format message and
-    then allocates npapi space for it */
-    const char pformat[] = NPCOLONY_PDF;
-    char *pformat_message = (char *) npnfuncs->memalloc(strlen(pformat));
-
-    /* copes the print format value into the javascript owned
-    print format message */
-    memcpy(pformat_message, pformat, strlen(pformat));
-
-    /* allocates space for the print format string and populates
-    it with the just copied print format message and the length of it */
-    NPString pformat_string;
-    pformat_string.UTF8Characters = pformat_message;
-    pformat_string.UTF8Length = strlen(pformat);
-
-    /* sets the pformat string value in the return value */
-    result->type = NPVariantType_String;
-    result->value.stringValue = pformat_string;
-
-    /* returns in success */
-    return true;
-}
-#endif
 
 bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* retrieves both the show dialog and the data string

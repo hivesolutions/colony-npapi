@@ -34,6 +34,18 @@ extern "C" {
 #endif
 
 /**
+ * Retrieves the format of the data file (buffer) to be used in
+ * the printing operation for the current operative system.
+ *
+ * This format should be used in conformance with the previously
+ * defined specification.
+ *
+ * @return The format of the data file to be used in the printing
+ * for the current operative system infra-structure.
+ */
+COLONY_EXPORT_PREFIX const char *pformat();
+
+/**
  * Prints a document using the default printer or in case the show
  * dialog option is set using the printer selected in the printing
  * dialog.

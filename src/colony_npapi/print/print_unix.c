@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 const char *pformat() {
-	return NPCOLONY_PDF;
+    return NPCOLONY_PDF;
 }
 
 int print(bool show_dialog, char *data, size_t size) {
@@ -65,13 +65,13 @@ int print(bool show_dialog, char *data, size_t size) {
     strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE) + 1);
     int fd = mkstemp(file_path);
     if(fd < 0) { return -1; }
-    
+
     /* writes the read contents from the pdf into the created
     temporary file and in case the result of the write operation
     is not the expected returns in error */
     size_t result = write(fd, data, size);
     if(result == -1) { return -1; }
-    
+
     /* creates the buffer that will contain the various
     files that are meant to be printed */
     char *files[1] = {
@@ -92,11 +92,11 @@ int print(bool show_dialog, char *data, size_t size) {
     /* releases the memory used for the listing
     of the various destinations */
     cupsFreeDests(num_dests, dests);
-    
+
     /* unlinks the created temporary file so that
     it's abel to be removed from the file system */
     unlink(file_path);
-    
+
     /* returns with no error */
     return 0;
 }

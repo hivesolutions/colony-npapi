@@ -120,7 +120,7 @@ extern "C" {
 #endif
 
 const char *pformat() {
-	return NPCOLONY_BINIE;
+    return NPCOLONY_BINIE;
 }
 
 int print(bool show_dialog, char *data, size_t size) {

@@ -32,6 +32,7 @@
 #include "encoding/encoding.h"
 #include "plugin/plugin.h"
 #include "print/print.h"
+#include "system/system.h"
 
 #ifdef COLONY_PLATFORM_MSC
 #ifdef COLONY_DEBUG

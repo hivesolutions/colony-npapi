@@ -385,6 +385,18 @@
                     >
                 </File>
             </Filter>
+            <Filter
+                Name="System"
+                >
+                <File
+                    RelativePath="..\..\src\colony_npapi\system\gui_unix.c"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\system\gui_win32.c"
+                    >
+                </File>
+            </Filter>
         </Filter>
         <Filter
             Name="Header Files"
@@ -476,6 +488,22 @@
                 </File>
                 <File
                     RelativePath="..\..\src\colony_npapi\encoding\encoding.h"
+                    >
+                </File>
+            </Filter>
+            <Filter
+                Name="System"
+                >
+                <File
+                    RelativePath="..\..\src\colony_npapi\system\gui_unix.h"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\system\gui_win32.h"
+                    >
+                </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\system\system.h"
                     >
                 </File>
             </Filter>

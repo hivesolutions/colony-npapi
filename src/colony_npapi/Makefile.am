@@ -35,4 +35,6 @@ encoding/base_64.c \
 plugin/base.c \
 plugin/util.c \
 print/print_unix.c \
-print/print_win32.c
+print/print_win32.c \
+system/gui_unix.c \
+system/gui_win32.c

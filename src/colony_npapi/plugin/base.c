@@ -33,23 +33,6 @@ NPObject *so = NULL;
 NPNetscapeFuncs *npnfuncs = NULL;
 NPP inst = NULL;
 
-bool has_method(NPObject* obj, NPIdentifier method_name) {
-    /* retrieves the correct string for the method name
-    as a normal comparision structure */
-    char *name = npnfuncs->utf8fromidentifier(method_name);
-
-    /* iterates over all the methods in the static structure
-    to compare them against the requesed method */
-    for(size_t index = 0; index < METHODS_COUNT; index++) {
-        /* in case the current method is the same as the
-        requested on returns valid */
-        if(!strcmp(name, methods[index])) { return true; }
-    }
-
-    /* by default returns method not found */
-    return false;
-}
-
 bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
@@ -128,55 +111,19 @@ bool invoke_callback(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     return true;
 }
 
-#ifdef COLONY_PLATFORM_WIN32
 bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    /* retrieves the first argument as an utf8 string */
-    struct _NPString message_string = NPVARIANT_TO_STRING(args[0]);
-
-    /* allocates space for both the title and the message
-    of the alert box then converts them from the base string
-    encoded utf8 values to the win32 api unicode representation */
-    wchar_t *title = new wchar_t[6];
-    wchar_t *message = new wchar_t[message_string.UTF8Length + 1];
-    MultiByteToWideChar(CP_UTF8, NULL, "Alert", -1, title, 6);
-    size_t count = MultiByteToWideChar(
-        CP_UTF8,
-        NULL,
-        message_string.UTF8Characters,
-        message_string.UTF8Length,
-        message,
-        message_string.UTF8Length
-    );
-    message[count] = '\0';
-
-    /* creates the alert box with the "just" converted title
-    and message values (both encoded in unicode) */
-    int return_value = MessageBoxW(
-        NULL,
-        message,
-        title,
-        MB_ICONINFORMATION | MB_OK
-    );
-
-    /* releases the title and the message, then returns
-    the execution control to the caller */
-    delete message;
-    delete title;
+    /* retrieves the first argument as an utf8 string
+    and uses it to show the proper alert window */
+    struct _NPString message_s = NPVARIANT_TO_STRING(args[0]);
+    alert(&message_s);
     return true;
 }
-#endif
-
-#ifdef COLONY_PLATFORM_UNIX
-bool invoke_alert(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    return true;
-}
-#endif
 
 bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* allocates static space for the print format message and
     then allocates npapi space for it */
     const char *format = pformat();
-	size_t format_size = strlen(format);
+    size_t format_size = strlen(format);
     char *pformat_message = (char *) npnfuncs->memalloc(format_size);
 
     /* copes the print format value into the javascript owned
@@ -257,6 +204,23 @@ bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint
     must have occured (invalid name) sets it in the environment */
     npnfuncs->setexception(obj, "exception during invocation");
 
+    return false;
+}
+
+bool has_method(NPObject* obj, NPIdentifier method_name) {
+    /* retrieves the correct string for the method name
+    as a normal comparision structure */
+    char *name = npnfuncs->utf8fromidentifier(method_name);
+
+    /* iterates over all the methods in the static structure
+    to compare them against the requesed method */
+    for(size_t index = 0; index < METHODS_COUNT; index++) {
+        /* in case the current method is the same as the
+        requested on returns valid */
+        if(!strcmp(name, methods[index])) { return true; }
+    }
+
+    /* by default returns method not found */
     return false;
 }
 

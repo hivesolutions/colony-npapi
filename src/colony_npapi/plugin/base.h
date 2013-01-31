@@ -28,6 +28,7 @@
 #pragma once
 
 #include "../print/print.h"
+#include "../system/system.h"
 #include "../encoding/encoding.h"
 #include "util.h"
 
@@ -37,7 +38,6 @@
  */
 #define METHODS_COUNT 7
 
-COLONY_EXPORT_PREFIX bool has_method(NPObject* obj, NPIdentifier method_name);
 COLONY_EXPORT_PREFIX bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_version(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
@@ -46,6 +46,7 @@ COLONY_EXPORT_PREFIX bool invoke_alert(NPObject *obj, const NPVariant *args, uin
 COLONY_EXPORT_PREFIX bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result);
+COLONY_EXPORT_PREFIX bool has_method(NPObject* obj, NPIdentifier method_name);
 COLONY_EXPORT_PREFIX bool has_property(NPObject *obj, NPIdentifier property_name);
 COLONY_EXPORT_PREFIX bool get_property(NPObject *obj, NPIdentifier property_name, NPVariant *result);
 

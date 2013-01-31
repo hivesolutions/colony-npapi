@@ -34,9 +34,6 @@ NPNetscapeFuncs *npnfuncs = NULL;
 NPP inst = NULL;
 
 bool has_method(NPObject* obj, NPIdentifier method_name) {
-    /* logs the function call */
-    log_m("npcolony: has_method\n");
-
     /* retrieves the correct string for the method name
     as a normal comparision structure */
     char *name = npnfuncs->utf8fromidentifier(method_name);
@@ -44,7 +41,7 @@ bool has_method(NPObject* obj, NPIdentifier method_name) {
     /* iterates over all the methods in the static structure
     to compare them against the requesed method */
     for(size_t index = 0; index < METHODS_COUNT; index++) {
-        /* in case the current method is the sames as the
+        /* in case the current method is the same as the
         requested on returns valid */
         if(!strcmp(name, methods[index])) { return true; }
     }
@@ -54,9 +51,6 @@ bool has_method(NPObject* obj, NPIdentifier method_name) {
 }
 
 bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-    /* logs the function call and sets the result as
-    the default magic value (answer to the universe) */
-    log_m("npcolony: invoke_default\n");
     result->type = NPVariantType_Int32;
     result->value.intValue = 42;
     return true;

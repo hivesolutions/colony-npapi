@@ -123,6 +123,43 @@ const char *pformat() {
     return NPCOLONY_BINIE;
 }
 
+void pdevices(char **names_p, size_t *name_c) {
+	size_t index;
+	char *names;
+    DWORD count = 0;
+    DWORD size = 0;
+	DWORD level = 2;
+	PRINTER_INFO_2 *sequence;
+
+	/* runs the initial printers enumeration to uncover the
+	size of the list to be retrieved and then allocate the
+	appropriate space for the buffer */
+	EnumPrinters(
+		PRINTER_ENUM_LOCAL,
+		NULL,
+		level,
+		NULL,
+		0,
+		&size,
+		&count
+	);
+	sequence = (PRINTER_INFO_2 *) malloc(size);
+
+	EnumPrinters(
+	    PRINTER_ENUM_LOCAL,
+		NULL,
+		level,
+		(LPBYTE) sequence,
+		size,
+		&size,
+		&count
+	);
+
+	for(index  = 0; index < count; index++) {
+		printf("%s\n", sequence[index].pPrinterName);
+	}
+}
+
 int print(bool show_dialog, char *data, size_t size) {
     /* reserves space for the printing context to be
     used in the current operation */

@@ -41,6 +41,15 @@ function pformat() {
     }
 }
 
+function pdevices() {
+    try {
+        var gateway = document.getElementById("colony-gateway");
+        alert(gateway.pdevices());
+    } catch (exception) {
+        alert(exception);
+    }
+}
+
 function foo() {
     try {
         var gateway = document.getElementById("colony-gateway");

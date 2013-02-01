@@ -144,6 +144,40 @@ bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
     return true;
 }
 
+bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
+	NPObject *window = NULL;
+	NPObject *_array = NULL;
+
+	npnfuncs->getvalue(inst, NPNVWindowNPObject, &window);
+	npnfuncs->invoke(
+		inst,
+		window,
+		npnfuncs->getstringidentifier("Array"),
+		NULL,
+		0,
+		result
+	);
+	_array = result->value.objectValue;
+
+	/* --------------------------------------- */
+	NPVariant item;
+    NPVariant result_i;
+    STRINGN_TO_NPVARIANT("Hello World", 11, item);
+    npnfuncs->invoke(
+		inst,
+		_array,
+		npnfuncs->getstringidentifier("push"),
+		&item,
+		1,
+		&result_i
+	);
+    npnfuncs->releasevariantvalue(&result_i);
+	/* --------------------------------------- */
+
+    /* returns in success */
+    return true;
+}
+
 bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
     /* retrieves both the show dialog and the data string
     values to be used in the printing operation */
@@ -194,6 +228,9 @@ bool invoke(NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint
         } else if(!strcmp(name, "pformat")) {
             /* returns the result of the pformat invoking */
             return invoke_pformat(obj, args, arg_count, result);
+        } else if(!strcmp(name, "pdevices")) {
+            /* returns the result of the pdevices invoking */
+            return invoke_pdevices(obj, args, arg_count, result);
         } else if(!strcmp(name, "print")) {
             /* returns the result of the print invoking */
             return invoke_print(obj, args, arg_count, result);

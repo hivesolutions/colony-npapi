@@ -36,7 +36,7 @@
  * The number of methods (smbols) to be exposed
  * by the gateway to the javascript interface.
  */
-#define METHODS_COUNT 7
+#define METHODS_COUNT 8
 
 COLONY_EXPORT_PREFIX bool invoke_default(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
 COLONY_EXPORT_PREFIX bool invoke_status(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result);
@@ -85,5 +85,6 @@ static char *methods[METHODS_COUNT] = {
     "callback",
     "alert",
     "pformat",
+	"pdevices",
     "print"
 };

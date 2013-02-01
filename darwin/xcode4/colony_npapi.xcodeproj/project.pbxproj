@@ -112,7 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				C38949BE16B80E17007D73A5 /* encoding */,
-				C38949EA16B80E25007D73A5 /* global */,
+				C38949EA16B80E25007D73A5 /* base */,
 				C38949C216B80E17007D73A5 /* global */,
 				C38949CA16B80E17007D73A5 /* npapi */,
 				C38949CF16B80E17007D73A5 /* plugin */,
@@ -243,7 +243,7 @@
 			path = vs2008ex;
 			sourceTree = "<group>";
 		};
-		C38949EA16B80E25007D73A5 /* global */ = {
+		C38949EA16B80E25007D73A5 /* base */ = {
 			isa = PBXGroup;
 			children = (
 				C38949F416B81088007D73A5 /* _config_win32.h */,
@@ -253,7 +253,7 @@
 				C38949F816B81088007D73A5 /* stdafx.h */,
 				C38949F916B81088007D73A5 /* targetver.h */,
 			);
-			name = global;
+			name = base;
 			path = ../../src/colony_npapi;
 			sourceTree = "<group>";
 		};

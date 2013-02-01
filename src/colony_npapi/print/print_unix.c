@@ -40,7 +40,7 @@ const char *pformat() {
 }
 
 void pdevices(struct device_t **devices_p, size_t *devices_c) {
-    /* allocates space for the various values to be used 
+    /* allocates space for the various values to be used
     in the listing of the devices of the current system */
     size_t index;
     struct device_t *device;
@@ -52,7 +52,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     /* allocates the buffer to hold the various printing devices
     existing in the current system (to be returned) */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * num_dests);
-    
+
     /* iterates over the complete set of destinies to create
     the associated device structure and populate it with the
     values that describe the device */
@@ -66,7 +66,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     /* releases the memory used for the listing
     of the various destinations */
     cupsFreeDests(num_dests, dests);
-    
+
     /* updates the devices pointer and the number of devices
     that have been created (output variables) */
     *devices_p = devices;

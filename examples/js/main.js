@@ -44,7 +44,16 @@ function pformat() {
 function pdevices() {
     try {
         var gateway = document.getElementById("colony-gateway");
-        alert(gateway.pdevices());
+        var devices = gateway.pdevices();
+        var devicesS = "";
+        var isFirst = true;
+        for(var index = 0; index < devices.length; index++) {
+            var device = devices[index];
+            devicesS += isFirst ? "" : "\n"
+            devicesS += device.name;
+            isFirst = false;
+        }
+        alert(devicesS);
     } catch (exception) {
         alert(exception);
     }

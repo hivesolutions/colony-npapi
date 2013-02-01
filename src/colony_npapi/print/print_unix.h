@@ -59,6 +59,20 @@ typedef struct device_t {
 COLONY_EXPORT_PREFIX const char *pformat();
 
 /**
+ * Retrieves the complete set of printing devices currently
+ * available in the system loaded in the appropriate structures.
+ *
+ * The number of devices available is also returned so that's
+ * it's possible to iterate over the sequence.
+ *
+ * @param devices_p The pointer to the buffer of device structures
+ * to be set with the various elements.
+ * @param devices_c The number of devices loaded into the devices
+ * pointer (loaded devices).
+ */
+COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_c);
+
+/**
  * Prints a document using the default printer or in case the show
  * dialog option is set using the printer selected in the printing
  * dialog.

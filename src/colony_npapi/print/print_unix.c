@@ -39,6 +39,40 @@ const char *pformat() {
     return NPCOLONY_PDF;
 }
 
+void pdevices(struct device_t **devices_p, size_t *devices_c) {
+    /* allocates space for the various values to be used 
+    in the listing of the devices of the current system */
+    size_t index;
+    struct device_t *device;
+    struct device_t *devices;
+    cups_dest_t *dest = NULL;
+    cups_dest_t *dests = NULL;
+    int num_dests = cupsGetDests(&dests);
+
+    /* allocates the buffer to hold the various printing devices
+    existing in the current system (to be returned) */
+    devices = (struct device_t *) malloc(sizeof(struct device_t) * num_dests);
+    
+    /* iterates over the complete set of destinies to create
+    the associated device structure and populate it with the
+    values that describe the device */
+    for(index = 0; index < num_dests; index++) {
+        device = &devices[index];
+        dest = &dests[index];
+        memcpy(device->name, dest->name, strlen(dest->name));
+        device->name_s = strlen(dest->name);
+    }
+
+    /* releases the memory used for the listing
+    of the various destinations */
+    cupsFreeDests(num_dests, dests);
+    
+    /* updates the devices pointer and the number of devices
+    that have been created (output variables) */
+    *devices_p = devices;
+    *devices_c = num_dests;
+}
+
 int print(bool show_dialog, char *data, size_t size) {
     /* allocates space for the various variables that
     are going to be used for the print operation and

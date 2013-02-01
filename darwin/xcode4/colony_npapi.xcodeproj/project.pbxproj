@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
+		C2CB7CFF16BBE76F00EE3E26 /* gui_unix.c in Sources */ = {isa = PBXBuildFile; fileRef = C2CB7CFA16BBE76F00EE3E26 /* gui_unix.c */; };
+		C2CB7D0016BBE76F00EE3E26 /* gui_win32.c in Sources */ = {isa = PBXBuildFile; fileRef = C2CB7CFC16BBE76F00EE3E26 /* gui_win32.c */; };
 		C38949E216B80E17007D73A5 /* base_64.c in Sources */ = {isa = PBXBuildFile; fileRef = C38949BF16B80E17007D73A5 /* base_64.c */; };
 		C38949E316B80E17007D73A5 /* base.c in Sources */ = {isa = PBXBuildFile; fileRef = C38949D016B80E17007D73A5 /* base.c */; };
 		C38949E416B80E17007D73A5 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = C38949D316B80E17007D73A5 /* util.c */; };
@@ -23,6 +25,11 @@
 /* Begin PBXFileReference section */
 		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D01CCD20486CAD60068D4B7 /* colony_npapi.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = colony_npapi.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2CB7CFA16BBE76F00EE3E26 /* gui_unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gui_unix.c; sourceTree = "<group>"; };
+		C2CB7CFB16BBE76F00EE3E26 /* gui_unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gui_unix.h; sourceTree = "<group>"; };
+		C2CB7CFC16BBE76F00EE3E26 /* gui_win32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gui_win32.c; sourceTree = "<group>"; };
+		C2CB7CFD16BBE76F00EE3E26 /* gui_win32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gui_win32.h; sourceTree = "<group>"; };
+		C2CB7CFE16BBE76F00EE3E26 /* system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = system.h; sourceTree = "<group>"; };
 		C38949BF16B80E17007D73A5 /* base_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base_64.c; sourceTree = "<group>"; };
 		C38949C016B80E17007D73A5 /* base_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_64.h; sourceTree = "<group>"; };
 		C38949C116B80E17007D73A5 /* encoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
@@ -104,13 +111,14 @@
 		08FB77ADFE841716C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C38949EA16B80E25007D73A5 /* global */,
 				C38949BE16B80E17007D73A5 /* encoding */,
+				C38949EA16B80E25007D73A5 /* global */,
 				C38949C216B80E17007D73A5 /* global */,
 				C38949CA16B80E17007D73A5 /* npapi */,
 				C38949CF16B80E17007D73A5 /* plugin */,
 				C38949D516B80E17007D73A5 /* print */,
 				C38949DB16B80E17007D73A5 /* resources */,
+				C2CB7CF916BBE76F00EE3E26 /* system */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -121,6 +129,19 @@
 				8D01CCD20486CAD60068D4B7 /* colony_npapi.bundle */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C2CB7CF916BBE76F00EE3E26 /* system */ = {
+			isa = PBXGroup;
+			children = (
+				C2CB7CFA16BBE76F00EE3E26 /* gui_unix.c */,
+				C2CB7CFB16BBE76F00EE3E26 /* gui_unix.h */,
+				C2CB7CFC16BBE76F00EE3E26 /* gui_win32.c */,
+				C2CB7CFD16BBE76F00EE3E26 /* gui_win32.h */,
+				C2CB7CFE16BBE76F00EE3E26 /* system.h */,
+			);
+			name = system;
+			path = ../../src/colony_npapi/system;
 			sourceTree = "<group>";
 		};
 		C38949BE16B80E17007D73A5 /* encoding */ = {
@@ -308,6 +329,8 @@
 				C38949E516B80E17007D73A5 /* print_unix.c in Sources */,
 				C38949E616B80E17007D73A5 /* print_win32.c in Sources */,
 				C38949FA16B81088007D73A5 /* stdafx.c in Sources */,
+				C2CB7CFF16BBE76F00EE3E26 /* gui_unix.c in Sources */,
+				C2CB7D0016BBE76F00EE3E26 /* gui_win32.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

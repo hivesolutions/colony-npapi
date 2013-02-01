@@ -34,6 +34,19 @@ extern "C" {
 #endif
 
 /**
+ * Structure that defines and identifies a
+ * printing device in a neutral manner.
+ *
+ * Should contain information that is able to
+ * promote the reusage of a device for its
+ * internal/external operations.
+ */
+typedef struct device_t {
+	char name[256];
+	size_t name_s;
+} device;
+
+/**
  * Retrieves the format of the data file (buffer) to be used in
  * the printing operation for the current operative system.
  *

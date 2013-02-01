@@ -123,9 +123,9 @@ const char *pformat() {
     return NPCOLONY_BINIE;
 }
 
-void pdevices(char **names_p, size_t *name_c) {
+void pdevices(struct device_t **devices_p, size_t *devices_c) {
 	size_t index;
-	char *names;
+	struct device_t *devices;
     DWORD count = 0;
     DWORD size = 0;
 	DWORD level = 2;
@@ -155,9 +155,16 @@ void pdevices(char **names_p, size_t *name_c) {
 		&count
 	);
 
+	devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
+
 	for(index  = 0; index < count; index++) {
-		printf("%s\n", sequence[index].pPrinterName);
+		char *name = sequence[index].pPrinterName;
+		size_t name_s = strlen(name);
+		memcpy(devices[index].name, name, name_s + 1);
 	}
+	
+	*devices_p = devices;
+	*devices_c = count;
 }
 
 int print(bool show_dialog, char *data, size_t size) {

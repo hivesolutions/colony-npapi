@@ -205,6 +205,19 @@ extern "C" {
 #endif
 
 /**
+ * Structure that defines and identifies a
+ * printing device in a neutral manner.
+ *
+ * Should contain information that is able to
+ * promote the reusage of a device for its
+ * internal/external operations.
+ */
+typedef struct device_t {
+	char name[256];
+	size_t name_s;
+} device;
+
+/**
  * Retrieves the format of the data file (buffer) to be used in
  * the printing operation for the current operative system.
  *
@@ -215,6 +228,20 @@ extern "C" {
  * for the current operative system infra-structure.
  */
 COLONY_EXPORT_PREFIX const char *pformat();
+
+/**
+ * Retrieves the complete set of printing devices currently
+ * available in the system loaded in the appropriate structures.
+ *
+ * The number of devices available is also returned so that's
+ * it's possible to iterate over the sequence.
+ *
+ * @param devices_p The pointer to the buffer of device structures
+ * to be set with the various elements.
+ * @param devices_c The number of devices loaded into the devices
+ * pointer (loaded devices).
+ */
+COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_c);
 
 /**
  * Prints a document using the default printer or in case the show

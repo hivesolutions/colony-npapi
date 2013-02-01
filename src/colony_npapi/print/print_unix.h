@@ -42,8 +42,8 @@ extern "C" {
  * internal/external operations.
  */
 typedef struct device_t {
-	char name[256];
-	size_t name_s;
+    char name[256];
+    size_t name_s;
 } device;
 
 /**

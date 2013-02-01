@@ -124,47 +124,60 @@ const char *pformat() {
 }
 
 void pdevices(struct device_t **devices_p, size_t *devices_c) {
-	size_t index;
-	struct device_t *devices;
+    /* allocates the various variables that are going to be
+    used for the creation of the devices structure buffer */
+    size_t index;
+    struct device_t *devices;
     DWORD count = 0;
     DWORD size = 0;
-	DWORD level = 2;
-	PRINTER_INFO_2 *sequence;
+    DWORD level = 2;
+    PRINTER_INFO_2 *sequence;
 
-	/* runs the initial printers enumeration to uncover the
-	size of the list to be retrieved and then allocate the
-	appropriate space for the buffer */
-	EnumPrinters(
-		PRINTER_ENUM_LOCAL,
-		NULL,
-		level,
-		NULL,
-		0,
-		&size,
-		&count
-	);
-	sequence = (PRINTER_INFO_2 *) malloc(size);
+    /* runs the initial printers enumeration to uncover the
+    size of the list to be retrieved and then allocate the
+    appropriate space for the buffer */
+    EnumPrinters(
+        PRINTER_ENUM_LOCAL,
+        NULL,
+        level,
+        NULL,
+        0,
+        &size,
+        &count
+    );
+    sequence = (PRINTER_INFO_2 *) malloc(size);
 
-	EnumPrinters(
-	    PRINTER_ENUM_LOCAL,
-		NULL,
-		level,
-		(LPBYTE) sequence,
-		size,
-		&size,
-		&count
-	);
+    /* enumerates the printing devices again for the sequence
+    buffer to be populated with the correct values */
+    EnumPrinters(
+        PRINTER_ENUM_LOCAL,
+        NULL,
+        level,
+        (LPBYTE) sequence,
+        size,
+        &size,
+        &count
+    );
 
-	devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
+    /* allocates space for the devices tructure according to the
+    number of devices loaded into the sequence and then iterates
+    over the sequence to create the various device structures */
+    devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
+    for(index  = 0; index < count; index++) {
+        char *name = sequence[index].pPrinterName;
+        size_t name_s = strlen(name);
+        memcpy(devices[index].name, name, name_s + 1);
+        devices[index].name_s = name_s;
+    }
 
-	for(index  = 0; index < count; index++) {
-		char *name = sequence[index].pPrinterName;
-		size_t name_s = strlen(name);
-		memcpy(devices[index].name, name, name_s + 1);
-	}
-	
-	*devices_p = devices;
-	*devices_c = count;
+    /* releases the memory from the sequence buffer, avoids any
+    memory leaking, it's not going to be used anymore */
+    free(sequence);
+
+    /* updates the devices pointer and the number of devices
+    that have been created (output variables) */
+    *devices_p = devices;
+    *devices_c = count;
 }
 
 int print(bool show_dialog, char *data, size_t size) {

@@ -145,34 +145,86 @@ bool invoke_pformat(NPObject *obj, const NPVariant *args, uint32_t arg_count, NP
 }
 
 bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVariant *result) {
-	NPObject *window = NULL;
-	NPObject *_array = NULL;
-
-	npnfuncs->getvalue(inst, NPNVWindowNPObject, &window);
-	npnfuncs->invoke(
-		inst,
-		window,
-		npnfuncs->getstringidentifier("Array"),
-		NULL,
-		0,
-		result
-	);
-	_array = result->value.objectValue;
-
-	/* --------------------------------------- */
-	NPVariant item;
+    /* allocates the various variables that are going to be
+    used both for the retrieval of the devices and for the
+    creation of the structures for npapi return */
+    size_t index;
+    size_t devices_c;
+    struct device_t *device;
+    struct device_t *devices;
+    NPVariant name_i;
     NPVariant result_i;
-    STRINGN_TO_NPVARIANT("Hello World", 11, item);
+    NPVariant object_v;
+    NPObject *object;
+    NPObject *window = NULL;
+    NPObject *_array = NULL;
+
+    /* retrieves the complete set of devices available in the
+    current system according to the specification */
+    pdevices(&devices, &devices_c);
+
+    /* retrieves the reference to the window object and uses
+    it to create a new array that will be used as the return
+    value of the current function */
+    npnfuncs->getvalue(inst, NPNVWindowNPObject, &window);
     npnfuncs->invoke(
-		inst,
-		_array,
-		npnfuncs->getstringidentifier("push"),
-		&item,
-		1,
-		&result_i
-	);
-    npnfuncs->releasevariantvalue(&result_i);
-	/* --------------------------------------- */
+        inst,
+        window,
+        npnfuncs->getstringidentifier("Array"),
+        NULL,
+        0,
+        result
+    );
+    _array = result->value.objectValue;
+
+    /* iterates over the complete set of devices to create a
+    new object for each of them and then populate it with the
+    various properties that define the device */
+    for(index = 0; index < devices_c; index++) {
+        /* retrieves the current device for the iteration, this
+        value is going to be used across the iteration */
+        device = &devices[index];
+
+        /* creates a new object by invoking the global function
+        for the construction of it and then retrieves the underlying
+        object reference from the variadic owner */
+        npnfuncs->invoke(
+            inst,
+            window,
+            npnfuncs->getstringidentifier("Object"),
+            NULL,
+            0,
+            &object_v
+        );
+        object = object_v.value.objectValue;
+
+        /* converts the device name into a string structure and
+        sets the name property of the object with its value */
+        STRINGN_TO_NPVARIANT(device->name, device->name_s, name_i);
+        npnfuncs->setproperty(
+            inst,
+            object,
+            npnfuncs->getstringidentifier("name"),
+            &name_i
+        );
+
+        /* "pushes" the object structure into the returning array
+        by invoking the push function on the returning object */
+        npnfuncs->invoke(
+            inst,
+            _array,
+            npnfuncs->getstringidentifier("push"),
+            &object_v,
+            1,
+            &result_i
+        );
+        npnfuncs->releasevariantvalue(&result_i);
+        npnfuncs->releasevariantvalue(&object_v);
+    }
+
+    /* releases the devices buffer as it's not going to
+    be used anymore (avoid memory leak) */
+    free(devices);
 
     /* returns in success */
     return true;

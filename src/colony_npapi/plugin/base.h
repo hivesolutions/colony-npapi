@@ -85,6 +85,6 @@ static char *methods[METHODS_COUNT] = {
     "callback",
     "alert",
     "pformat",
-	"pdevices",
+    "pdevices",
     "print"
 };

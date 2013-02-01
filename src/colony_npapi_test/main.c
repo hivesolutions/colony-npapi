@@ -30,25 +30,25 @@
 #define HELLO_WORLD_B64 "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAABAAQAAAAAAAAAAAABDYWxpYnJpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAABIZWxsbyBXb3JsZAA="
 
 void print_devices() {
-	/* allocates memory for the various internal structure
-	that are going to be used to print device information */
-	size_t index;
-	size_t devices_s;
-	struct device_t *device;
-	struct device_t *devices;
+    /* allocates memory for the various internal structure
+    that are going to be used to print device information */
+    size_t index;
+    size_t devices_s;
+    struct device_t *device;
+    struct device_t *devices;
 
-	/* retrieves the complete set of available printing
-	devices and then iterates over them to print their
-	currently set values and settings */
-	pdevices(&devices, &devices_s);
-	for(index = 0; index < devices_s; index++) {
-		device = &devices[index];
-		printf("%s\n", device->name);
-	}
+    /* retrieves the complete set of available printing
+    devices and then iterates over them to print their
+    currently set values and settings */
+    pdevices(&devices, &devices_s);
+    for(index = 0; index < devices_s; index++) {
+        device = &devices[index];
+        printf("%s\n", device->name);
+    }
 
-	/* releases the memory that was allocated for the
-	device structures sequence (avoids memory leak) */
-	free(devices);
+    /* releases the memory that was allocated for the
+    device structures sequence (avoids memory leak) */
+    free(devices);
 }
 
 void print_hello() {
@@ -114,7 +114,7 @@ void print_base64(char *file_path) {
 }
 
 int main(int argc, char *argv[]) {
-	print_devices();
-    print_hello();	
+    print_devices();
+    print_hello();
     return 0;
 }

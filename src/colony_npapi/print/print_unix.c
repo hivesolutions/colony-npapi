@@ -58,7 +58,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     existing in the current system (to be returned) */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * num_dests);
     memset(devices, 0, sizeof(struct device_t) * num_dests);
-    
+
     /* iterates over the complete set of destinies to create
     the associated device structure and populate it with the
     values that describe the device */
@@ -67,7 +67,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device structure and to the current dest value */
         device = &devices[index];
         dest = &dests[index];
-        
+
         /* retrieves the ppdf file for the current device
         and opens its file then reads the various values
         required to be red from it */
@@ -76,7 +76,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         ppd = ppdOpen(ppd_file);
         page_size_o = ppdFindOption(ppd, "PageSize");
         page_size = ppdPageSize(ppd, page_size_o->defchoice);
-        
+
         /* populates the various device values according to the
         the various definitions of the device */
         memcpy(device->name, dest->name, strlen(dest->name) + 1);
@@ -92,11 +92,11 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
             device->width = page_size->width;
             device->length = page_size->length;
         }
-        
+
         /* closes the ppd reference object, as it's not going
         to be used anymore (avoids memory leaks) */
         ppdClose(ppd);
-        
+
         /* closes the temporaty ppdf file and then unlinks it
         so that it's correctly removed from the current system */
         fclose(ppd_file);

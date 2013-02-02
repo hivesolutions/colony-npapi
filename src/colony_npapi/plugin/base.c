@@ -220,7 +220,7 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
             npnfuncs->getstringidentifier("media"),
             &media_i
         );
-        
+
         /* converts the device width into a double structure and
         sets the width property of the object with its value */
         DOUBLE_TO_NPVARIANT(device->width, width_i);
@@ -230,7 +230,7 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
             npnfuncs->getstringidentifier("width"),
             &width_i
         );
-        
+
         /* converts the device length into a double structure and
         sets the length property of the object with its value */
         DOUBLE_TO_NPVARIANT(device->length, length_i);

@@ -61,6 +61,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         dest = &dests[index];
         memcpy(device->name, dest->name, strlen(dest->name));
         device->name_s = strlen(dest->name);
+        device->is_default = (char) dest->is_default;
     }
 
     /* releases the memory used for the listing

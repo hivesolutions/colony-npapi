@@ -127,6 +127,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     /* allocates the various variables that are going to be
     used for the creation of the devices structure buffer */
     size_t index;
+    struct device_t *device;
     struct device_t *devices;
     DWORD count = 0;
     DWORD size = 0;
@@ -164,10 +165,12 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     over the sequence to create the various device structures */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
     for(index  = 0; index < count; index++) {
+        device = &devices[index];
         char *name = sequence[index].pPrinterName;
         size_t name_s = strlen(name);
-        memcpy(devices[index].name, name, name_s + 1);
-        devices[index].name_s = name_s;
+        memcpy(device->name, name, name_s + 1);
+        device->name_s = name_s;
+        device->is_default = 0;
     }
 
     /* releases the memory from the sequence buffer, avoids any

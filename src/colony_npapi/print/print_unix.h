@@ -44,6 +44,7 @@ extern "C" {
 typedef struct device_t {
     char name[256];
     size_t name_s;
+    char is_default;
 } device;
 
 /**

@@ -50,7 +50,7 @@ function pdevices() {
         for(var index = 0; index < devices.length; index++) {
             var device = devices[index];
             devicesS += isFirst ? "" : "\n"
-            devicesS += device.name;
+            devicesS += device.name + " - " + device.media;
             isFirst = false;
         }
         alert(devicesS);

@@ -164,6 +164,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     number of devices loaded into the sequence and then iterates
     over the sequence to create the various device structures */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
+    memset(devices, 0, sizeof(struct device_t) * count);
     for(index  = 0; index < count; index++) {
         device = &devices[index];
         char *name = sequence[index].pPrinterName;

@@ -216,6 +216,10 @@ typedef struct device_t {
     char name[256];
     size_t name_s;
     char is_default;
+    char media[256];
+    size_t media_s;
+    float width;
+    float length;
 } device;
 
 /**

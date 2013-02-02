@@ -153,6 +153,9 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     struct device_t *device;
     struct device_t *devices;
     NPVariant name_i;
+    NPVariant media_i;
+    NPVariant width_i;
+    NPVariant length_i;
     NPVariant result_i;
     NPVariant object_v;
     NPObject *object;
@@ -206,6 +209,36 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
             object,
             npnfuncs->getstringidentifier("name"),
             &name_i
+        );
+
+        /* converts the device media into a string structure and
+        sets the media property of the object with its value */
+        STRINGN_TO_NPVARIANT(device->media, device->media_s, media_i);
+        npnfuncs->setproperty(
+            inst,
+            object,
+            npnfuncs->getstringidentifier("media"),
+            &media_i
+        );
+        
+        /* converts the device width into a double structure and
+        sets the width property of the object with its value */
+        DOUBLE_TO_NPVARIANT(device->width, width_i);
+        npnfuncs->setproperty(
+            inst,
+            object,
+            npnfuncs->getstringidentifier("width"),
+            &width_i
+        );
+        
+        /* converts the device length into a double structure and
+        sets the length property of the object with its value */
+        DOUBLE_TO_NPVARIANT(device->length, length_i);
+        npnfuncs->setproperty(
+            inst,
+            object,
+            npnfuncs->getstringidentifier("length"),
+            &length_i
         );
 
         /* "pushes" the object structure into the returning array

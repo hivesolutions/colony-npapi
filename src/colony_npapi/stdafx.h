@@ -98,6 +98,7 @@
 #ifdef COLONY_PLATFORM_UNIX
 #include <unistd.h>
 #include <sys/types.h>
+#include <cups/ppd.h>
 #include <cups/cups.h>
 #endif
 

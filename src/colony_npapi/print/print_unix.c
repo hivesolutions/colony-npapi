@@ -93,6 +93,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
             device->length = page_size->length;
         }
         
+        /* closes the ppd reference object, as it's not going
+        to be used anymore (avoids memory leaks) */
+        ppdClose(ppd);
+        
         /* closes the temporaty ppdf file and then unlinks it
         so that it's correctly removed from the current system */
         fclose(ppd_file);

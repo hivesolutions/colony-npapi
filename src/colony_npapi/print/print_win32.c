@@ -169,7 +169,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device = &devices[index];
         char *name = sequence[index].pPrinterName;
         size_t name_s = strlen(name);
-        memcpy(device->name, name, name_s + 1);
+        memcpy(device->name, name, name_s);
         device->name_s = name_s;
         device->is_default = 0;
     }

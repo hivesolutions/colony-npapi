@@ -79,14 +79,14 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
 
         /* populates the various device values according to the
         the various definitions of the device */
-        memcpy(device->name, dest->name, strlen(dest->name) + 1);
+        memcpy(device->name, dest->name, strlen(dest->name));
         device->name_s = strlen(dest->name);
         device->is_default = (char) dest->is_default;
         if(page_size_o) {
             memcpy(
                 device->media,
                 page_size_o->defchoice,
-                strlen(page_size_o->defchoice) + 1
+                strlen(page_size_o->defchoice)
             );
             device->media_s = strlen(page_size_o->defchoice);
             device->width = page_size->width;

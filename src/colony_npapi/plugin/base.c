@@ -154,6 +154,7 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     struct device_t *devices;
     NPVariant name_i;
     NPVariant media_i;
+	NPVariant is_default_i;
     NPVariant width_i;
     NPVariant length_i;
     NPVariant result_i;
@@ -219,6 +220,16 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
             object,
             npnfuncs->getstringidentifier("media"),
             &media_i
+        );
+
+        /* converts the device is default into a boolean structure and
+        sets the is default property of the object with its value */
+        BOOLEAN_TO_NPVARIANT(device->is_default, is_default_i);
+        npnfuncs->setproperty(
+            inst,
+            object,
+            npnfuncs->getstringidentifier("isDefault"),
+            &is_default_i
         );
 
         /* converts the device width into a double structure and

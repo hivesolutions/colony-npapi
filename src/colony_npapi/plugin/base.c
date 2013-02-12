@@ -154,7 +154,7 @@ bool invoke_pdevices(NPObject *obj, const NPVariant *args, uint32_t arg_count, N
     struct device_t *devices;
     NPVariant name_i;
     NPVariant media_i;
-	NPVariant is_default_i;
+    NPVariant is_default_i;
     NPVariant width_i;
     NPVariant length_i;
     NPVariant result_i;

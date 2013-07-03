@@ -5,7 +5,7 @@ NPAPI based plugin that provides a series of native features like:
 * Printing using direct access to the printing infra-structure of the operative system
 * Creation of native based GUI elements
 
-The current implementation support only x86/x64 architectures and Windows, Linux and Mac OS X.
+The current implementation supports only x86/x64 architectures and Windows, Linux and Mac OS X.
 
 ## Building
 

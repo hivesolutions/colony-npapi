@@ -15,6 +15,9 @@ automated process assumes the Windows build process using the Visual Studio IDE.
 
 ### Windows
 
+Use Visual Studio 2008 Express for compilation with no additional dependencies. The build process should
+create the plugins files in the output.
+
 ### Mac OS X
 
 Download the [Gecko SDK 1.9 32 bit](https://developer.mozilla.org/en-US/docs/Gecko_SDK) from the official 

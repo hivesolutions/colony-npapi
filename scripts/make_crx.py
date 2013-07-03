@@ -23,7 +23,11 @@ shutil.copytree(images_path, temporary_path + "/images")
 try:
     if os.name in ("nt", "os"):
         local_app_path = os.environ["LOCALAPPDATA"]
+        program_files_path = os.environ["PROGRAMFILES"] 
+        program_files_path = os.environ.get("PROGRAMFILES(X86)", program_files_path)
         chrome_path = "%s/Google/Chrome/Application/chrome.exe" % local_app_path
+        global_chrome_path = "%s/Google/Chrome/Application/chrome.exe" % program_files_path
+        if os.path.exists(global_chrome_path): chrome_path = global_chrome_path
     else:
         chrome_path = "chrome"
 

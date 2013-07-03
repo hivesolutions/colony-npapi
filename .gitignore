@@ -3,7 +3,8 @@
 *.suo
 .DS_Store
 
-/bin
+/bin/
+/scripts/build/
 /win32/vs2008ex/*/*
 /darwin/xcode4/colony_npapi.xcodeproj/xcuserdata/
 /darwin/xcode4/colony_npapi.xcodeproj/project.xcworkspace/xcuserdata/

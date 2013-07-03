@@ -9,9 +9,9 @@ The current implementation support only x86/x64 architectures and Windows, Linux
 
 ## Building
 
-In order to build both the XPI and the XIB files for the plugin one should use the scripts
-created for such effect under the [scripts](scripts) directory. The automated process assumes
-the Windows build process using the Visual Studio IDE.
+In order to build both the CRX (Goolgle Chrome) and the XPI (Mozilla Firefox) files for the plugin
+one should use the scripts created for such effect under the [scripts](scripts) directory. The
+automated process assumes the Windows build process using the Visual Studio IDE.
 
 ### Windows
 

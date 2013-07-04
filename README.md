@@ -22,3 +22,6 @@ create the plugins files in the output.
 
 Download the [Gecko SDK 1.9 32 bit](https://developer.mozilla.org/en-US/docs/Gecko_SDK) from the official 
 website.
+
+Use the `/Library/Internet Plugins/` directory to test the plugin while the proper extension package file
+is not created.

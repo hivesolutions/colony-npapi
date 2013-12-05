@@ -30,7 +30,9 @@ is not created.
 
 Use the `/` directory to test te *.so based plugin file for development purposes.
 
-## Google Chrome package
+## Packaging
+
+### Google Chrome
 
 Create a package file that contains the references to the complete set of plugins files for the various
 platforms as defined here:

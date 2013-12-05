@@ -38,9 +38,14 @@ Create a package file that contains the references to the complete set of plugin
 platforms as defined here:
 
 ```javascript
-"plugins" : [
-    { "path" : "plugin-windows.dll" },
-    { "path" : "plugin-linux.so" },
-    { "path" : "plugin-mac.plugin" }
-]
+"plugins" : [{
+    "path" : "npcolony.dll",
+    "public" : true
+}, {
+    "path" : "libnpcolony.so",
+    "public" : true
+}, {
+    "path" : "npcolony.plugin",
+    "public" : true
+}]
 ```

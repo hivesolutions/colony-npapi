@@ -28,7 +28,7 @@ is not created.
 
 ### Linux
 
-Use the `/usr/lib/mozilla/plugins/` directory to test te `*.so` based plugin file for development purposes.
+Use the `/usr/lib/mozilla/plugins/` directory to test the `*.so` based plugin file for development purposes.
 
 ## Packaging
 

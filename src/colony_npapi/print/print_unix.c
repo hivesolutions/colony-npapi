@@ -72,12 +72,12 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         and opens its file then reads the various values
         required to be read from it */
         ppd_path = cupsGetPPD(dest->name);
-		if(ppd_path == NULL) { ppd_file = NULL; }
-		else { ppd_file = fopen(ppd_path, "rb"); }
-		if(ppd_file == NULL) { ppd = NULL; }
-		else { ppd = ppdOpen(ppd_file); }
-		if(ppd == NULL) { page_size_o = NULL; }
-		else { page_size_o = ppdFindOption(ppd, "PageSize"); }
+        if(ppd_path == NULL) { ppd_file = NULL; }
+        else { ppd_file = fopen(ppd_path, "rb"); }
+        if(ppd_file == NULL) { ppd = NULL; }
+        else { ppd = ppdOpen(ppd_file); }
+        if(ppd == NULL) { page_size_o = NULL; }
+        else { page_size_o = ppdFindOption(ppd, "PageSize"); }
 
         /* populates the various device values according to the
         the various definitions of the device */
@@ -85,10 +85,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device->name_s = strlen(dest->name);
         device->is_default = (char) dest->is_default;
         if(page_size_o) {
-			page_size = ppdPageSize(
-				ppd,
-				page_size_o->defchoice
-			);
+            page_size = ppdPageSize(
+                ppd,
+                page_size_o->defchoice
+            );
             memcpy(
                 device->media,
                 page_size_o->defchoice,
@@ -101,11 +101,11 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
 
         /* closes the ppd reference object, as it's not going
         to be used anymore (avoids memory leaks) */
-		if(ppd != NULL) { ppdClose(ppd); }
+        if(ppd != NULL) { ppdClose(ppd); }
 
         /* closes the temporaty ppdf file and then unlinks it
         so that it's correctly removed from the current system */
-		if(ppd_file != NULL) { fclose(ppd_file); }
+        if(ppd_file != NULL) { fclose(ppd_file); }
         unlink(ppd_path);
     }
 

@@ -73,7 +73,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         required to be read from it */
         ppd_path = cupsGetPPD(dest->name);
         ppd_file = fopen(ppd_path, "rb");
-		if(ppd_file == NULL) { ppf = NULL; }
+		if(ppd_file == NULL) { ppd = NULL; }
 		else { ppd = ppdOpen(ppd_file); }
 		if(ppd == NULL) { page_size_o = NULL; }
 		else { page_size_o = ppdFindOption(ppd, "PageSize"); }

@@ -59,7 +59,28 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     devices = (struct device_t *) malloc(sizeof(struct device_t) * num_dests);
     memset(devices, 0, sizeof(struct device_t) * num_dests);
 
-	/* updates the devices pointer and the number of devices
+    /* iterates over the complete set of destinies to create
+    the associated device structure and populate it with the
+    values that describe the device */
+    for(index = 0; index < num_dests; index++) {
+        /* retrieves the references to the current
+        device structure and to the current dest value */
+        device = &devices[index];
+        dest = &dests[index];
+
+        /* retrieves the ppd file for the current device
+        and opens its file then reads the various values
+        required to be read from it */
+        ppd_path = cupsGetPPD(dest->name);
+
+        unlink(ppd_path);
+    }
+
+    /* releases the memory used for the listing
+    of the various destinations */
+    cupsFreeDests(num_dests, dests);
+
+    /* updates the devices pointer and the number of devices
     that have been created (output variables) */
     *devices_p = devices;
     *devices_c = num_dests;

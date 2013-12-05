@@ -73,8 +73,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         required to be read from it */
         ppd_path = cupsGetPPD(dest->name);
         ppd_file = fopen(ppd_path, "rb");
-        ppd = ppdOpen(ppd_file);
-        page_size_o = ppdFindOption(ppd, "PageSize");
+		if(ppd_file == NULL) { ppf = NULL; }
+		else { ppd = ppdOpen(ppd_file); }
+		if(ppd == NULL) { page_size_o = NULL; }
+		else { page_size_o = ppdFindOption(ppd, "PageSize"); }
 
         /* populates the various device values according to the
         the various definitions of the device */
@@ -98,11 +100,11 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
 
         /* closes the ppd reference object, as it's not going
         to be used anymore (avoids memory leaks) */
-        ppdClose(ppd);
+		if(ppd != NULL) { ppdClose(ppd); }
 
         /* closes the temporaty ppdf file and then unlinks it
         so that it's correctly removed from the current system */
-        fclose(ppd_file);
+		if(ppd_file != NULL) { fclose(ppd_file); }
         unlink(ppd_path);
     }
 

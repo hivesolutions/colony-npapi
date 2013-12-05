@@ -25,3 +25,20 @@ website.
 
 Use the `/Library/Internet Plugins/` directory to test the plugin while the proper extension package file
 is not created.
+
+### Linux
+
+Use the `/` directory to test te *.so based plugin file for development purposes.
+
+## Google Chrome package
+
+Create a package file that contains the references to the complete set of plugins files for the various
+platforms as defined here:
+
+```javascript
+"plugins" : [
+    { "path" : "plugin-windows.dll" },
+    { "path" : "plugin-linux.so" },
+    { "path" : "plugin-mac.plugin" }
+]
+```

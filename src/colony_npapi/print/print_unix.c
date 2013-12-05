@@ -68,14 +68,13 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device = &devices[index];
         dest = &dests[index];
 
-        /* retrieves the ppdf file for the current device
+        /* retrieves the ppd file for the current device
         and opens its file then reads the various values
-        required to be red from it */
+        required to be read from it */
         ppd_path = cupsGetPPD(dest->name);
         ppd_file = fopen(ppd_path, "rb");
         ppd = ppdOpen(ppd_file);
         page_size_o = ppdFindOption(ppd, "PageSize");
-        page_size = ppdPageSize(ppd, page_size_o->defchoice);
 
         /* populates the various device values according to the
         the various definitions of the device */
@@ -83,6 +82,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device->name_s = strlen(dest->name);
         device->is_default = (char) dest->is_default;
         if(page_size_o) {
+			page_size = ppdPageSize(
+				ppd,
+				page_size_o->defchoice
+			);
             memcpy(
                 device->media,
                 page_size_o->defchoice,

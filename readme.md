@@ -24,7 +24,7 @@ Download the [Gecko SDK 1.9 32 bit](https://developer.mozilla.org/en-US/docs/Gec
 website.
 
 Use the `/Library/Internet Plug-Ins/` directory to test the plugin while the proper extension package file
-is not created.
+is not created. Remenber to rename the `*.bundle` package into an `*.plugin` based package.
 
 ### Linux
 

@@ -35,7 +35,7 @@ Use the `/usr/lib/mozilla/plugins/` directory to test the `*.so` based plugin fi
 ### Google Chrome
 
 Create a package file that contains the references to the complete set of plugins files for the various
-platforms as defined here:
+platforms as defined in the `src/colony_npapi/descriptors` file.
 
 ```javascript
 "plugins" : [{

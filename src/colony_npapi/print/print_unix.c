@@ -59,60 +59,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     devices = (struct device_t *) malloc(sizeof(struct device_t) * num_dests);
     memset(devices, 0, sizeof(struct device_t) * num_dests);
 
-    /* iterates over the complete set of destinies to create
-    the associated device structure and populate it with the
-    values that describe the device */
-    for(index = 0; index < num_dests; index++) {
-        /* retrieves the references to the current
-        device structure and to the current dest value */
-        device = &devices[index];
-        dest = &dests[index];
-
-        /* retrieves the ppd file for the current device
-        and opens its file then reads the various values
-        required to be read from it */
-        ppd_path = cupsGetPPD(dest->name);
-        ppd_file = fopen(ppd_path, "rb");
-		if(ppd_file == NULL) { ppd = NULL; }
-		else { ppd = ppdOpen(ppd_file); }
-		if(ppd == NULL) { page_size_o = NULL; }
-		else { page_size_o = ppdFindOption(ppd, "PageSize"); }
-
-        /* populates the various device values according to the
-        the various definitions of the device */
-        memcpy(device->name, dest->name, strlen(dest->name));
-        device->name_s = strlen(dest->name);
-        device->is_default = (char) dest->is_default;
-        if(page_size_o) {
-			page_size = ppdPageSize(
-				ppd,
-				page_size_o->defchoice
-			);
-            memcpy(
-                device->media,
-                page_size_o->defchoice,
-                strlen(page_size_o->defchoice)
-            );
-            device->media_s = strlen(page_size_o->defchoice);
-            device->width = page_size->width;
-            device->length = page_size->length;
-        }
-
-        /* closes the ppd reference object, as it's not going
-        to be used anymore (avoids memory leaks) */
-		if(ppd != NULL) { ppdClose(ppd); }
-
-        /* closes the temporaty ppdf file and then unlinks it
-        so that it's correctly removed from the current system */
-		if(ppd_file != NULL) { fclose(ppd_file); }
-        unlink(ppd_path);
-    }
-
-    /* releases the memory used for the listing
-    of the various destinations */
-    cupsFreeDests(num_dests, dests);
-
-    /* updates the devices pointer and the number of devices
+	/* updates the devices pointer and the number of devices
     that have been created (output variables) */
     *devices_p = devices;
     *devices_c = num_dests;

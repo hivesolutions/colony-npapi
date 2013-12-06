@@ -465,8 +465,15 @@ int print(bool show_dialog, char *data, size_t size) {
                 fclose(image_file);
 
                 /* loads the (bitmap) image from the file and creates the appropriate in
-                memory image handler */
-                handle_image_new = LoadImage(0, (LPCTSTR) path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
+                memory image handler to be used in the writing of the image */
+                handle_image_new = LoadImage(
+				    0,
+					(LPCTSTR) path,
+					IMAGE_BITMAP,
+					0,
+					0,
+					LR_LOADFROMFILE | LR_DEFAULTSIZE
+				);
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);

@@ -413,7 +413,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* checks if there is a new page for writing, in case
                 there is a new page must be "constructed" */
-                if(new_page != current_page) {
+                if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
                     EndPage(context);
@@ -422,7 +422,10 @@ int print(bool show_dialog, char *data, size_t size) {
                     /* updates the current page variable with
                     the new page value */
                     current_page = new_page;
-                }
+				}
+				/* otherwise sets the new page with the value of the current
+				page as expected for default behaviour */
+				else { new_page = current_page; }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the text y position, taking
@@ -521,7 +524,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* calculates the y position for the bottom position of the
                 image and then converts it into a milimiter type */
-                image_y_bottom = clip_box.top - image_element_header->position.y - (int) (scaled_height * divisor);
+                image_y_bottom = clip_box.top - image_element_header->position.y + (int) (scaled_height * divisor);
                 image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH;
 
                 /* uses the bottom position of the image in milimiters and
@@ -533,7 +536,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* checks if there is a new page for writing, in case
                 there is a new page must be "constructed" */
-                if(new_page != current_page) {
+                if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
                     EndPage(context);
@@ -542,7 +545,10 @@ int print(bool show_dialog, char *data, size_t size) {
                     /* updates the current page variable with
                     the new page value */
                     current_page = new_page;
-                }
+				}
+				/* otherwise sets the new page with the value of the current
+				page as expected for default behaviour */
+				else { new_page = current_page; }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the image y position, taking

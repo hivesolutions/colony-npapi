@@ -564,7 +564,19 @@ int print(bool show_dialog, char *data, size_t size) {
                 previous map mode */
                 previous_mode = GetMapMode(context);
                 SetMapMode(context, MM_TEXT);
-                StretchBlt(context, image_x, image_y, (int) scaled_width, (int) scaled_height, image_context, 0, 0, bitmap.bmWidth, bitmap.bmHeight, SRCCOPY);
+                StretchBlt(
+				    context,
+					image_x,
+					image_y,
+					(int) scaled_width,
+					(int) scaled_height,
+					image_context,
+					0,
+					0,
+					bitmap.bmWidth,
+					bitmap.bmHeight,
+					SRCCOPY
+				);
                 SetMapMode(context, previous_mode);
 
                 /* selectes the bitmap for the context and then deletes the

@@ -528,7 +528,7 @@ int print(bool show_dialog, char *data, size_t size) {
                 divides (integer division) it over the page size to check
                 the current page number (index) note that if the current
                 image is inside a block no page is changed (default layout
-                rules, clipping should apply)*/
+                rules, clipping should apply) */
                 new_page = is_block ? current_page : (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case

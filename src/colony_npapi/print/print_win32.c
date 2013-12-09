@@ -407,7 +407,9 @@ int print(bool show_dialog, char *data, size_t size) {
                 text_y = clip_box.top + text_element_header->position.y;
 
                 /* calculates the y position for the bottom position of the
-                text and then converts it into a milimiter type */
+                text and then converts it into a milimiter type, note that
+				the resulting milimiter value is rounded to avoid problems
+				with the szies in the device driver (required) */
                 text_y_bottom = text_y - text_size.cy;
                 text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;

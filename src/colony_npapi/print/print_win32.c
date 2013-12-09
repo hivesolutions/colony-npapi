@@ -273,8 +273,8 @@ int print(bool show_dialog, char *data, size_t size) {
     /* retrieves the various characteristics of the media for
     the current context so that the size and the density values
     are retrieved as their going to be used in the print operation */
-    int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
     int vertical_res = GetDeviceCaps(context, VERTRES);
+	int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
     int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
 
     /* start the current page value at the initial value

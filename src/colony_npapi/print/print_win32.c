@@ -274,8 +274,11 @@ int print(bool show_dialog, char *data, size_t size) {
     int vertical_size = GetDeviceCaps(context, VERTSIZE);
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
 
-    /* start the current page value at the initial value */
+    /* start the current page value at the initial value
+	and the vertical offset that is going to be added for
+	the new pages that are going to be incremented */
     int current_page = 0;
+	int page_offset = 0;
 
     /* iterates over the element count in the document to
     process it and generate the correct print instructions */
@@ -320,6 +323,7 @@ int print(bool show_dialog, char *data, size_t size) {
         int new_page;
         double page_size_twips;
         char is_block;
+		int page_delta = 0;
 
         /* switches over the element type to generate the
         appropriate print instructions */
@@ -417,25 +421,33 @@ int print(bool show_dialog, char *data, size_t size) {
                     on (page break operation) */
                     EndPage(context);
                     StartPage(context);
+						
+					/* calculates the size of the page size in twips units
+					and uses it to re-calculate the text y position, taking
+					into account the already "used" pages (modulus) */
+					page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
 
                     /* updates the current page variable with
-                    the new page value */
+                    the new page value and adds the proper offset
+					value to the page offset counter integer */
                     current_page = new_page;
+					page_offset += (int) page_size_twips;
                 }
                 /* otherwise sets the new page with the value of the current
                 page as expected for default behaviour */
                 else { new_page = current_page; }
 
-                /* calculates the size of the page size in twips units
-                and uses it to re-calculate the text y position, taking
-                into account the already "used" pages (modulus) */
-                page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
-                text_y += (int) ((double) new_page * page_size_twips);
+				/* increments the current text vertical position by the vertical
+				offset for the current page position */
+                text_y += page_offset;
 
                 /* resets the text y position in case the value is greater
                 than the maximum zero value, otherwise uses the "normal" text
                 y position value (default case) */
-                text_y = text_y > 0 ? 0 : text_y;
+				if(text_y > 0) {
+					page_offset -= text_y;
+					text_y = 0;
+				}
 
                 /* outputs the text to the current drawing context an for the
 				provided (calculated) coordinates */
@@ -549,24 +561,33 @@ int print(bool show_dialog, char *data, size_t size) {
                     EndPage(context);
                     StartPage(context);
 
+					/* calculates the size of the page size in twips units
+					and uses it to re-calculate the text y position, taking
+					into account the already "used" pages (modulus) */
+					page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
+
                     /* updates the current page variable with
-                    the new page value */
+                    the new page value and adds the proper offset
+					value to the page offset counter integer */
                     current_page = new_page;
+					page_offset += (int) page_size_twips;
                 }
                 /* otherwise sets the new page with the value of the current
                 page as expected for default behaviour */
                 else { new_page = current_page; }
 
-                /* calculates the size of the page size in twips units
-                and uses it to re-calculate the image y position, taking
-                into account the already "used" pages (modulus) */
-                page_size_twips = (vertical_size / MM_PER_INCH * TWIPS_PER_INCH);
-                image_y = (int) ((double) clip_box.top + (double) image_element_header->position.y + ((double) new_page * page_size_twips));
+                /* calculates the vertical position to be used in the image and
+				then adds the current page offset to it (as defined in spec) */
+                image_y = (int) ((double) clip_box.top + (double) image_element_header->position.y);
+				image_y += page_offset;
 
                 /* resets the image y position in case the value is greater
                 than the maximum zero value, otherwise uses the "normal" image
                 y position value (default case) */
-                image_y = image_y > 0 ? 0 : image_y;
+				if(image_y > 0) {
+					page_offset -= image_y;
+					image_y = 0;
+				}
 
                 /* sets the image y as the current position context y using
                 the divisor for text mode scale */

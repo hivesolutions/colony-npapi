@@ -225,7 +225,7 @@ int print(bool show_dialog, char *data, size_t size) {
     /* casts the initial part of the buffer into a document
     header element */
     struct document_header_t *document_header =\
-		(struct document_header_t *) buffer;
+        (struct document_header_t *) buffer;
 
     /* in case the printer dialog is meant to be shown
     the proper show dialog function must be called*/
@@ -271,11 +271,11 @@ int print(bool show_dialog, char *data, size_t size) {
         (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
     /* retrieves the various characteristics of the media for
-	the current context so that the size and the density values
-	are retrieved as their going to be used in the print operation */
+    the current context so that the size and the density values
+    are retrieved as their going to be used in the print operation */
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
-	int vertical_res = GetDeviceCaps(context, VERTRES);
-	int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
+    int vertical_res = GetDeviceCaps(context, VERTRES);
+    int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
 
     /* start the current page value at the initial value
     and the vertical offset that is going to be added for
@@ -410,7 +410,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 text and then converts it into a milimiter type */
                 text_y_bottom = text_y - text_size.cy;
                 text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
-                text_y_bottom_millimeter = ceil((double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0);
+                text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
+				text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
                 /* uses the bottom position of the text in milimiters and
                 divides (integer division) it over the page size to check

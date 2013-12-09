@@ -266,7 +266,8 @@ int print(bool show_dialog, char *data, size_t size) {
     SelectObject(context, pen);
 
     /* retrieves the initial document element  header */
-    struct element_header_t *element_header = (struct element_header_t *) (buffer + sizeof(struct document_header_t));
+    struct element_header_t *element_header =\
+		(struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
     /* retrieves the vertical size for the current media and pixel
     density capabilities from the current device */

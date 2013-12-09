@@ -268,10 +268,8 @@ int print(bool show_dialog, char *data, size_t size) {
     /* retrieves the initial document element  header */
     struct element_header_t *element_header = (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
-    /* retrieves the horizontal and vertical resolution and pixel
+    /* retrieves the vertical size for the current media and pixel
     density capabilities from the current device */
-    int horizontal_resolution = GetDeviceCaps(context, HORZRES);
-    int vertical_resolution = GetDeviceCaps(context, VERTRES);
     int vertical_size = GetDeviceCaps(context, VERTSIZE);
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
 

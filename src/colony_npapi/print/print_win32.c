@@ -224,7 +224,8 @@ int print(bool show_dialog, char *data, size_t size) {
 
     /* casts the initial part of the buffer into a document
     header element */
-    struct document_header_t *document_header = (struct document_header_t *) buffer;
+    struct document_header_t *document_header =\
+		(struct document_header_t *) buffer;
 
     /* in case the printer dialog is meant to be shown
     the proper show dialog function must be called*/
@@ -269,10 +270,13 @@ int print(bool show_dialog, char *data, size_t size) {
     struct element_header_t *element_header =\
         (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
-    /* retrieves the vertical size for the current media and pixel
-    density capabilities from the current device */
-    int vertical_size = GetDeviceCaps(context, VERTSIZE);
+    /* retrieves the various characteristics of the media for
+	the current context so that the size and the density values
+	are retrieved as their going to be used in the print operation */
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
+	int physical_height = GetDeviceCaps(context, PHYSICALHEIGHT);
+	int physical_offset = GetDeviceCaps(context, PHYSICALOFFSETY);
+	int vertical_size = (int) ((float) physical_height / pixel_density * MM_PER_INCH);
 
     /* start the current page value at the initial value
     and the vertical offset that is going to be added for

@@ -274,9 +274,8 @@ int print(bool show_dialog, char *data, size_t size) {
 	the current context so that the size and the density values
 	are retrieved as their going to be used in the print operation */
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
-	int physical_height = GetDeviceCaps(context, PHYSICALHEIGHT);
-	int physical_offset = GetDeviceCaps(context, PHYSICALOFFSETY);
-	int vertical_size = (int) ((float) physical_height / pixel_density * MM_PER_INCH);
+	int vertical_res = GetDeviceCaps(context, VERTRES);
+	int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
 
     /* start the current page value at the initial value
     and the vertical offset that is going to be added for
@@ -411,7 +410,7 @@ int print(bool show_dialog, char *data, size_t size) {
                 text and then converts it into a milimiter type */
                 text_y_bottom = text_y - text_size.cy;
                 text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
-                text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
+                text_y_bottom_millimeter = ceil((double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0);
 
                 /* uses the bottom position of the text in milimiters and
                 divides (integer division) it over the page size to check

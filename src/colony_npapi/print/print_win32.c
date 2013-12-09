@@ -267,7 +267,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
     /* retrieves the initial document element  header */
     struct element_header_t *element_header =\
-		(struct element_header_t *) (buffer + sizeof(struct document_header_t));
+        (struct element_header_t *) (buffer + sizeof(struct document_header_t));
 
     /* retrieves the vertical size for the current media and pixel
     density capabilities from the current device */
@@ -421,10 +421,10 @@ int print(bool show_dialog, char *data, size_t size) {
                     /* updates the current page variable with
                     the new page value */
                     current_page = new_page;
-				}
-				/* otherwise sets the new page with the value of the current
-				page as expected for default behaviour */
-				else { new_page = current_page; }
+                }
+                /* otherwise sets the new page with the value of the current
+                page as expected for default behaviour */
+                else { new_page = current_page; }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the text y position, taking
@@ -437,7 +437,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 y position value (default case) */
                 text_y = text_y > 0 ? 0 : text_y;
 
-                /* outputs the text to the current drawing context */
+                /* outputs the text to the current drawing context an for the
+				provided (calculated) coordinates */
                 TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
                 /* releases the unicode representation of the text */
@@ -466,13 +467,13 @@ int print(bool show_dialog, char *data, size_t size) {
                 /* loads the (bitmap) image from the file and creates the appropriate in
                 memory image handler to be used in the writing of the image */
                 handle_image_new = LoadImage(
-				    0,
-					(LPCTSTR) path,
-					IMAGE_BITMAP,
-					0,
-					0,
-					LR_LOADFROMFILE | LR_DEFAULTSIZE
-				);
+                    0,
+                    (LPCTSTR) path,
+                    IMAGE_BITMAP,
+                    0,
+                    0,
+                    LR_LOADFROMFILE | LR_DEFAULTSIZE
+                );
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
@@ -551,10 +552,10 @@ int print(bool show_dialog, char *data, size_t size) {
                     /* updates the current page variable with
                     the new page value */
                     current_page = new_page;
-				}
-				/* otherwise sets the new page with the value of the current
-				page as expected for default behaviour */
-				else { new_page = current_page; }
+                }
+                /* otherwise sets the new page with the value of the current
+                page as expected for default behaviour */
+                else { new_page = current_page; }
 
                 /* calculates the size of the page size in twips units
                 and uses it to re-calculate the image y position, taking
@@ -577,18 +578,18 @@ int print(bool show_dialog, char *data, size_t size) {
                 previous_mode = GetMapMode(context);
                 SetMapMode(context, MM_TEXT);
                 StretchBlt(
-				    context,
-					image_x,
-					image_y,
-					(int) scaled_width,
-					(int) scaled_height,
-					image_context,
-					0,
-					0,
-					bitmap.bmWidth,
-					bitmap.bmHeight,
-					SRCCOPY
-				);
+                    context,
+                    image_x,
+                    image_y,
+                    (int) scaled_width,
+                    (int) scaled_height,
+                    image_context,
+                    0,
+                    0,
+                    bitmap.bmWidth,
+                    bitmap.bmHeight,
+                    SRCCOPY
+                );
                 SetMapMode(context, previous_mode);
 
                 /* selectes the bitmap for the context and then deletes the

@@ -408,12 +408,12 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* calculates the y position for the bottom position of the
                 text and then converts it into a milimiter type, note that
-				the resulting milimiter value is rounded to avoid problems
-				with the szies in the device driver (required) */
+                the resulting milimiter value is rounded to avoid problems
+                with the szies in the device driver (required) */
                 text_y_bottom = text_y - text_size.cy;
                 text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
-				text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
+                text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
                 /* uses the bottom position of the text in milimiters and
                 divides (integer division) it over the page size to check

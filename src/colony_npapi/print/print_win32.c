@@ -496,7 +496,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
 
-                /* removes the temporary image file (it's no longer required)`*/
+                /* removes the temporary image file (it's no longer required)
+				as the image was already loaded into memory */
                 remove(path);
 
                 /* calculates the pixel divisor (resizing for text mode) and

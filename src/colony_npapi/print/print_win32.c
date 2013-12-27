@@ -274,7 +274,7 @@ int print(bool show_dialog, char *data, size_t size) {
     the current context so that the size and the density values
     are retrieved as their going to be used in the print operation */
     int vertical_res = GetDeviceCaps(context, VERTRES);
-	int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
+    int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
     int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
 
     /* start the current page value at the initial value
@@ -368,7 +368,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 result = MultiByteToWideChar(CP_UTF8, NULL, text, -1, text_unicode, lstrlen(text) + 1);
 
                 /* retrieves the extension (size) of the text for the current
-                font using the current settings */
+                font using the current settings and then retrieves the size of
+                the current context (page) where it's going to be "drawn" */
                 GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
                 GetClipBox(context, &clip_box);
 
@@ -411,7 +412,6 @@ int print(bool show_dialog, char *data, size_t size) {
                 the resulting milimiter value is rounded to avoid problems
                 with the szies in the device driver (required) */
                 text_y_bottom = text_y - text_size.cy;
-                text_y_bottom = text_y_bottom > clip_box.bottom ? text_y_bottom : clip_box.bottom;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
                 text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
@@ -505,7 +505,7 @@ int print(bool show_dialog, char *data, size_t size) {
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
                 /* retrieves the current clip box rectangle defined for the
-                image context */
+                image context (the place where it's going to be drawn) */
                 GetClipBox(context, &clip_box);
 
                 /* in case the block width and height are defined a block is defined

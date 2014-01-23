@@ -1,7 +1,7 @@
 {
     "manifest_version" : 2,
     "name" : "Colony Gateway",
-    "version" : "1.1.4",
+    "version" : "1.1.5",
     "description" : "Gateway plugin for interaction with colony framework native tools",
     "icons" : {
         "16" : "images/colony_icon_16.png",

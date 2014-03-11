@@ -378,7 +378,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
 
                 /* in case the current text is defined inside a block the
-                clip box must be changed accordingly */
+                clip box must be changed accordingly, these values are measured
+				as twips and not milimieters (logical units) */
                 if(is_block) {
                     clip_box.left = text_element_header->position_x;
                     clip_box.top = text_element_header->position_y * -1;
@@ -411,7 +412,7 @@ int print(bool show_dialog, char *data, size_t size) {
                 text and then converts it into a milimiter type, note that
                 the resulting milimiter value is rounded to avoid problems
                 with the szies in the device driver (required) */
-                text_y_bottom = text_y - text_size.cy;
+                text_y_bottom = is_block ? clip_box.bottom : text_y - text_size.cy;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
                 text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
@@ -514,7 +515,8 @@ int print(bool show_dialog, char *data, size_t size) {
                 is_block = image_element_header->block_width != 0 && image_element_header->block_height != 0;
 
                 /* in case the current image is defined inside a block the
-                clip box must be changed accordingly */
+                clip box must be changed accordingly, these values are measured
+				as twips and not milimieters (logical units) */
                 if(is_block) {
                     clip_box.left = image_element_header->position_x;
                     clip_box.top = image_element_header->position_y * -1;

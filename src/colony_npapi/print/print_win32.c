@@ -379,7 +379,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* in case the current text is defined inside a block the
                 clip box must be changed accordingly, these values are measured
-				as twips and not milimieters (logical units) */
+                as twips and not milimieters (logical units) */
                 if(is_block) {
                     clip_box.left = text_element_header->position_x;
                     clip_box.top = text_element_header->position_y * -1;
@@ -516,7 +516,7 @@ int print(bool show_dialog, char *data, size_t size) {
 
                 /* in case the current image is defined inside a block the
                 clip box must be changed accordingly, these values are measured
-				as twips and not milimieters (logical units) */
+                as twips and not milimieters (logical units) */
                 if(is_block) {
                     clip_box.left = image_element_header->position_x;
                     clip_box.top = image_element_header->position_y * -1;

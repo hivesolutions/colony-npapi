@@ -29,6 +29,7 @@ is not created. Remenber to rename the `*.bundle` package into an `*.plugin` bas
 ### Linux
 
 Use the `/usr/lib/mozilla/plugins/` directory to test the `*.so` based plugin file for development purposes.
+[Mozilla Firefox](http://www.mozilla.org) should be the primary browser for the debugging of the NPAPI based plugin
 
 ## Packaging
 

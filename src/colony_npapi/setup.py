@@ -57,6 +57,7 @@ module = setuptools.Extension(
         "-Wno-long-long",
         "-Wno-variadic-macros",
         "-Wno-strict-aliasing",
+        "-Wno-strict-prototypes",
         "-DNO_CONFIG_H"
     ],
     sources = [

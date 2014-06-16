@@ -36,9 +36,9 @@ AC_CHECK_LIB([python2.6], [main], [], [have_python_26=false])
 AC_CHECK_LIB([python2.7], [main], [], [have_python_27=false])
 
 if test "$have_python_26" = true || test "$have_python_27" = true; then
-    AC_DEFINE (have_python, true)
+    AC_DEFINE(have_python, true)
 else
-    AC_DEFINE (have_python, false)
+    AC_DEFINE(have_python, false)
 fi
 
 # library variables activation

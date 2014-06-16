@@ -25,4 +25,18 @@
 
 include $(top_srcdir)/Common.am
 
-SUBDIRS = colony_npapi colony_npapi_python
+lib_LTLIBRARIES = libnpcolony.la
+
+libnpcolony_la_CFLAGS = $(AM_CFLAGS)
+libnpcolony_la_CXXFLAGS = $(AM_CXXFLAGS)
+
+libnpcolony_la_SOURCES = colony_npapi/stdafx.c \
+colony_npapi/encoding/base_64.c \
+colony_npapi/plugin/base.c \
+colony_npapi/plugin/util.c \
+colony_npapi/print/print_unix.c \
+colony_npapi/print/print_win32.c \
+colony_npapi/system/gui_unix.c \
+colony_npapi/system/gui_win32.c \
+colony_npapi_python/main.c \
+colony_npapi_python/stdafx.c

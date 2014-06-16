@@ -28,4 +28,4 @@ AC_CHECK_HEADERS([stdlib.h assert.h])
 
 # checks for specific header files
 AC_CHECK_HEADERS([cups/cups.h], [], [AC_MSG_ERROR([cups headers are required])])
-AC_CHECK_HEADERS([Python.h], [have_python=true], [have_python=false])
+AC_CHECK_HEADERS([python.h], [have_python=true], [have_python=false])

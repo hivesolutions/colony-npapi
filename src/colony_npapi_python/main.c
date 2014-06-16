@@ -175,7 +175,7 @@ static PyMethodDef colony_methods[] = {
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to printer."},
-    {"print_base64", print_hello, METH_VARARGS, "Print a base 64 based sequence of data."},
+    {"print_base64", print_base64, METH_VARARGS, "Prints a base 64 based sequence of data."},
     {NULL, NULL, 0, NULL}
 };
 

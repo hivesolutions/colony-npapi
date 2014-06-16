@@ -17,7 +17,7 @@
  You should have received a copy of the GNU General Public License
  along with Hive Colony Framework. If not, see <http://www.gnu.org/licenses/>.
 
- __author__    = Jo„o Magalh„es <joamag@hive.pt>
+ __author__    = Jo√£o Magalh√£es <joamag@hive.pt>
  __version__   = 1.0.0
  __revision__  = $LastChangedRevision$
  __date__      = $LastChangedDate$
@@ -26,3 +26,28 @@
 */
 
 #include "stdafx.h"
+
+#include <Python.h>
+
+static PyObject *say_hello(PyObject* self, PyObject* args) {
+    const char *name;
+
+    if (!PyArg_ParseTuple(args, "s", &name))
+        return NULL;
+
+    printf("Hello %s!\n", name);
+
+    Py_RETURN_NONE;
+}
+
+static PyMethodDef HelloMethods[] =
+{
+     {"say_hello", say_hello, METH_VARARGS, "Greet somebody."},
+     {NULL, NULL, 0, NULL}
+};
+
+PyMODINIT_FUNC
+inithello(void)
+{
+     (void) Py_InitModule("hello", HelloMethods);
+}

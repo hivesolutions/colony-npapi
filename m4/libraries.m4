@@ -26,11 +26,20 @@
 # sets the default values for the various library
 # control variables
 have_cups=true
-have_python=false
+have_python=true
+have_python_26=true
+have_python_27=true
 
 # checks for libraries
 AC_CHECK_LIB([cups], [main], [], [AC_MSG_ERROR([cups library is required])])
-AC_CHECK_LIB([python2.6 python2.7], [main], [], [have_python=false])
+AC_CHECK_LIB([python2.6], [main], [], [have_python_26=false])
+AC_CHECK_LIB([python2.7], [main], [], [have_python_27=false])
+
+if test "$have_python_26" = true || test "$have_python_27" = true; then
+    AC_DEFINE (have_python, true)
+else
+    AC_DEFINE (have_python, false)
+fi
 
 # library variables activation
 AM_CONDITIONAL(LINK_CUPS, [test "$have_cups" != "false"])

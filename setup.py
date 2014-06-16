@@ -51,14 +51,14 @@ module = setuptools.Extension(
     library_dirs = ["/usr/local/lib"],
     sources = [
         "src/colony_npapi/stdafx.c",
-        "src/colony_npapiencoding/base_64.c",
-        "src/colony_npapiplugin/base.c",
-        "src/colony_npapiplugin/python.c",
-        "src/colony_npapiplugin/util.c",
-        "src/colony_npapiprint/print_unix.c",
-        "src/colony_npapiprint/print_win32.c",
-        "src/colony_npapisystem/gui_unix.c",
-        "src/colony_npapisystem/gui_win32.c"
+        "src/colony_npapi/encoding/base_64.c",
+        "src/colony_npapi/plugin/base.c",
+        "src/colony_npapi/plugin/python.c",
+        "src/colony_npapi/plugin/util.c",
+        "src/colony_npapi/print/print_unix.c",
+        "src/colony_npapi/print/print_win32.c",
+        "src/colony_npapi/system/gui_unix.c",
+        "src/colony_npapi/system/gui_win32.c"
     ]
 )
 

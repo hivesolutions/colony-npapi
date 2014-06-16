@@ -71,7 +71,7 @@ setuptools.setup(
     license = "GNU General Public License (GPL), Version 3",
     keywords = "colony npapi native",
     url = "http://colony_npapi.hive.pt",
-    ext_modules = [module]
+    ext_modules = [module],
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",

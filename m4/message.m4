@@ -32,6 +32,7 @@ echo " + Install prefix        $prefix"
 echo " + CFLAGS                $CFLAGS"
 echo " + DEBUG                 $have_debug"
 echo " + CUPS                  $have_cups"
+echo " + Python                $have_python"
 echo
 echo Instructions
 echo "========================"

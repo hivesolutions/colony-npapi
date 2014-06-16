@@ -26,9 +26,11 @@
 # sets the default values for the various library
 # control variables
 have_cups=true
+have_python=false
 
 # checks for libraries
 AC_CHECK_LIB([cups], [main], [], [AC_MSG_ERROR([cups library is required])])
+AC_CHECK_LIB([python], [main], [], [have_python=false])
 
 # library variables activation
 AM_CONDITIONAL(LINK_CUPS, [test "$have_cups" != "false"])

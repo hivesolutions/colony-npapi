@@ -46,7 +46,11 @@ module = setuptools.Extension(
         ("MAJOR_VERSION", "1"),
         ('MINOR_VERSION', '0')
     ],
-    include_dirs = [".", "/usr/local/include"],
+    include_dirs = [
+        ".",
+        "src/colony_npapi/",
+        "/usr/local/include"
+    ],
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
     extra_compile_args = [
@@ -62,15 +66,15 @@ module = setuptools.Extension(
         "-DCOLONY_PLATFORM_UNIX"
     ],
     sources = [
-        "stdafx.c",
-        "encoding/base_64.c",
-        "plugin/base.c",
-        "plugin/python.c",
-        "plugin/util.c",
-        "print/print_unix.c",
-        "print/print_win32.c",
-        "system/gui_unix.c",
-        "system/gui_win32.c"
+        "src/colony_npapi/stdafx.c",
+        "src/colony_npapi/encoding/base_64.c",
+        "src/colony_npapi/plugin/base.c",
+        "src/colony_npapi/plugin/python.c",
+        "src/colony_npapi/plugin/util.c",
+        "src/colony_npapi/print/print_unix.c",
+        "src/colony_npapi/print/print_win32.c",
+        "src/colony_npapi/system/gui_unix.c",
+        "src/colony_npapi/system/gui_win32.c"
     ]
 )
 

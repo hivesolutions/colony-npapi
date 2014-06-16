@@ -27,8 +27,6 @@
 
 #include "stdafx.h"
 
-#ifdef COLONY_PYTHON
-
 #include "main.h"
 
 #define HELLO_WORLD_B64 "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
@@ -186,5 +184,3 @@ static PyMethodDef colony_methods[] = {
 PyMODINIT_FUNC initnpcolony(void) {
     (void) Py_InitModule("npcolony", colony_methods);
 }
-
-#endif

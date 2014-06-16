@@ -28,4 +28,5 @@
 #pragma once
 
 #include "base.h"
+#include "python.h"
 #include "util.h"

@@ -27,7 +27,5 @@
 
 #pragma once
 
-#include "../colony_npapi/colony_npapi.h"
-
-static __inline char **get_methods() { return methods; }
-static __inline NPClass *get_ref_object() { return &ref_object; }
+#include "../print/print.h"
+#include "../encoding/encoding.h"

@@ -23,9 +23,19 @@
 # __copyright__ = Copyright (c) 2008-2014 Hive Solutions Lda.
 # __license__   = GNU General Public License (GPL), Version 3
 
-# defines the version values
-m4_define([colony_npapi_major_version], [1])
-m4_define([colony_npapi_minor_version], [0])
-m4_define([colony_npapi_micro_version], [0])
-m4_define([colony_npapi_version], m4_format(%s.%s.%s, colony_npapi_major_version, colony_npapi_minor_version, colony_npapi_micro_version))
-m4_define([colony_npapi_makefiles], [Makefile m4/Makefile src/Makefile src/colony_npapi/Makefile])
+include $(top_srcdir)/Common.am
+
+lib_LTLIBRARIES = libnpcolony.la
+
+libnpcolony_la_CFLAGS = $(AM_CFLAGS)
+libnpcolony_la_CXXFLAGS = $(AM_CXXFLAGS)
+
+libnpcolony_la_SOURCES = stdafx.c \
+encoding/base_64.c \
+plugin/base.c \
+plugin/python.c \
+plugin/util.c \
+print/print_unix.c \
+print/print_win32.c \
+system/gui_unix.c \
+system/gui_win32.c

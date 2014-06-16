@@ -38,5 +38,4 @@ colony_npapi/print/print_unix.c \
 colony_npapi/print/print_win32.c \
 colony_npapi/system/gui_unix.c \
 colony_npapi/system/gui_win32.c \
-colony_npapi_python/main.c \
-colony_npapi_python/stdafx.c
+colony_npapi_python/main.c

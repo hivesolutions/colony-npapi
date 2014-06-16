@@ -27,5 +27,5 @@
 
 #pragma once
 
-static char **get_methods();
-static NPClass *get_ref_object();
+char **get_methods();
+NPClass *get_ref_object();

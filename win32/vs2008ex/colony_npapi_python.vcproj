@@ -209,6 +209,10 @@
             UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
             >
             <File
+                RelativePath="..\..\src\colony_npapi_python\main.h"
+                >
+            </File>
+            <File
                 RelativePath="..\..\src\colony_npapi_python\stdafx.h"
                 >
             </File>

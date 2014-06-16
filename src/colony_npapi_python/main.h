@@ -27,14 +27,5 @@
 
 #pragma once
 
-#ifndef UNSET
-#define UNSET -1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
+static char **get_methods();
+static NPClass *get_ref_object();

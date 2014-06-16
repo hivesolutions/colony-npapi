@@ -37,7 +37,7 @@ AC_CHECK_LIB([python2.7], [main], [], [have_python_27=false])
 
 if test "$have_python_26" = true || test "$have_python_27" = true; then
     have_python=true
-    AC_DEFINE(HAVE_PYTHON, true, [Define to 1 if python is present])
+    AC_DEFINE(HAVE_LIBPYTHON, true, [Define to 1 if python lib is present])
 else
     have_python=false
 fi

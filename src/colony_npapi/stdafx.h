@@ -139,9 +139,9 @@
 #define OSCALL
 #endif
 
-unsigned char *name_colony_npapi();
-unsigned char *version_colony_npapi();
-unsigned char *description_colony_npapi();
+unsigned char *name_colony_npapi(void);
+unsigned char *version_colony_npapi(void);
+unsigned char *description_colony_npapi(void);
 
 #ifndef HIBYTE
 #define HIBYTE(x) ((((uint32_t)(x)) & 0xff00) >> 8)

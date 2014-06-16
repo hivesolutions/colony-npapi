@@ -49,6 +49,15 @@
 
 #ifdef HAVE_LIBPYTHON
 #define COLONY_PYTHON
+#ifdef HAVE_LIBPYTHON2_6
+#define COLONY_PYTHON_26
+#endif
+#ifdef HAVE_LIBPYTHON2_7
+#define COLONY_PYTHON_27
+#endif
+#ifdef HAVE_LIBPYTHON_UNDEF
+#define COLONY_PYTHON_UNDEF
+#endif
 #endif
 
 #ifdef __MACH__
@@ -106,7 +115,15 @@
 #endif
 
 #ifdef COLONY_PYTHON
+#ifdef COLONY_PYTHON_26
+#include <python2.6/Python.h>
+#endif
+#ifdef COLONY_PYTHON_27
+#include <python2.7/Python.h>
+#endif
+#ifdef COLONY_PYTHON_UNDEF
 #include <Python.h>
+#endif
 #endif
 
 #include <math.h>

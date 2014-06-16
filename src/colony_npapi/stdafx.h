@@ -34,7 +34,7 @@
 
 #ifdef NO_CONFIG_H
 #include "_config.h"
-#endif 
+#endif
 
 #ifdef _MSC_VER
 #include "_config_win32.h"

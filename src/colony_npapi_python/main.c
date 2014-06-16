@@ -140,6 +140,35 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
 }
 
 static PyObject *print_base64(PyObject *self, PyObject *args) {
+    /* allocates space for the decoded data buffer and for
+    the storage of the length (size) of it */
+    char *data;
+    char *input;
+    size_t data_length;
+
+    /* tries to parse the privided sequence of arguments
+    as a single string value that is going to be used as
+    the input value for the printing of the page */
+    if(PyArg_ParseTuple(args, "s", &input) == FALSE) {
+        return NULL;
+    }
+
+    /* decodes the data value from the base 64 encoding
+    and then uses it to print the data */
+    decode_base64(
+        (unsigned char *) input,
+        strlen(input),
+        (unsigned char **) &data, &data_length
+    );
+    print(FALSE, data, data_length);
+
+    /* releases the decoded buffer (avoids memory leak)
+    and then returns in success */
+    _free_base64((unsigned char *) data);
+
+    /* returns an invalid value to the caller method/function
+    as this function should not return anything */
+    Py_RETURN_NONE;
 }
 
 static PyMethodDef colony_methods[] = {

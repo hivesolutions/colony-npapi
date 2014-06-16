@@ -50,6 +50,7 @@ module = setuptools.Extension(
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
     extra_compile_args = [
+        "-std=c99",
         "-pedantic",
         "-finline-functions",
         "-Wall",

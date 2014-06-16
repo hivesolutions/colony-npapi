@@ -58,7 +58,8 @@ module = setuptools.Extension(
         "-Wno-variadic-macros",
         "-Wno-strict-aliasing",
         "-Wno-strict-prototypes",
-        "-DNO_CONFIG_H"
+        "-DNO_CONFIG_H",
+        "-DCOLONY_PLATFORM_UNIX"
     ],
     sources = [
         "stdafx.c",

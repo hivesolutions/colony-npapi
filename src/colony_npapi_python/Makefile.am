@@ -25,5 +25,10 @@
 
 include $(top_srcdir)/Common.am
 
-SUBDIRS = colony_npapi
-SUBDIRS = colony_npapi_python
+lib_LTLIBRARIES = libnpcolonypy.la
+
+libnpcolonypy_la_CFLAGS = $(AM_CFLAGS)
+libnpcolonypy_la_CXXFLAGS = $(AM_CXXFLAGS)
+
+libnpcolonypy_la_SOURCES = main.c \
+stdafx.c

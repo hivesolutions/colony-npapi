@@ -28,3 +28,6 @@
 #pragma once
 
 #include "../colony_npapi/colony_npapi.h"
+
+char **get_methods();
+NPClass *get_ref_object();

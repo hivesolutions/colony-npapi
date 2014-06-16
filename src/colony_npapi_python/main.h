@@ -26,6 +26,3 @@
 */
 
 #pragma once
-
-char **get_methods();
-NPClass *get_ref_object();

@@ -446,6 +446,10 @@
                     RelativePath="..\..\src\colony_npapi\global\targetver.h"
                     >
                 </File>
+                <File
+                    RelativePath="..\..\src\colony_npapi\global\types.h"
+                    >
+                </File>
             </Filter>
             <Filter
                 Name="Plugin"

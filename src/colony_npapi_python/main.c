@@ -187,7 +187,4 @@ PyMODINIT_FUNC initnpcolony(void) {
     (void) Py_InitModule("npcolony", colony_methods);
 }
 
-char **get_methods() { return methods; }
-NPClass *get_ref_object() { return &ref_object; }
-
 #endif

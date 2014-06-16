@@ -27,6 +27,4 @@
 
 #pragma once
 
-#include <Python.h>
-
 #include "../colony_npapi/colony_npapi.h"

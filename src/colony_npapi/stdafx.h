@@ -47,6 +47,10 @@
 #define COLONY_JNI
 #endif
 
+#ifdef HAVE_LIBPYTHON
+#define COLONY_PYTHON
+#endif
+
 #ifdef __MACH__
 #define unix true
 #include <TargetConditionals.h>
@@ -99,6 +103,10 @@
 #include <sys/types.h>
 #include <cups/ppd.h>
 #include <cups/cups.h>
+#endif
+
+#ifdef COLONY_PYTHON
+#include <Python.h>
 #endif
 
 #include <math.h>

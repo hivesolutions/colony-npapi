@@ -46,7 +46,7 @@ module = setuptools.Extension(
         ("MAJOR_VERSION", "1"),
         ('MINOR_VERSION', '0')
     ],
-    include_dirs = ["/usr/local/include"],
+    include_dirs = [".", "/usr/local/include"],
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
     sources = [

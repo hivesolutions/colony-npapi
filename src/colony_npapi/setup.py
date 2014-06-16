@@ -49,7 +49,15 @@ module = setuptools.Extension(
     include_dirs = [".", "/usr/local/include"],
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
-    extra_compile_args = ["-std=c99"],
+    extra_compile_args = [
+        "-pedantic",
+        "-finline-functions",
+        "-Wall",
+        "-Wno-long-long",
+        "-Wno-variadic-macros",
+        "-Wno-strict-aliasing",
+        "-DHAVE_CONFIG_H"
+    ],
     sources = [
         "stdafx.c",
         "encoding/base_64.c",

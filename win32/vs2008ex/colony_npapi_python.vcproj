@@ -61,7 +61,7 @@
             />
             <Tool
                 Name="VCLinkerTool"
-                OutputFile="$(OutDir)\pycolony.dll"
+                OutputFile="$(OutDir)\npcolony.pyd"
                 LinkIncremental="2"
                 GenerateDebugInformation="true"
                 SubSystem="2"
@@ -135,7 +135,7 @@
             />
             <Tool
                 Name="VCLinkerTool"
-                OutputFile="$(OutDir)\pycolony.dll"
+                OutputFile="$(OutDir)\npcolony.pyd"
                 LinkIncremental="1"
                 GenerateDebugInformation="true"
                 SubSystem="2"

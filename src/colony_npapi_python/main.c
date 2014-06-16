@@ -27,27 +27,37 @@
 
 #include "stdafx.h"
 
-#include <Python.h>
+#define HELLO_WORLD_B64 "SGVsbG8gV29ybGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAABAAQAAAAAAAAAAAABDYWxpYnJpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAABIZWxsbyBXb3JsZAA="
 
-static PyObject *say_hello(PyObject* self, PyObject* args) {
-    const char *name;
+static PyObject *print_hello(PyObject *self, PyObject *args) {
+    /* allocates space for the decoded data buffer and for
+    the storage of the length (size) of it */
+    char *data;
+    size_t data_length;
 
-    if (!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+    /* decodes the data value from the base 64 encoding
+    and then uses it to print the data */
+    decode_base64(
+        (unsigned char *) HELLO_WORLD_B64,
+        strlen(HELLO_WORLD_B64),
+        (unsigned char **) &data, &data_length
+    );
+    print(FALSE, data, data_length);
 
-    printf("Hello %s!\n", name);
+    /* releases the decoded buffer (avoids memory leak)
+    and then returns in success */
+    _free_base64((unsigned char *) data);
 
+    /* returns an invalid value to the caller method/function
+    as this function should not return anything */
     Py_RETURN_NONE;
 }
 
-static PyMethodDef HelloMethods[] =
-{
-     {"say_hello", say_hello, METH_VARARGS, "Greet somebody."},
-     {NULL, NULL, 0, NULL}
+static PyMethodDef colony_methods[] = {
+    {"print_hello", print_hello, METH_NOARGS, "Print an hello message to printer."},
+    {NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC
-inithello(void)
-{
-     (void) Py_InitModule("hello", HelloMethods);
+PyMODINIT_FUNC initnpcolony(void) {
+    (void) Py_InitModule("npcolony", colony_methods);
 }

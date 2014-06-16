@@ -26,6 +26,3 @@
 */
 
 #include "stdafx.h"
-
-char **get_methods() { return methods; }
-NPClass *get_ref_object() { return &ref_object; }

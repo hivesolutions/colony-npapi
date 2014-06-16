@@ -29,5 +29,5 @@
 
 #include "../colony_npapi/colony_npapi.h"
 
-char **get_methods();
-NPClass *get_ref_object();
+static __inline char **get_methods() { return methods; }
+static __inline NPClass *get_ref_object() { return &ref_object; }

@@ -50,15 +50,15 @@ module = setuptools.Extension(
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
     sources = [
-        "src/colony_npapi/stdafx.c",
-        "src/colony_npapi/encoding/base_64.c",
-        "src/colony_npapi/plugin/base.c",
-        "src/colony_npapi/plugin/python.c",
-        "src/colony_npapi/plugin/util.c",
-        "src/colony_npapi/print/print_unix.c",
-        "src/colony_npapi/print/print_win32.c",
-        "src/colony_npapi/system/gui_unix.c",
-        "src/colony_npapi/system/gui_win32.c"
+        "stdafx.c",
+        "encoding/base_64.c",
+        "plugin/base.c",
+        "plugin/python.c",
+        "plugin/util.c",
+        "print/print_unix.c",
+        "print/print_win32.c",
+        "system/gui_unix.c",
+        "system/gui_win32.c"
     ]
 )
 

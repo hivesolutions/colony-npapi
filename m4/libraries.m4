@@ -30,8 +30,7 @@ have_python=false
 
 # checks for libraries
 AC_CHECK_LIB([cups], [main], [], [AC_MSG_ERROR([cups library is required])])
-AC_CHECK_LIB([python2.6], [main], [have_python=true], [have_python=false])
-AC_CHECK_LIB([python2.7], [main], [have_python=true], [have_python=false])
+AC_CHECK_LIB([python2.6 python2.7], [main], [], [have_python=false])
 
 # library variables activation
 AM_CONDITIONAL(LINK_CUPS, [test "$have_cups" != "false"])

@@ -34,48 +34,48 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
     that are going to be used to retrieve device information */
     size_t index;
     size_t devices_s;
-	PyObject *element;
-	PyObject *item;
+    PyObject *element;
+    PyObject *item;
     struct device_t *device;
     struct device_t *devices;
-	PyObject *result = PyList_New(0);
+    PyObject *result = PyList_New(0);
 
     /* retrieves the complete set of available printing
     devices and then iterates over them to convert their
-	internal structure into dictionaries to be returned */
+    internal structure into dictionaries to be returned */
     pdevices(&devices, &devices_s);
     for(index = 0; index < devices_s; index++) {
         device = &devices[index];
-		element = PyDict_New();
-		item = PyString_Decode(
-		    device->name,
-			device->name_s,
-			"utf-8",
-			NULL
-		);
-		PyDict_SetItemString(element, "name", item);
-		item = PyBool_FromLong((long) device->is_default);
-		PyDict_SetItemString(element, "is_default", item);
-		item = PyString_Decode(
-		    device->media,
-			device->media_s,
-			"utf-8",
-			NULL
-		);
-		PyDict_SetItemString(element, "media", item);
-		item = PyFloat_FromDouble((double) device->width);
-		PyDict_SetItemString(element, "width", item);
-		item = PyFloat_FromDouble((double) device->length);
-		PyDict_SetItemString(element, "length", item);
-		PyList_Append(result, element);
+        element = PyDict_New();
+        item = PyString_Decode(
+            device->name,
+            device->name_s,
+            "utf-8",
+            NULL
+        );
+        PyDict_SetItemString(element, "name", item);
+        item = PyBool_FromLong((long) device->is_default);
+        PyDict_SetItemString(element, "is_default", item);
+        item = PyString_Decode(
+            device->media,
+            device->media_s,
+            "utf-8",
+            NULL
+        );
+        PyDict_SetItemString(element, "media", item);
+        item = PyFloat_FromDouble((double) device->width);
+        PyDict_SetItemString(element, "width", item);
+        item = PyFloat_FromDouble((double) device->length);
+        PyDict_SetItemString(element, "length", item);
+        PyList_Append(result, element);
     }
 
     /* releases the memory that was allocated for the
     device structures sequence (avoids memory leak) */
     free(devices);
 
-	/* returns the list that has been constructed for the
-	values that are going to be returned to the caller */
+    /* returns the list that has been constructed for the
+    values that are going to be returned to the caller */
     return result;
 }
 
@@ -130,8 +130,8 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef colony_methods[] = {
-	{"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
-	{"print_devices", print_devices, METH_NOARGS, "Print the complete set of devices."},
+    {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
+    {"print_devices", print_devices, METH_NOARGS, "Print the complete set of devices."},
     {"print_hello", print_hello, METH_NOARGS, "Print an hello message to printer."},
     {NULL, NULL, 0, NULL}
 };

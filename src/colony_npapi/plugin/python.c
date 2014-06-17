@@ -183,7 +183,7 @@ static PyMethodDef colony_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initnpcolony(void) {
+PyMODINIT_FUNC initnpcolony() {
     (void) Py_InitModule("npcolony", colony_methods);
 }
 

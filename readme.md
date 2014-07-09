@@ -34,7 +34,7 @@ Use the `/usr/lib/mozilla/plugins/` directory to test the `*.so` based plugin fi
 ### Python
 
 It's also possible to build a Python module that exports the functionality present in the NPAPI Plugin for
-such run the python script as ``python setup.py install`` under an UNIX based machine.
+such run the python script as `python setup.py install` under an UNIX based machine.
 
 ## Packaging
 

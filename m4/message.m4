@@ -29,6 +29,7 @@ echo "========================"
 echo
 echo " + Host                  $host_os"
 echo " + Install prefix        $prefix"
+echo " + CC                    $CC"
 echo " + CFLAGS                $CFLAGS"
 echo " + DEBUG                 $have_debug"
 echo " + CUPS                  $have_cups"

@@ -42,7 +42,4 @@ try:
         os.remove(directory_path + "/npcolony.crx")
         os.remove(directory_path + "/npcolony.pem")
 finally:
-    shutil.rmtree(temporary_path + "/images")
-    os.remove(temporary_path + "/manifest.json")
-    os.remove(temporary_path + "/npcolony.dll")
-    os.rmdir(temporary_path)
+    shutil.rmtree(temporary_path)

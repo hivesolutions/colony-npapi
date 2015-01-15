@@ -13,12 +13,16 @@ not os.path.exists(target_path) and os.mkdir(target_path)
 not os.path.exists(temporary_path) and os.mkdir(temporary_path)
 
 specification_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/manifest.json"))
-library_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/npcolony.dll"))
+library_win_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/npcolony.dll"))
+library_linux_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/libnpcolony.so"))
+library_mac_path = os.path.normpath(os.path.join(directory_path, "../" + base_path + "/npcolony.plugin"))
 images_path = os.path.normpath(os.path.join(directory_path, "../src/colony_npapi/descriptors/images"))
 
 shutil.copyfile(specification_path, temporary_path + "/manifest.json")
-shutil.copyfile(library_path, temporary_path + "/npcolony.dll")
+shutil.copyfile(library_win_path, temporary_path + "/npcolony.dll")
 shutil.copytree(images_path, temporary_path + "/images")
+if os.path.exists(library_linux_path): shutil.copyfile(library_linux_path, temporary_path + "/libnpcolony.so")
+if os.path.exists(library_mac_path): shutil.copyfile(library_mac_path, temporary_path + "/npcolony.plugin")
 
 try:
     if os.name in ("nt", "os"):

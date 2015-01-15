@@ -22,7 +22,7 @@ shutil.copyfile(specification_path, temporary_path + "/manifest.json")
 shutil.copyfile(library_win_path, temporary_path + "/npcolony.dll")
 shutil.copytree(images_path, temporary_path + "/images")
 if os.path.exists(library_linux_path): shutil.copyfile(library_linux_path, temporary_path + "/libnpcolony.so")
-if os.path.exists(library_mac_path): shutil.copyfile(library_mac_path, temporary_path + "/npcolony.plugin")
+if os.path.exists(library_mac_path): shutil.copytree(library_mac_path, temporary_path + "/npcolony.plugin")
 
 try:
     if os.name in ("nt", "os"):

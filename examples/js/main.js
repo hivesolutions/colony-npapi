@@ -47,7 +47,7 @@ function pdevices() {
         var devices = gateway.pdevices();
         var devicesS = "";
         var isFirst = true;
-        for(var index = 0; index < devices.length; index++) {
+        for (var index = 0; index < devices.length; index++) {
             var device = devices[index];
             devicesS += isFirst ? "" : "\n"
             devicesS += device.name + " - " + (device.media || "N/A");
@@ -72,8 +72,8 @@ function callback() {
     try {
         var gateway = document.getElementById("colony-gateway");
         gateway.callback(function(message) {
-                    alert(message);
-                });
+            alert(message);
+        });
     } catch (exception) {
         alert(exception);
     }
@@ -93,15 +93,15 @@ function _print() {
         var gateway = document.getElementById("colony-gateway");
         var format = gateway.pformat();
         switch (format) {
-            case "binie" :
+            case "binie":
                 gateway.print(true, HELLO_WORD_BINIE_B64);
                 break;
 
-            case "pdf" :
+            case "pdf":
                 gateway.print(true, HELLO_WORD_PDF_B64);
                 break;
 
-            default :
+            default:
                 break;
         }
     } catch (exception) {

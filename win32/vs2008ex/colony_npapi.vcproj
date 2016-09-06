@@ -28,7 +28,6 @@
             />
             <Tool
                 Name="VCCustomBuildTool"
-                CommandLine=""
             />
             <Tool
                 Name="VCXMLDataGeneratorTool"
@@ -184,7 +183,6 @@
             />
             <Tool
                 Name="VCCustomBuildTool"
-                CommandLine=""
             />
             <Tool
                 Name="VCXMLDataGeneratorTool"
@@ -304,6 +302,161 @@
                 CommandLine=""
             />
         </Configuration>
+        <Configuration
+            Name="Debug (Python)|Win32"
+            OutputDirectory="$(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
+            IntermediateDirectory="$(ProjectName)\$(ConfigurationName)"
+            ConfigurationType="2"
+            CharacterSet="0"
+            >
+            <Tool
+                Name="VCPreBuildEventTool"
+            />
+            <Tool
+                Name="VCCustomBuildTool"
+            />
+            <Tool
+                Name="VCXMLDataGeneratorTool"
+            />
+            <Tool
+                Name="VCWebServiceProxyGeneratorTool"
+            />
+            <Tool
+                Name="VCMIDLTool"
+            />
+            <Tool
+                Name="VCCLCompilerTool"
+                Optimization="0"
+                PreprocessorDefinitions="XULRUNNER_SDK;WIN32;_DEBUG;_WINDOWS;_USRDLL;COLONY_NPAPI_EXPORTS;COLONY_DEBUG;PYTHON_27;HAVE_LIBPYTHON;HAVE_LIBPYTHON_UNDEF"
+                MinimalRebuild="true"
+                BasicRuntimeChecks="3"
+                RuntimeLibrary="1"
+                UsePrecompiledHeader="2"
+                ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
+                WarningLevel="3"
+                DebugInformationFormat="4"
+                CompileAs="2"
+            />
+            <Tool
+                Name="VCManagedResourceCompilerTool"
+            />
+            <Tool
+                Name="VCResourceCompilerTool"
+            />
+            <Tool
+                Name="VCPreLinkEventTool"
+            />
+            <Tool
+                Name="VCLinkerTool"
+                OutputFile="$(OutDir)\npcolony.dll"
+                LinkIncremental="2"
+                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.def"
+                GenerateDebugInformation="true"
+                SubSystem="2"
+                TargetMachine="1"
+            />
+            <Tool
+                Name="VCALinkTool"
+            />
+            <Tool
+                Name="VCManifestTool"
+            />
+            <Tool
+                Name="VCXDCMakeTool"
+            />
+            <Tool
+                Name="VCBscMakeTool"
+            />
+            <Tool
+                Name="VCFxCopTool"
+            />
+            <Tool
+                Name="VCAppVerifierTool"
+            />
+            <Tool
+                Name="VCPostBuildEventTool"
+                CommandLine=""
+            />
+        </Configuration>
+        <Configuration
+            Name="Release (Python)|Win32"
+            OutputDirectory="$(SolutionDir)..\..\bin\$(ProjectName)\i386\win32\$(ConfigurationName)"
+            IntermediateDirectory="$(ProjectName)\$(ConfigurationName)"
+            ConfigurationType="2"
+            CharacterSet="0"
+            WholeProgramOptimization="1"
+            >
+            <Tool
+                Name="VCPreBuildEventTool"
+            />
+            <Tool
+                Name="VCCustomBuildTool"
+            />
+            <Tool
+                Name="VCXMLDataGeneratorTool"
+            />
+            <Tool
+                Name="VCWebServiceProxyGeneratorTool"
+            />
+            <Tool
+                Name="VCMIDLTool"
+            />
+            <Tool
+                Name="VCCLCompilerTool"
+                Optimization="2"
+                EnableIntrinsicFunctions="true"
+                PreprocessorDefinitions="XULRUNNER_SDK;WIN32;NDEBUG;_WINDOWS;_USRDLL;COLONY_NPAPI_EXPORTS;PYTHON_27;HAVE_LIBPYTHON;HAVE_LIBPYTHON_UNDEF"
+                RuntimeLibrary="0"
+                EnableFunctionLevelLinking="true"
+                UsePrecompiledHeader="2"
+                ProgramDataBaseFileName="$(TargetDir)$(TargetName).pdb"
+                WarningLevel="3"
+                DebugInformationFormat="3"
+                CompileAs="2"
+            />
+            <Tool
+                Name="VCManagedResourceCompilerTool"
+            />
+            <Tool
+                Name="VCResourceCompilerTool"
+            />
+            <Tool
+                Name="VCPreLinkEventTool"
+            />
+            <Tool
+                Name="VCLinkerTool"
+                OutputFile="$(OutDir)\npcolony.dll"
+                LinkIncremental="1"
+                ModuleDefinitionFile="$(SolutionDir)..\..\src\colony_npapi\resources\win32\vs2008ex\colony_npapi.def"
+                GenerateDebugInformation="true"
+                SubSystem="2"
+                OptimizeReferences="2"
+                EnableCOMDATFolding="2"
+                TargetMachine="1"
+            />
+            <Tool
+                Name="VCALinkTool"
+            />
+            <Tool
+                Name="VCManifestTool"
+            />
+            <Tool
+                Name="VCXDCMakeTool"
+            />
+            <Tool
+                Name="VCBscMakeTool"
+            />
+            <Tool
+                Name="VCFxCopTool"
+            />
+            <Tool
+                Name="VCAppVerifierTool"
+            />
+            <Tool
+                Name="VCPostBuildEventTool"
+                CommandLine=""
+            />
+        </Configuration>
     </Configurations>
     <References>
     </References>
@@ -342,6 +495,22 @@
                 </FileConfiguration>
                 <FileConfiguration
                     Name="Release (Static)|Win32"
+                    >
+                    <Tool
+                        Name="VCCLCompilerTool"
+                        UsePrecompiledHeader="1"
+                    />
+                </FileConfiguration>
+                <FileConfiguration
+                    Name="Debug (Python)|Win32"
+                    >
+                    <Tool
+                        Name="VCCLCompilerTool"
+                        UsePrecompiledHeader="1"
+                    />
+                </FileConfiguration>
+                <FileConfiguration
+                    Name="Release (Python)|Win32"
                     >
                     <Tool
                         Name="VCCLCompilerTool"

@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "colony_npapi", "colony_npapi.vcproj", "{A3E24E4A-16BA-438E-AB7F-CF246B2AD317}"
@@ -7,24 +6,34 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "colony_npapi_test", "colony
 EndProject
 Global
     GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug (Python)|Win32 = Debug (Python)|Win32
         Debug (Static)|Win32 = Debug (Static)|Win32
         Debug|Win32 = Debug|Win32
+        Release (Python)|Win32 = Release (Python)|Win32
         Release (Static)|Win32 = Release (Static)|Win32
         Release|Win32 = Release|Win32
     EndGlobalSection
     GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug (Python)|Win32.ActiveCfg = Debug (Python)|Win32
+        {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug (Python)|Win32.Build.0 = Debug (Python)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug (Static)|Win32.ActiveCfg = Debug (Static)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug (Static)|Win32.Build.0 = Debug (Static)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug|Win32.ActiveCfg = Debug|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Debug|Win32.Build.0 = Debug|Win32
+        {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release (Python)|Win32.ActiveCfg = Release (Python)|Win32
+        {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release (Python)|Win32.Build.0 = Release (Python)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release (Static)|Win32.ActiveCfg = Release (Static)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release (Static)|Win32.Build.0 = Release (Static)|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release|Win32.ActiveCfg = Release|Win32
         {A3E24E4A-16BA-438E-AB7F-CF246B2AD317}.Release|Win32.Build.0 = Release|Win32
+        {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug (Python)|Win32.ActiveCfg = Debug (Python)|Win32
+        {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug (Python)|Win32.Build.0 = Debug (Python)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug (Static)|Win32.ActiveCfg = Debug (Static)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug (Static)|Win32.Build.0 = Debug (Static)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug|Win32.ActiveCfg = Debug|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Debug|Win32.Build.0 = Debug|Win32
+        {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Release (Python)|Win32.ActiveCfg = Release (Python)|Win32
+        {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Release (Python)|Win32.Build.0 = Release (Python)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Release (Static)|Win32.ActiveCfg = Release (Static)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Release (Static)|Win32.Build.0 = Release (Static)|Win32
         {67A4B563-1011-4C36-BDAB-EE6B4E567098}.Release|Win32.ActiveCfg = Release|Win32

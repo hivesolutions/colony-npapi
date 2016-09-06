@@ -28,5 +28,3 @@
 #pragma once
 
 #define HAVE_LIBPTHREAD
-#define HAVE_LIBPYTHON
-#define HAVE_LIBPYTHON_UNDEF

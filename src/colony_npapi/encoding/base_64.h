@@ -42,7 +42,12 @@
  * @param encoded_buffer_length_pointer The length of the created encoded buffer.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int encode_base64(unsigned char *buffer, size_t buffer_length, unsigned char **encoded_buffer_pointer, size_t *encoded_buffer_length_pointer);
+COLONY_EXPORT_PREFIX int encode_base64(
+    unsigned char *buffer,
+    size_t buffer_length,
+    unsigned char **encoded_buffer_pointer,
+    size_t *encoded_buffer_length_pointer
+);
 
 /**
  * Decodes from base 64 the encoded buffer with the given length into a new (decoded) buffer
@@ -54,7 +59,12 @@ COLONY_EXPORT_PREFIX int encode_base64(unsigned char *buffer, size_t buffer_leng
  * @param decoded_buffer_length_pointer The length of the created (decoder) buffer.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int decode_base64(unsigned char *encoded_buffer, size_t encoded_buffer_length, unsigned char **decoded_buffer_pointer, size_t *decoded_buffer_length_pointer);
+COLONY_EXPORT_PREFIX int decode_base64(
+    unsigned char *encoded_buffer,
+    size_t encoded_buffer_length,
+    unsigned char **decoded_buffer_pointer,
+    size_t *decoded_buffer_length_pointer
+);
 
 /**
  * Calculates the encoded buffer length from the
@@ -73,7 +83,10 @@ COLONY_EXPORT_PREFIX size_t calculate_encoded_buffer_length_base64(size_t buffer
  * @param padding_count The ammount of padding in the base 64 encoded string.
  * @return The length of the decoded buffer.
  */
-COLONY_EXPORT_PREFIX size_t calculate_decoded_buffer_length_base64(size_t encoded_buffer_length, size_t padding_count);
+COLONY_EXPORT_PREFIX size_t calculate_decoded_buffer_length_base64(
+    size_t encoded_buffer_length,
+    size_t padding_count
+);
 
 /**
  * Encodes the given buffer into base64.
@@ -85,7 +98,10 @@ COLONY_EXPORT_PREFIX size_t calculate_decoded_buffer_length_base64(size_t encode
  * @param encoded_buffer_length The target encoded buffer length.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int _encode_base64(unsigned char *buffer, size_t buffer_length, unsigned char *encoded_buffer, size_t encoded_buffer_length);
+COLONY_EXPORT_PREFIX int _encode_base64(
+    unsigned char *buffer, size_t buffer_length,
+    unsigned char *encoded_buffer, size_t encoded_buffer_length
+);
 
 /**
  * Decodes the given encoded buffer from base64.
@@ -98,7 +114,12 @@ COLONY_EXPORT_PREFIX int _encode_base64(unsigned char *buffer, size_t buffer_len
  * @param padding_count The ammount of padding in the base 64 encoded string.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int _decode_base64(unsigned char *encoded_buffer, size_t encoded_buffer_length, unsigned char *buffer, size_t buffer_length, size_t padding_count);
+COLONY_EXPORT_PREFIX int _decode_base64(
+    unsigned char *encoded_buffer,
+    size_t encoded_buffer_length,
+    unsigned char *buffer, size_t buffer_length,
+    size_t padding_count
+);
 
 /**
  * Allocates a new encoded buffer.
@@ -109,7 +130,11 @@ COLONY_EXPORT_PREFIX int _decode_base64(unsigned char *encoded_buffer, size_t en
  * @param encoded_buffer_length_pointer The length of the encoded buffer to be created.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int _allocate_encoded_buffer(size_t buffer_length, unsigned char **encoded_buffer_pointer, size_t *encoded_buffer_length_pointer);
+COLONY_EXPORT_PREFIX int _allocate_encoded_buffer(
+    size_t buffer_length,
+    unsigned char **encoded_buffer_pointer,
+    size_t *encoded_buffer_length_pointer
+);
 
 /**
  * Allocates a new decoded buffer.
@@ -121,7 +146,12 @@ COLONY_EXPORT_PREFIX int _allocate_encoded_buffer(size_t buffer_length, unsigned
  * @param padding_count The ammount of padding to be used.
  * @return The execution status.
  */
-COLONY_EXPORT_PREFIX int _allocate_decoded_buffer(size_t encoded_buffer_length, unsigned char **decoded_buffer_pointer, size_t *decoded_buffer_length_pointer, size_t padding_count);
+COLONY_EXPORT_PREFIX int _allocate_decoded_buffer(
+    size_t encoded_buffer_length,
+    unsigned char **decoded_buffer_pointer,
+    size_t *decoded_buffer_length_pointer,
+    size_t padding_count
+);
 
 /**
  * Retrieves the padding count for the given encoded buffer
@@ -131,7 +161,10 @@ COLONY_EXPORT_PREFIX int _allocate_decoded_buffer(size_t encoded_buffer_length, 
  * @param encoded_buffer_length The lenght of the encoded buffer.
  * @return The padding count for the given encoded buffer.
  */
-COLONY_EXPORT_PREFIX unsigned int _get_padding_count(unsigned char *encoded_buffer, size_t encoded_buffer_length);
+COLONY_EXPORT_PREFIX unsigned int _get_padding_count(
+    unsigned char *encoded_buffer,
+    size_t encoded_buffer_length
+);
 
 /**
  * Looks up the given value in the reverse

@@ -58,3 +58,11 @@ platforms as defined in the `src/colony_npapi/descriptors/manifest_u.json` file.
 
 Copy the proeper files (npcolony.dll, libnpcolony.so and npcolony.plugin) into the proper release directory
 and then run the build script to create the target files (eg: cbx and xpi).
+
+## License
+
+Colony Gateway is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+
+## Build Automation
+
+[![Build Status](https://travis-ci.org/hivesolutions/colony_npapi.svg?branch=master)](https://travis-ci.org/hivesolutions/paypal_api)

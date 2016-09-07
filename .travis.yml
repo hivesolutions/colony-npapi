@@ -1,10 +1,10 @@
-sudo: required
-services: docker
+sudo: false
 language: c
 compiler:
   - clang
   - gcc
-install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libcups2-dev
+addons:
+  apt:
+    packages:
+      - libcups2-dev
 script: ./autogen.sh && ./configure && make

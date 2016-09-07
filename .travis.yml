@@ -3,5 +3,5 @@ language: c
 compiler:
   - clang
   - gcc
-install: apt-get install libcups2-dev
+install: sudo apt-get install libcups2-dev
 script: ./autogen.sh && ./configure && make

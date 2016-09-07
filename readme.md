@@ -61,7 +61,7 @@ and then run the build script to create the target files (eg: cbx and xpi).
 
 ## Examples
 
-There's an [exameples directory](examples) containing HTML samples to test the plugin. 
+There's an [examples directory](examples) containing HTML samples to test the plugin. 
 
 ## License
 

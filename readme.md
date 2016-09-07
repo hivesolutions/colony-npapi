@@ -57,7 +57,11 @@ platforms as defined in the `src/colony_npapi/descriptors/manifest_u.json` file.
 ```
 
 Copy the proeper files (`npcolony.dll`, `libnpcolony.so` and `npcolony.plugin`) into the proper release directory
-and then run the build script to create the target files (eg: cbx and xpi).
+and then run the `make_all` script to create the target files (eg: cbx and xpi).
+
+```bash
+make_all <dir>
+```
 
 ## Examples
 

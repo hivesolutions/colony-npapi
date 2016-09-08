@@ -65,7 +65,7 @@ make_all build <dir>
 
 ## Examples
 
-There's an [examples directory](examples) containing HTML samples to test the plugin. 
+There's an [examples directory](examples) containing HTML samples to test the plugin.
 
 ## License
 

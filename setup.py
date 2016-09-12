@@ -53,7 +53,7 @@ module = setuptools.Extension(
     ],
     libraries = ["cups"],
     library_dirs = ["/usr/local/lib"],
-    extra_compile_args = [
+    extra_compile_args = [] if os.name in ("nt",) else [
         "-std=c99",
         "-pedantic",
         "-finline-functions",

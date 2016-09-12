@@ -270,6 +270,26 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
 
+/**
+ * Prints a document using the provided printer or in case the show
+ * dialog option is set using the printer selected in the printing
+ * dialog.
+ *
+ * The provided data buffer must be encoded using the pdf binary
+ * file specification, that specifies a series of basic printing
+ * primitive routines.
+ *
+ * @param show_dialog If the printing dialog should be display for
+ * selection of the printer.
+ * @param printer The name of the printer to be used in the print
+ * operation (only used in case show dialog is not set).
+ * @param data The buffer of data encoded in pdf format describing
+ * the document to be printed.
+ * @param size The size of the buffer od encoded data that was
+ * passed as an argument.
+ * @return The result of the printing process if success a value
+ * greater than zero should be returned.
+ */
 COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);
 
 #ifdef __cplusplus

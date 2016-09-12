@@ -119,7 +119,11 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     *devices_c = num_dests;
 }
 
-int print(bool show_dialog, char *data, size_t size) {
+int print(bool show_dialog, char *printer, char *data, size_t size) {
+    return print_printer(show_dialog, NULL, data, size);
+}
+
+int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     /* allocates space for the various variables that
     are going to be used for the print operation and
     then retrieves the various available destinies */

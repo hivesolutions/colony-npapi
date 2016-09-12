@@ -179,6 +179,8 @@ typedef struct document_t {
  * This function is useful for situations where no print
  * dialog is wanted (fast printing).
  *
+ * @param name The name of the printer to be retrieved, in case
+ * this value is not provided the default printer is used.
  * @param width Optional parameter that allows the retrieved
  * context to be configured with the desired width (in decimal
  * parts of millimiter).
@@ -188,7 +190,7 @@ typedef struct document_t {
  * @return The handle for the the drawing context of the
  * default printer.
  */
-COLONY_EXPORT_PREFIX HDC get_default_printer(int width, int height);
+COLONY_EXPORT_PREFIX HDC get_default_printer(char *name, int width, int height);
 
 /**
  * Shows the printing dialog for printer selction, the return
@@ -255,7 +257,7 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  *
  * The provided data buffer must be encoded using the binie binary
  * file specification, that specifies a series of basic printing
- * primitive routines.
+ * primitive routines from adobe.
  *
  * @param show_dialog If the printing dialog should be display for
  * selection of the printer.
@@ -267,6 +269,8 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
+
+COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);
 
 #ifdef __cplusplus
 }

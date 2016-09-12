@@ -31,7 +31,7 @@
 
 #include "print_win32.h"
 
-HDC get_default_printer(int width, int height) {
+HDC get_default_printer(char *name, int width, int height) {
     /* allocates space for the dev mode related
     structures used to customize the default values
     of the printing operation */
@@ -61,8 +61,9 @@ HDC get_default_printer(int width, int height) {
 
     /* retrieves the default printer and then
     and then uses it to create the apropriate context */
-    GetDefaultPrinter(buffer, &size);
-    OpenPrinter(buffer, &printer, &printer_defaults);
+    if(name == NULL) { GetDefaultPrinter(buffer, &size); }
+    else { memcpy(buffer, name, strlen(name) + 1); }
+    OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults);
 
     /* tries to retrieves an empty document properties to
     "gather" the size of the underlying structure and then
@@ -185,6 +186,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
 }
 
 int print(bool show_dialog, char *data, size_t size) {
+    return print_printer(show_dialog, NULL, data, size);
+}
+
+int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     /* reserves space for the printing context to be
     used in the current operation */
     HDC context;
@@ -242,7 +247,11 @@ int print(bool show_dialog, char *data, size_t size) {
     else {
         /* retrieves the default printer as the
         the default context for printing */
-        context = get_default_printer(document_header->width, document_header->height);
+        context = get_default_printer(
+            printer,
+            document_header->width,
+            document_header->height
+        );
     }
 
     /* declares a document information structure

@@ -175,11 +175,45 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
+static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
+    /* allocates space for the decoded data buffer and for
+    the storage of the length (size) of it */
+    char *data;
+    char *printer;
+    char *input;
+    size_t data_length;
+
+    /* tries to parse the privided sequence of arguments
+    as a single string value that is going to be used as
+    the input value for the printing of the page */
+    if(PyArg_ParseTuple(args, "ss", &printer, &input) == FALSE) {
+        return NULL;
+    }
+
+    /* decodes the data value from the base 64 encoding
+    and then uses it to print the data */
+    decode_base64(
+        (unsigned char *) input,
+        strlen(input),
+        (unsigned char **) &data, &data_length
+    );
+    print_printer(FALSE, printer, data, data_length);
+
+    /* releases the decoded buffer (avoids memory leak)
+    and then returns in success */
+    _free_base64((unsigned char *) data);
+
+    /* returns an invalid value to the caller method/function
+    as this function should not return anything */
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef colony_methods[] = {
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a base 64 based sequence of data."},
+    {"print_printer_base64", print_printer_base64, METH_VARARGS, "Prints a base 64 based sequence of data in a specific printer."},
     {NULL, NULL, 0, NULL}
 };
 

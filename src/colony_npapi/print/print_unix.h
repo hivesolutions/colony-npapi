@@ -84,7 +84,7 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  *
  * The provided data buffer must be encoded using the pdf binary
  * file specification, that specifies a series of basic printing
- * primitive routines from adobe.
+ * primitive routines.
  *
  * @param show_dialog If the printing dialog should be display for
  * selection of the printer.
@@ -96,6 +96,8 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
+
+COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);
 
 #ifdef __cplusplus
 }

@@ -59,7 +59,13 @@ int decode_base64(
     _allocate_decoded_buffer(encoded_buffer_length, decoded_buffer_pointer, decoded_buffer_length_pointer, padding_count);
 
     /* decodes the buffer from base 64 */
-    _decode_base64(encoded_buffer, encoded_buffer_length, *decoded_buffer_pointer, *decoded_buffer_length_pointer, padding_count);
+    _decode_base64(
+		encoded_buffer,
+		encoded_buffer_length,
+		*decoded_buffer_pointer,
+		*decoded_buffer_length_pointer,
+		padding_count
+	);
 
     /* returns valid */
     return 0;

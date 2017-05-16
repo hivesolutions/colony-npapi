@@ -297,7 +297,7 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
-    _free_base64(data);
+    _free_base64((unsigned char *) data);
     return true;
 }
 

@@ -469,6 +469,10 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 provided (calculated) coordinates */
                 TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
+                /* deletes the font object as it's no longer going to be used,
+                avoiding possible memory leaks */
+                DeleteObject(font);
+
                 /* releases the unicode representation of the text */
                 delete text_unicode;
 
@@ -644,6 +648,10 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
         of the current element (this is the increment delta to be used) */
         element_header = (struct element_header_t *) ((char *) element_header + sizeof(struct element_header_t) + element_length);
     }
+
+    /* deletes the pen object as it's no longer going to be
+    used and should be discarded */
+    DeleteObject(pen);
 
     /* ends the current page and the document for the
     current context */

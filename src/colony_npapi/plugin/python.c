@@ -131,7 +131,7 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
         (unsigned char *) HELLO_WORLD_B64,
         strlen(HELLO_WORLD_B64),
         (unsigned char **) &data,
-		&data_length
+        &data_length
     );
     print(FALSE, data, data_length);
 
@@ -164,7 +164,7 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
         (unsigned char *) input,
         strlen(input),
         (unsigned char **) &data,
-		&data_length
+        &data_length
     );
     print(FALSE, data, data_length);
 
@@ -198,7 +198,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
         (unsigned char *) input,
         strlen(input),
         (unsigned char **) &data,
-		&data_length
+        &data_length
     );
     print_printer(FALSE, printer, data, data_length);
 

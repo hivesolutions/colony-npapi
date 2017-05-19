@@ -509,6 +509,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
+                DeleteObject(handle_image_new);
 
                 /* removes the temporary image file (it's no longer required)
                 as the image was already loaded into memory */

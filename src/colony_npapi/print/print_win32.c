@@ -365,7 +365,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                     DEFAULT_CHARSET,
                     OUT_OUTLINE_PRECIS,
                     CLIP_DEFAULT_PRECIS,
-                    CLEARTYPE_QUALITY,
+                    DEFAULT_QUALITY,
                     VARIABLE_PITCH,
                     text_element_header->font
                 );

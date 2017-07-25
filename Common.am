@@ -29,5 +29,9 @@ else
 EXTRA_FLAGS = -finline-functions
 endif
 
+if CNEO
+EXTRA_FLAGS += -Wformat-overflow=0
+endif
+
 AM_CFLAGS = -pedantic -Wall -Wno-long-long -Wno-variadic-macros -Wno-strict-aliasing -DHAVE_CONFIG_H $(EXTRA_FLAGS)
 AM_CXXFLAGS = -pedantic -Wall -Wno-long-long -Wno-variadic-macros -Wno-strict-aliasing -DHAVE_CONFIG_H $(EXTRA_FLAGS)

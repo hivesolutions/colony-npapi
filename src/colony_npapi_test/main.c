@@ -108,7 +108,7 @@ void print_base64(char *file_path) {
     file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    /* allocates enought space for the buffer to hold
+    /* allocates enough space for the buffer to hold
     the complete set of contents of the file */
     buffer = (unsigned char *) malloc(file_size);
 

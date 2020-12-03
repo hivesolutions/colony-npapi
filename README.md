@@ -73,4 +73,4 @@ Colony Gateway is currently licensed under the [Apache License, Version 2.0](htt
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/hivesolutions/colony_npapi.svg?branch=master)](https://travis-ci.org/hivesolutions/colony_npapi)
+[![Build Status](https://travis-ci.com/hivesolutions/colony_npapi.svg?branch=master)](https://travis-ci.com/hivesolutions/colony_npapi)

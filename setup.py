@@ -102,5 +102,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4"
-    ]
+    ],
+    long_description = open(os.path.join(os.path.dirname(__file__), "README.md"), "r").read(),
+    long_description_content_type = "text/markdown"
 )

@@ -49,7 +49,7 @@ HDC get_default_printer(char *name, int width, int height) {
     char buffer[BUFFER_SIZE];
     unsigned long size = BUFFER_SIZE;
 
-    /* creats the array of definitions to the default
+    /* creates the array of definitions to the default
     values of the printer */
     PRINTER_DEFAULTS printer_defaults = {
         NULL, NULL, PRINTER_ACCESS_USE
@@ -60,7 +60,7 @@ HDC get_default_printer(char *name, int width, int height) {
     set_values = width > 0 && height > 0;
 
     /* retrieves the default printer and then
-    and then uses it to create the apropriate context */
+    and then uses it to create the appropriate context */
     if(name == NULL) { GetDefaultPrinter(buffer, &size); }
     else { memcpy(buffer, name, strlen(name) + 1); }
     OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults);
@@ -161,7 +161,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         &count
     );
 
-    /* allocates space for the devices tructure according to the
+    /* allocates space for the devices structure according to the
     number of devices loaded into the sequence and then iterates
     over the sequence to create the various device structures */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
@@ -388,7 +388,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
 
                 /* in case the current text is defined inside a block the
                 clip box must be changed accordingly, these values are measured
-                as twips and not milimieters (logical units) */
+                as twips and not millimeters (logical units) */
                 if(is_block) {
                     clip_box.left = text_element_header->position_x;
                     clip_box.top = text_element_header->position_y * -1;
@@ -418,14 +418,14 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 text_y = clip_box.top + text_element_header->position.y;
 
                 /* calculates the y position for the bottom position of the
-                text and then converts it into a milimiter type, note that
-                the resulting milimiter value is rounded to avoid problems
-                with the szies in the device driver (required) */
+                text and then converts it into a millimeter type, note that
+                the resulting millimeter value is rounded to avoid problems
+                with the sizes in the device driver (required) */
                 text_y_bottom = is_block ? clip_box.bottom : text_y - text_size.cy;
                 text_y_bottom_millimeter = (double) text_y_bottom / TWIPS_PER_INCH * MM_PER_INCH * -1.0;
                 text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
-                /* uses the bottom position of the text in milimiters and
+                /* uses the bottom position of the text in millimeters and
                 divides (integer division) it over the page size to check
                 the current page number (index) */
                 new_page = (int) (text_y_bottom_millimeter / vertical_size);
@@ -530,7 +530,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
 
                 /* in case the current image is defined inside a block the
                 clip box must be changed accordingly, these values are measured
-                as twips and not milimieters (logical units) */
+                as twips and not millimeters (logical units) */
                 if(is_block) {
                     clip_box.left = image_element_header->position_x;
                     clip_box.top = image_element_header->position_y * -1;
@@ -565,11 +565,11 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 }
 
                 /* calculates the y position for the bottom position of the
-                image and then converts it into a milimiter type */
+                image and then converts it into a millimeter type */
                 image_y_bottom = clip_box.top - image_element_header->position.y + (int) (scaled_height * divisor);
                 image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH;
 
-                /* uses the bottom position of the image in milimiters and
+                /* uses the bottom position of the image in millimeters and
                 divides (integer division) it over the page size to check
                 the current page number (index) note that if the current
                 image is inside a block no page is changed (default layout

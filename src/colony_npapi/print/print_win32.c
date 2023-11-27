@@ -134,6 +134,13 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     DWORD size = 0;
     DWORD level = 2;
     PRINTER_INFO_2 *sequence;
+    char default_printer[BUFFER_SIZE];
+    unsigned long buffer_size = BUFFER_SIZE;
+
+    /* obtains the name of the default printer so that we
+    can then use it to compare to the enumeration and determine
+    if the printer is the default one or not */
+    GetDefaultPrinter(default_printer, &buffer_size);
 
     /* runs the initial printers enumeration to uncover the
     size of the list to be retrieved and then allocate the
@@ -172,7 +179,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         size_t name_s = strlen(name);
         memcpy(device->name, name, name_s);
         device->name_s = name_s;
-        device->is_default = 0;
+        device->is_default = !strcmp(device->name, default_printer) ? 1 : 0;
     }
 
     /* releases the memory from the sequence buffer, avoids any

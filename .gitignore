@@ -1,12 +1,15 @@
 *.ncb
 *.user
 *.suo
+*.pyc
 .DS_Store
 
 /bin
 /dist
 /build
 /npcolony.egg-info
+/src/python/npcolony*.so
+/src/python/npcolony.egg-info
 /scripts/npcolony.*
 /scripts/build
 /scripts/npcolony

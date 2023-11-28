@@ -256,11 +256,15 @@ static PyMethodDef colony_functions[] = {
 PyMODINIT_FUNC PyInit_npcolony() {
     PyObject *colony_module = PyModule_Create(&moduledef);
     if(colony_module == NULL) { return NULL; }
+    PyModule_AddStringConstant(colony_module, "VERSION", NPCOLONY_VERSION);
     return colony_module;
 }
 #else
 PyMODINIT_FUNC initnpcolony() {
-    (void) Py_InitModule("npcolony", colony_functions);
+    PyObject *colony_module = Py_InitModule("npcolony", colony_functions);
+    if(colony_module == NULL) { return; }
+    PyModule_AddStringConstant(colony_module, "VERSION", NPCOLONY_VERSION);
+    return colony_module;
 }
 #endif
 

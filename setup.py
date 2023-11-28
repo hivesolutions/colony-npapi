@@ -105,13 +105,21 @@ if os.name in ("nt",):
 try:
     setuptools.setup(
         name = "npcolony",
-        version = "0.1.0",
+        version = "1.1.5",
         author = "Hive Solutions Lda.",
         author_email = "development@hive.pt",
         description = "Colony Framework",
         license = "Apache License, Version 2.0",
         keywords = "colony npapi native",
         url = "http://colony_npapi.hive.pt",
+        packages = [
+            "npcolony_py",
+            "npcolony_py.test"
+        ],
+        test_suite = "npcolony_py.test",
+        package_dir = {
+            "" : os.path.normpath("src/python")
+        },
         zip_safe = False,
         ext_modules = [module],
         classifiers = [

@@ -269,7 +269,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     document_information.lpszOutput = NULL;
     document_information.fwType = 0;
 
-    /* contructs the document information and prints
+    /* builds the document information and prints
     it on finishing it (print on close document) */
     StartDoc(context, &document_information);
     StartPage(context);
@@ -438,7 +438,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 new_page = (int) (text_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
-                there is a new page must be "constructed" */
+                there is a new page must be "built" */
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
@@ -584,7 +584,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 new_page = is_block ? current_page : (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
-                there is a new page must be "constructed" */
+                there is a new page must be "built" */
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */

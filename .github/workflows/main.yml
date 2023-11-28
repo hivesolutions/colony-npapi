@@ -29,3 +29,12 @@ jobs:
       - run: apt-get update && apt-get install -y libcups2-dev
       - run: python --version
       - run: python setup.py build
+  build-windows:
+    name: Build Windows
+    timeout-minutes: 10
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+      - run: python --version
+      - run: python setup.py build

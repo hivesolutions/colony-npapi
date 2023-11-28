@@ -264,7 +264,6 @@ PyMODINIT_FUNC initnpcolony() {
     PyObject *colony_module = Py_InitModule("npcolony", colony_functions);
     if(colony_module == NULL) { return; }
     PyModule_AddStringConstant(colony_module, "VERSION", NPCOLONY_VERSION);
-    return colony_module;
 }
 #endif
 

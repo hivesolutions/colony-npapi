@@ -43,6 +43,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\
 AAAAAAAAAwAAABIZWxsbyBXb3JsZAA="
 
+static PyObject *get_format(PyObject *self, PyObject *args) {
+    return PyUnicode_FromString(pformat());
+}
+
 static PyObject *get_devices(PyObject *self, PyObject *args) {
     /* allocates memory for the various internal structure
     that are going to be used to retrieve device information */
@@ -230,6 +234,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef colony_functions[] = {
+    {"get_format", get_format, METH_NOARGS, "Retrieves the format supported by the system."},
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},

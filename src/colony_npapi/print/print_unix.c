@@ -103,7 +103,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         to be used anymore (avoids memory leaks) */
         if(ppd != NULL) { ppdClose(ppd); }
 
-        /* closes the temporaty ppdf file and then unlinks it
+        /* closes the temporary PPD file and then unlinks it
         so that it's correctly removed from the current system */
         if(ppd_file != NULL) { fclose(ppd_file); }
         unlink(ppd_path);

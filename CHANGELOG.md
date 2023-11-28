@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for detecting the default printer in win32 (`get_devices()`)
+* Support for the `get_format()` Python extension method
 
 ### Changed
 

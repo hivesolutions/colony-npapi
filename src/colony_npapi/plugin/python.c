@@ -61,21 +61,39 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
     for(index = 0; index < devices_s; index++) {
         device = &devices[index];
         element = PyDict_New();
+#if PY_MAJOR_VERSION >= 3
+        item = PyUnicode_Decode(
+            device->name,
+            device->name_s,
+            "utf-8",
+            NULL
+        );
+#else
         item = PyString_Decode(
             device->name,
             device->name_s,
             "utf-8",
             NULL
         );
+#endif
         PyDict_SetItemString(element, "name", item);
         item = PyBool_FromLong((long) device->is_default);
         PyDict_SetItemString(element, "is_default", item);
+#if PY_MAJOR_VERSION >= 3
+        item = PyUnicode_Decode(
+            device->media,
+            device->media_s,
+            "utf-8",
+            NULL
+        );
+#else
         item = PyString_Decode(
             device->media,
             device->media_s,
             "utf-8",
             NULL
         );
+#endif
         PyDict_SetItemString(element, "media", item);
         item = PyFloat_FromDouble((double) device->width);
         PyDict_SetItemString(element, "width", item);
@@ -211,7 +229,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
-static PyMethodDef colony_methods[] = {
+static PyMethodDef colony_functions[] = {
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to printer."},
@@ -220,8 +238,30 @@ static PyMethodDef colony_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initnpcolony() {
-    (void) Py_InitModule("npcolony", colony_methods);
+#if PY_MAJOR_VERSION >= 3
+    struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "npcolony",
+        "Colony Gateway",
+        -1,
+        colony_functions,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_npcolony() {
+    PyObject *colony_module = PyModule_Create(&moduledef);
+    if(colony_module == NULL) { return NULL; }
+    return colony_module;
 }
+#else
+PyMODINIT_FUNC initnpcolony() {
+    (void) Py_InitModule("npcolony", colony_functions);
+}
+#endif
 
 #endif

@@ -40,6 +40,20 @@ __license__ = "Apache License, Version 2.0"
 import os
 import setuptools
 
+def rename_sources(sources, base = ".c", target = ".cpp"):
+    renamed = []
+    for source in sources:
+        source_extension = os.path.splitext(source)[1]
+        if not source_extension == base: continue
+        source_name = os.path.splitext(source)[0]
+        new_source_path = source_name + target
+        os.rename(source, new_source_path)
+        renamed.append(new_source_path)
+    return renamed
+
+def rollback_sources(sources, base = ".cpp", target = ".c"):
+    return rename_sources(sources, base = base, target = target)
+
 module = setuptools.Extension(
     "npcolony",
     define_macros = [
@@ -51,9 +65,17 @@ module = setuptools.Extension(
         "src/colony_npapi/",
         "/usr/local/include"
     ],
-    libraries = ["cups"],
+    libraries = [
+        "user32",
+        "gdi32",
+        "winspool",
+        "comdlg32"
+    ] if os.name in ("nt",) else ["cups"],
     library_dirs = ["/usr/local/lib"],
-    extra_compile_args = [] if os.name in ("nt",) else [
+    extra_compile_args = [
+        "/DHAVE_LIBPYTHON",
+        "/DHAVE_LIBPYTHON_UNDEF"
+    ] if os.name in ("nt",) else [
         "-std=c99",
         "-pedantic",
         "-finline-functions",
@@ -78,31 +100,45 @@ module = setuptools.Extension(
     ]
 )
 
-setuptools.setup(
-    name = "npcolony",
-    version = "0.1.0",
-    author = "Hive Solutions Lda.",
-    author_email = "development@hive.pt",
-    description = "Colony Framework",
-    license = "Apache License, Version 2.0",
-    keywords = "colony npapi native",
-    url = "http://colony_npapi.hive.pt",
-    zip_safe = False,
-    ext_modules = [module],
-    classifiers = [
-        "Development Status :: 3 - Alpha",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.0",
-        "Programming Language :: Python :: 3.1",
-        "Programming Language :: Python :: 3.2",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4"
-    ],
-    long_description = open(os.path.join(os.path.dirname(__file__), "README.md"), "rb").read().decode("utf-8"),
-    long_description_content_type = "text/markdown"
-)
+if os.name in ("nt",):
+    module.sources = rename_sources(module.sources)
+try:
+    setuptools.setup(
+        name = "npcolony",
+        version = "0.1.0",
+        author = "Hive Solutions Lda.",
+        author_email = "development@hive.pt",
+        description = "Colony Framework",
+        license = "Apache License, Version 2.0",
+        keywords = "colony npapi native",
+        url = "http://colony_npapi.hive.pt",
+        zip_safe = False,
+        ext_modules = [module],
+        classifiers = [
+            "Development Status :: 3 - Alpha",
+            "Topic :: Utilities",
+            "License :: OSI Approved :: Apache Software License",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 2.6",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3.0",
+            "Programming Language :: Python :: 3.1",
+            "Programming Language :: Python :: 3.2",
+            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.12"
+        ],
+        long_description = open(os.path.join(os.path.dirname(__file__), "README.md"), "rb").read().decode("utf-8"),
+        long_description_content_type = "text/markdown"
+    )
+finally:
+    if os.name in ("nt",):
+        rollback_sources(module.sources)

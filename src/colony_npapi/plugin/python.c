@@ -169,7 +169,7 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
     char *input;
     size_t data_length;
 
-    /* tries to parse the privided sequence of arguments
+    /* tries to parse the provided sequence of arguments
     as a single string value that is going to be used as
     the input value for the printing of the page */
     if(PyArg_ParseTuple(args, "s", &input) == FALSE) {
@@ -203,7 +203,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
     char *input;
     size_t data_length;
 
-    /* tries to parse the privided sequence of arguments
+    /* tries to parse the provided sequence of arguments
     as a single string value that is going to be used as
     the input value for the printing of the page */
     if(PyArg_ParseTuple(args, "ss", &printer, &input) == FALSE) {
@@ -231,10 +231,10 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
 
 static PyMethodDef colony_functions[] = {
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
-    {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices."},
-    {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to printer."},
-    {"print_base64", print_base64, METH_VARARGS, "Prints a base 64 based sequence of data."},
-    {"print_printer_base64", print_printer_base64, METH_VARARGS, "Prints a base 64 based sequence of data in a specific printer."},
+    {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
+    {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
+    {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},
+    {"print_printer_base64", print_printer_base64, METH_VARARGS, "Prints a Base64 based sequence of data in a specific printer."},
     {NULL, NULL, 0, NULL}
 };
 

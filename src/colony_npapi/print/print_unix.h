@@ -37,8 +37,8 @@ extern "C" {
  * Structure that defines and identifies a
  * printing device in a neutral manner.
  *
- * Should contain information that is able to
- * promote the reusage of a device for its
+ * Should contain information that can
+ * promote the re-usage of a device for its
  * internal/external operations.
  */
 typedef struct device_t {
@@ -67,7 +67,7 @@ COLONY_EXPORT_PREFIX const char *pformat();
  * Retrieves the complete set of printing devices currently
  * available in the system loaded in the appropriate structures.
  *
- * The number of devices available is also returned so that's
+ * The number of devices available is also returned, so that's
  * it's possible to iterate over the sequence.
  *
  * @param devices_p The pointer to the buffer of device structures
@@ -83,16 +83,16 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  * dialog.
  *
  * The provided data buffer must be encoded using the pdf binary
- * file specification, that specifies a series of basic printing
+ * file specification that specifies a series of basic printing
  * primitive routines.
  *
- * @param show_dialog If the printing dialog should be display for
- * selection of the printer.
- * @param data The buffer of data encoded in pdf format describing
+ * @param show_dialog If the printing dialog should be displayed for
+ * printer selection.
+ * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
- * @param size The size of the buffer od encoded data that was
+ * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process if success a value
+ * @return The result of the printing process, if successful, a value
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
@@ -103,18 +103,18 @@ COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
  * dialog.
  *
  * The provided data buffer must be encoded using the pdf binary
- * file specification, that specifies a series of basic printing
+ * file specification that specifies a series of basic printing
  * primitive routines.
  *
- * @param show_dialog If the printing dialog should be display for
- * selection of the printer.
- * @param printer The name of the printer to be used in the print
- * operation (only used in case show dialog is not set).
- * @param data The buffer of data encoded in pdf format describing
+ * @param show_dialog If the printing dialog should be displayed for
+ * printer selection.
+ * @param printer The printer's name is to be used in the print
+* operation (only used in case the show dialog is not set).
+ * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
- * @param size The size of the buffer od encoded data that was
+ * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process if success a value
+ * @return The result of the printing process, if successful, a value
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);

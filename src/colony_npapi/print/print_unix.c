@@ -69,7 +69,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         dest = &dests[index];
 
         /* retrieves the ppd file for the current device
-        and opens its file then reads the various values
+        and opens its file, then reads the various values
         required to be read from it */
         ppd_path = cupsGetPPD(dest->name);
         if(ppd_path == NULL) { ppd_file = NULL; }
@@ -113,7 +113,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     of the various destinations */
     cupsFreeDests(num_dests, dests);
 
-    /* updates the devices pointer and the number of devices
+    /* updates the devices' pointer and the number of devices
     that have been created (output variables) */
     *devices_p = devices;
     *devices_c = num_dests;
@@ -144,14 +144,14 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     }
 
     /* copies the base (file) template to the file path and
-    uses it it to create the final path to the temporary path
+    uses it to create the final path to the temporary path
     then verifies it has been correctly opened */
     strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE) + 1);
     int fd = mkstemp(file_path);
     if(fd < 0) { return -1; }
 
     /* writes the read contents from the pdf into the created
-    temporary file and in case the result of the write operation
+    temporary file, and in case the result of the write operation
     is not the expected returns in error */
     size_t result = write(fd, data, size);
     if(result == -1) { return -1; }
@@ -178,7 +178,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     cupsFreeDests(num_dests, dests);
 
     /* unlinks the created temporary file so that
-    it's abel to be removed from the file system */
+    it's able to be removed from the file system */
     unlink(file_path);
 
     /* returns with no error */

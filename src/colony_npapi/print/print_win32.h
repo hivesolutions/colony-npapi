@@ -36,14 +36,14 @@
 #define BUFFER_SIZE 1024
 
 /**
- * The coeficient for conversion between
+ * The coefficient for conversion between
  * millimeter and inch.
  */
 #define MM_PER_INCH 25.4
 
 /**
- * The coeficient for conversion between
- * twips and inch.
+ * The coefficient for conversion between
+ * twips and inches.
  */
 #define TWIPS_PER_INCH 1440.0
 
@@ -56,7 +56,7 @@
 
 /**
  * The scale factor to be used when resizing
- * the image to display it in the oducment.
+ * the image to display it in the document.
  */
 #define IMAGE_SCALE_FACTOR 10
 
@@ -76,7 +76,7 @@
 #define CENTER_TEXT_ALIGN_VALUE 3
 
 /**
- * Structure defining a position int a two axis
+ * Structure defining a position int a two-axis
  * based system.
  */
 typedef struct position_t {
@@ -179,26 +179,26 @@ typedef struct document_t {
  * This function is useful for situations where no print
  * dialog is wanted (fast printing).
  *
- * @param name The name of the printer to be retrieved, in case
- * this value is not provided the default printer is used.
+ * @param name The printer's name is to be retrieved. If
+ * this value is not provided, the default printer is used.
  * @param width Optional parameter that allows the retrieved
  * context to be configured with the desired width (in decimal
- * parts of millimiter).
+ * parts of millimeter).
  * @param height Optional parameter that allows the retrieved
  * context to be configured with the desired height (in decimal
- * parts of millimiter).
- * @return The handle for the the drawing context of the
+ * parts of a millimeter).
+ * @return The handle for the drawing context of the
  * default printer.
  */
 COLONY_EXPORT_PREFIX HDC get_default_printer(char *name, int width, int height);
 
 /**
- * Shows the printing dialog for printer selction, the return
+ * Shows the printing dialog for printer selection, the return
  * value reflects the success of the calling.
  *
  * @param print_dialog_pointer A pointer to the print dialog
  * structure describing the configuration for the dialog box.
- * @return A boolean with the success result of the print dialog.
+ * @return A boolean with the successful result of the print dialog.
  */
 COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
 
@@ -210,8 +210,8 @@ extern "C" {
  * Structure that defines and identifies a
  * printing device in a neutral manner.
  *
- * Should contain information that is able to
- * promote the reusage of a device for its
+ * Should contain information that can
+ * promote the usage of a device for its
  * internal/external operations.
  */
 typedef struct device_t {
@@ -240,7 +240,7 @@ COLONY_EXPORT_PREFIX const char *pformat();
  * Retrieves the complete set of printing devices currently
  * available in the system loaded in the appropriate structures.
  *
- * The number of devices available is also returned so that's
+ * The number of devices available is also returned, so that's
  * it's possible to iterate over the sequence.
  *
  * @param devices_p The pointer to the buffer of device structures
@@ -256,17 +256,17 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  * dialog.
  *
  * The provided data buffer must be encoded using the binie binary
- * file specification, that specifies a series of basic printing
- * primitive routines from adobe.
+ * file specification that specifies a series of basic printing
+ * primitive routines from Adobe.
  *
- * @param show_dialog If the printing dialog should be display for
- * selection of the printer.
- * @param data The buffer of data encoded in binie format describing
+ * @param show_dialog If the printing dialog should be displayed for
+ * printer selection.
+ * @param data The data buffer encoded in binie format describing
  * the document to be printed.
- * @param size The size of the buffer od encoded data that was
+ * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process if success a value
- * greater than zero should be returned.
+ * @return The result of the successful printing process, a value
+ * greater than zero, should be returned.
  */
 COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
 
@@ -276,18 +276,18 @@ COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
  * dialog.
  *
  * The provided data buffer must be encoded using the pdf binary
- * file specification, that specifies a series of basic printing
+ * file specification that specifies a series of basic printing
  * primitive routines.
  *
- * @param show_dialog If the printing dialog should be display for
- * selection of the printer.
- * @param printer The name of the printer to be used in the print
- * operation (only used in case show dialog is not set).
- * @param data The buffer of data encoded in pdf format describing
+ * @param show_dialog If the printing dialog should be displayed for
+ * printer selection.
+ * @param printer The printer's name is to be used in the print
+* operation (only used in case the show dialog is not set).
+ * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
- * @param size The size of the buffer od encoded data that was
+ * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process if success a value
+ * @return The result of the printing process, if successful, a value
  * greater than zero should be returned.
  */
 COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);

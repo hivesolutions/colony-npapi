@@ -39,7 +39,7 @@ HDC get_default_printer(char *name, int width, int height) {
     LONG dev_mode_size;
     PDEVMODEA dev_mode;
 
-    /* allocates space fot the flag that will
+    /* allocates space for the flag that will
     define if the dimension values should be set */
     unsigned char set_values;
 
@@ -65,7 +65,7 @@ HDC get_default_printer(char *name, int width, int height) {
     else { memcpy(buffer, name, strlen(name) + 1); }
     OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults);
 
-    /* tries to retrieves an empty document properties to
+    /* tries to retrieve empty document properties to
     "gather" the size of the underlying structure and then
     allocates the associated dev mode */
     dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
@@ -74,7 +74,7 @@ HDC get_default_printer(char *name, int width, int height) {
 
     /* retrieves the current print dev mode structure (out mode)
     then updates the structure with the default values and set
-    these values again in the dev structure and then creates the
+    these values again in the dev structure and then create the
     drawing context for the "resulting" printer */
     DocumentProperties(NULL, printer, buffer, dev_mode, NULL, DM_OUT_BUFFER);
     dev_mode->dmPaperSize = DMPAPER_USER;
@@ -126,7 +126,7 @@ const char *pformat() {
 
 void pdevices(struct device_t **devices_p, size_t *devices_c) {
     /* allocates the various variables that are going to be
-    used for the creation of the devices structure buffer */
+    used for the creation of the devices' structure buffer */
     size_t index;
     struct device_t *device;
     struct device_t *devices;
@@ -142,7 +142,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     if the printer is the default one or not */
     GetDefaultPrinter(default_printer, &buffer_size);
 
-    /* runs the initial printers enumeration to uncover the
+    /* runs the initial printers' enumeration to uncover the
     size of the list to be retrieved and then allocate the
     appropriate space for the buffer */
     EnumPrinters(
@@ -168,7 +168,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         &count
     );
 
-    /* allocates space for the devices structure according to the
+    /* allocates space for the devices' structure according to the
     number of devices loaded into the sequence and then iterates
     over the sequence to create the various device structures */
     devices = (struct device_t *) malloc(sizeof(struct device_t) * count);
@@ -182,8 +182,8 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device->is_default = !strcmp(device->name, default_printer) ? 1 : 0;
     }
 
-    /* releases the memory from the sequence buffer, avoids any
-    memory leaking, it's not going to be used anymore */
+    /* releases the memory from the sequence buffer and avoids any
+    memory leaks, it's not going to be used anymore */
     free(sequence);
 
     /* updates the devices pointer and the number of devices
@@ -212,7 +212,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
         used for the parsing */
         buffer = data;
     }
-    /* otherwise the data must be read from the local
+    /* otherwise, the data must be read from the local
     file system */
     else {
         /* creates the file object reference and opens
@@ -221,14 +221,14 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
         fopen_s(&file, "default.binie", "rb");
 
         /* retrieves the size of the file by seeking
-        to the end of it an then retrieving the offset */
+        to the end of it and then retrieving the offset */
         fseek(file, 0, SEEK_END);
         size_t size = ftell(file);
         fseek(file, 0, SEEK_SET);
 
         /* allocates space for the buffer to hold the binie
         document file and then reads it into it, closing the
-        file afterwards */
+        file afterward */
         buffer = (char *) malloc(size);
         fread(buffer, sizeof(char), size, file);
         fclose(file);
@@ -250,7 +250,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
         if(!result) { return -1; }
         context = print_dialog.hDC;
     }
-    /* otherwise the default printer is retrieved */
+    /* otherwise, the default printer is retrieved */
     else {
         /* retrieves the default printer as the
         the default context for printing */
@@ -270,7 +270,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
     document_information.fwType = 0;
 
     /* builds the document information and prints
-    it on finishing it (print on close document) */
+    it on finishing it (print on closed document) */
     StartDoc(context, &document_information);
     StartPage(context);
 
@@ -288,7 +288,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
 
     /* retrieves the various characteristics of the media for
     the current context so that the size and the density values
-    are retrieved as their going to be used in the print operation */
+    are retrieved as they are going to be used in the print operation */
     int vertical_res = GetDeviceCaps(context, VERTRES);
     int pixel_density = GetDeviceCaps(context, LOGPIXELSY);
     int vertical_size = (int) ((float) vertical_res / pixel_density * MM_PER_INCH);
@@ -354,8 +354,8 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 text = (char *) text_element_header + sizeof(struct text_element_header_t);
                 weight = FW_DONTCARE;
 
-                /* in case the text weight is greater than zero it's
-                considered to be bold sized */
+                /* in case the text weight is greater than zero, it's
+                considered to be bold-sized */
                 if(text_element_header->text_weight > 0) { weight = FW_BOLD; }
 
                 /* creates the correct front to display the current text
@@ -389,11 +389,11 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 GetTextExtentPointW(context, text_unicode, lstrlenW(text_unicode), &text_size);
                 GetClipBox(context, &clip_box);
 
-                /* in case the block width and height are defined a block is defined
+                /* in case the block width and height are defined, a block is defined
                 so the variable defining the block should be set */
                 is_block = text_element_header->block_width != 0 && text_element_header->block_height != 0;
 
-                /* in case the current text is defined inside a block the
+                /* in case the current text is defined inside a block, the
                 clip box must be changed accordingly, these values are measured
                 as twips and not millimeters (logical units) */
                 if(is_block) {
@@ -407,15 +407,15 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 and using the current font scale factor */
                 text_x = (text_element_header->margin_left - text_element_header->margin_right) * FONT_SCALE_FACTOR;
 
-                /* in case the text align is left */
+                /* in case the text-align is left */
                 if(text_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
                     text_x += clip_box.left;
                 }
-                /* in case the text align is right */
+                /* in case the text-align is right */
                 else if(text_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
                     text_x += clip_box.right - text_size.cx;
                 }
-                /* in case the text align is left */
+                /* in case the text-align is left */
                 else if(text_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
                     text_x += clip_box.left + (clip_box.right - clip_box.left) / 2 - text_size.cx / 2;
                 }
@@ -433,12 +433,12 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 text_y_bottom_millimeter = ceil(text_y_bottom_millimeter * 100.0) / 100.0;
 
                 /* uses the bottom position of the text in millimeters and
-                divides (integer division) it over the page size to check
+                divides (integer division) over the page size to check
                 the current page number (index) */
                 new_page = (int) (text_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
-                there is a new page must be "built" */
+                there is a new page that must be "built" */
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
@@ -456,23 +456,23 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                     current_page = new_page;
                     page_offset += (int) page_size_twips;
                 }
-                /* otherwise sets the new page with the value of the current
-                page as expected for default behaviour */
+                /* otherwise, sets the new page with the value of the current
+                page as expected for default behavior */
                 else { new_page = current_page; }
 
-                /* increments the current text vertical position by the vertical
+                /* increments the current text's vertical position by the vertical
                 offset for the current page position */
                 text_y += page_offset;
 
                 /* resets the text y position in case the value is greater
-                than the maximum zero value, otherwise uses the "normal" text
+                then the maximum zero value, otherwise uses the "normal" text
                 y position value (default case) */
                 if(text_y > 0) {
                     page_offset -= text_y;
                     text_y = 0;
                 }
 
-                /* outputs the text to the current drawing context an for the
+                /* outputs the text to the current drawing context for the
                 provided (calculated) coordinates */
                 TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
@@ -487,13 +487,13 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 break;
 
             case IMAGE_VALUE:
-                /* "casts" the element header as image element header an retrieves
-                the image part from it */
+                /* "casts" the element header as the image element header 
+                and retrieves the image part from it */
                 image_element_header = (struct image_element_header_t *) element_header;
                 image = (char *) image_element_header + sizeof(struct image_element_header_t);
 
                 /* retrieves the temporary path (directory) and then uses it to
-                generate a temporary path for out image file */
+                generate a temporary path for our image file */
                 GetTempPath(1024, directory_buffer);
                 GetTempFileName(directory_buffer, "default", 0, path);
 
@@ -523,7 +523,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 remove(path);
 
                 /* calculates the pixel divisor (resizing for text mode) and
-                calculates the multipler for the image size */
+                calculates the multiplier for the image size */
                 divisor = TWIPS_PER_INCH / pixel_density;
                 multiplier = (double) IMAGE_SCALE_FACTOR / divisor;
 
@@ -531,11 +531,11 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 image context (the place where it's going to be drawn) */
                 GetClipBox(context, &clip_box);
 
-                /* in case the block width and height are defined a block is defined
+                /* in case the block width and height are defined, a block is defined
                 so the variable defining the block should be set */
                 is_block = image_element_header->block_width != 0 && image_element_header->block_height != 0;
 
-                /* in case the current image is defined inside a block the
+                /* in case the current image is defined inside a block, the
                 clip box must be changed accordingly, these values are measured
                 as twips and not millimeters (logical units) */
                 if(is_block) {
@@ -557,15 +557,15 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 scaled_width = (float) bitmap.bmWidth * (float) multiplier;
                 scaled_height = (float) bitmap.bmHeight * (float) multiplier;
 
-                /* in case the text align is left */
+                /* in case the text-align is left */
                 if(image_element_header->text_align == LEFT_TEXT_ALIGN_VALUE) {
                     image_x = clip_box_pixel.left;
                 }
-                /* in case the text align is right */
+                /* in case the text-align is right */
                 else if(image_element_header->text_align == RIGHT_TEXT_ALIGN_VALUE) {
                     image_x = clip_box_pixel.right - (int) scaled_width;
                 }
-                /* in case the text align is left */
+                /* in case the text-align is left */
                 else if(image_element_header->text_align == CENTER_TEXT_ALIGN_VALUE) {
                     image_x = clip_box_pixel.left + (clip_box_pixel.right - clip_box_pixel.left) / 2 -
                         (int) (scaled_width / 2);
@@ -577,14 +577,14 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 image_y_bottom_millimeter = (double) image_y_bottom / TWIPS_PER_INCH * MM_PER_INCH;
 
                 /* uses the bottom position of the image in millimeters and
-                divides (integer division) it over the page size to check
-                the current page number (index) note that if the current
-                image is inside a block no page is changed (default layout
+                divides (integer division) over the page size to check
+                the current page number (index), note that if the current
+                image is inside a block, no page is changed (default layout
                 rules, clipping should apply) */
                 new_page = is_block ? current_page : (int) (image_y_bottom_millimeter / vertical_size);
 
                 /* checks if there is a new page for writing, in case
-                there is a new page must be "built" */
+                there is a new page that must be "built" */
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
@@ -602,8 +602,8 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                     current_page = new_page;
                     page_offset += (int) page_size_twips;
                 }
-                /* otherwise sets the new page with the value of the current
-                page as expected for default behaviour */
+                /* otherwise, sets the new page with the value of the current
+                page as expected for default behavior */
                 else { new_page = current_page; }
 
                 /* calculates the vertical position to be used in the image and
@@ -612,7 +612,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 image_y += page_offset;
 
                 /* resets the image y position in case the value is greater
-                than the maximum zero value, otherwise uses the "normal" image
+                then the maximum zero value, otherwise uses the "normal" image
                 y position value (default case) */
                 if(image_y > 0) {
                     page_offset -= image_y;
@@ -623,8 +623,8 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 the divisor for text mode scale */
                 image_y = (int) ((double) image_y / divisor) * -1;
 
-                /* switches the map mode to text (pixel oriented) and writes
-                the image into the current context, then switches back to the
+                /* switches the map mode to text (pixel-oriented) and writes
+                the image into the current context, then switch back to the
                 previous map mode */
                 previous_mode = GetMapMode(context);
                 SetMapMode(context, MM_TEXT);
@@ -643,7 +643,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 );
                 SetMapMode(context, previous_mode);
 
-                /* selectes the bitmap for the context and then deletes the
+                /* selects the bitmap for the context and then deletes the
                 "just" generated drawing context */
                 SelectBitmap(image_context, handle_image);
                 DeleteDC(image_context);

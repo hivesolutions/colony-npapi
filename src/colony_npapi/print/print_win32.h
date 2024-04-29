@@ -190,6 +190,11 @@ typedef struct document_t {
 COLONY_EXPORT_PREFIX HDC get_default_printer(char *name, int width, int height);
 
 /**
+ * Same as `get_default_printer`.
+ */
+COLONY_EXPORT_PREFIX HDC get_printer(char *name, int width, int height);
+
+/**
  * Shows the printing dialog for printer selection, the return
  * value reflects the success of the calling.
  *

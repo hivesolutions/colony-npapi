@@ -29,6 +29,10 @@
 #include "print_win32.h"
 
 HDC get_default_printer(char *name, int width, int height) {
+    return get_printer(name, width, height);
+}
+
+HDC get_printer(char *name, int width, int height) {
     /* allocates space for the dev mode related
     structures used to customize the default values
     of the printing operation */
@@ -247,11 +251,11 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
         if(!result) { return -1; }
         context = print_dialog.hDC;
     }
-    /* otherwise, the default printer is retrieved */
+    /* otherwise, the requested printer is retrieved */
     else {
-        /* retrieves the default printer as the
+        /* retrieves the requested printer as the
         the default context for printing */
-        context = get_default_printer(
+        context = get_printer(
             printer,
             document_header->width,
             document_header->height
@@ -484,7 +488,7 @@ int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
                 break;
 
             case IMAGE_VALUE:
-                /* "casts" the element header as the image element header 
+                /* "casts" the element header as the image element header
                 and retrieves the image part from it */
                 image_element_header = (struct image_element_header_t *) element_header;
                 image = (char *) image_element_header + sizeof(struct image_element_header_t);

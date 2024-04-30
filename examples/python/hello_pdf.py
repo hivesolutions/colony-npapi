@@ -22,5 +22,5 @@ dir_name = os.path.dirname(os.path.abspath(__file__))
 npcolony.print_printer_base64(
     "Microsoft Print to PDF",
     HELLO_WORLD_B64,
-    dict(output_path=os.path.join(dir_name, "output.pdf")),
+    options=dict(output_path=os.path.join(dir_name, "output.pdf")),
 )

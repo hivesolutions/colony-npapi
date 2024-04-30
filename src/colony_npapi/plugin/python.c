@@ -229,7 +229,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         PyObject *value = PyDict_GetItemString(options, "output_path");
         if (value != NULL) {
 #if PY_MAJOR_VERSION >= 3
-            output_path = PyUnicode_AsUTF8(value);
+            output_path = (char *) PyUnicode_AsUTF8(value);
 #else
             output_path = PyString_AsString(value);
 #endif

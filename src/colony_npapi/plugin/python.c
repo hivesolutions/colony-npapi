@@ -205,7 +205,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     PyObject *value;
     PyObject *options;
     size_t data_length;
-	struct job_t job = {NULL, 0};
+    struct job_t job = {NULL, 0};
     static char *kwlist[] = {"options", NULL};
 
     /* tries to parse the provided sequence of arguments

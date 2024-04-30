@@ -203,10 +203,10 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     char *printer;
     char *input;
     PyObject *value;
-    PyObject *options;
     size_t data_length;
+    PyObject *options = NULL;
     struct job_t job = {NULL, 0};
-    static char *kwlist[] = {"options", NULL};
+    static char *kwlist[] = {"printer", "data", "options", NULL};
 
     /* tries to parse the provided sequence of arguments
     as a single string value that is going to be used as
@@ -215,6 +215,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         args,
         kwargs,
         "ss|O!",
+        kwlist,
         &printer,
         &input,
         &PyDict_Type,
@@ -225,9 +226,9 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
 
     // in case options were set then we can build the job
     // options to be used in the print operation
-    if (options != NULL) {
+    if(options != NULL) {
         value = PyDict_GetItemString(options, "output_path");
-        if (value != NULL) {
+        if(value != NULL) {
 #if PY_MAJOR_VERSION >= 3
             job.output_path = (char *) PyUnicode_AsUTF8(value);
 #else
@@ -261,7 +262,7 @@ static PyMethodDef colony_functions[] = {
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},
-    {"print_printer_base64", (PyCFunction) print_printer_base64, METH_VARARGS | METH_KEYWORDS, "Prints a Base64 based sequence of data in a specific printer."},
+    {"print_printer_base64", (PyCFunction) print_printer_base64, METH_VARARGS | METH_KEYWORDS, "Prints a Base64 based sequence of data in a specific printer with optional options."},
     {NULL, NULL, 0, NULL}
 };
 

@@ -377,14 +377,14 @@ NPError nevv(NPMIMEType plugin_type, NPP instance, uint16_t mode, int16_t argc, 
 
 #ifdef COLONY_PLATFORM_MACOSX
     NPBool has_cg = false;
-    if (npnfuncs->getvalue(instance, NPNVsupportsCoreGraphicsBool, &has_cg) == NPERR_NO_ERROR && has_cg) {
+    if(npnfuncs->getvalue(instance, NPNVsupportsCoreGraphicsBool, &has_cg) == NPERR_NO_ERROR && has_cg) {
         npnfuncs->setvalue(instance, NPPVpluginDrawingModel, (void *) NPDrawingModelCoreGraphics);
     } else {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 
     NPBool has_cocoa = false;
-    if (npnfuncs->getvalue(instance, NPNVsupportsCocoaBool, &has_cocoa) == NPERR_NO_ERROR && has_cocoa) {
+    if(npnfuncs->getvalue(instance, NPNVsupportsCocoaBool, &has_cocoa) == NPERR_NO_ERROR && has_cocoa) {
         npnfuncs->setvalue(instance, NPPVpluginEventModel, (void *) NPEventModelCocoa);
     } else {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;

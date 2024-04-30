@@ -278,7 +278,11 @@ int print_printer(
     DOCINFO document_information;
     document_information.cbSize = sizeof(DOCINFO);
     document_information.lpszDocName = document_header->title;
-    document_information.lpszOutput = NULL;
+    if(config == NULL || config->output_path == NULL) {
+        document_information.lpszOutput = NULL;
+    } else {
+        document_information.lpszOutput = config->output_path;
+    }
     document_information.fwType = 0;
 
     /* builds the document information and prints

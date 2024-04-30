@@ -73,15 +73,6 @@
 #define CENTER_TEXT_ALIGN_VALUE 3
 
 /**
- * Structure that describes a (printing) job
- * to be processed in the NPAPI context.
- */
-typedef struct job_t {
-    char *output_path;
-    size_t urgency;
-} job;
-
-/**
  * Structure defining a position int a two-axis
  * based system.
  */
@@ -220,6 +211,15 @@ COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Structure that describes a (printing) job
+ * to be processed in the NPAPI context.
+ */
+typedef struct job_t {
+    char *output_path;
+    size_t urgency;
+} job;
 
 /**
  * Structure that defines and identifies a

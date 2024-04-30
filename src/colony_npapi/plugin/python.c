@@ -204,8 +204,8 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     char *input;
     PyObject *value;
     PyObject *options;
-	char *output_path;
     size_t data_length;
+	struct job_t job = {NULL, 0};
     static char *kwlist[] = {"options", NULL};
 
     /* tries to parse the provided sequence of arguments
@@ -226,12 +226,12 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     // in case options were set then we can build the job
     // options to be used in the print operation
     if (options != NULL) {
-        PyObject *value = PyDict_GetItemString(options, "output_path");
+        value = PyDict_GetItemString(options, "output_path");
         if (value != NULL) {
 #if PY_MAJOR_VERSION >= 3
-            output_path = (char *) PyUnicode_AsUTF8(value);
+            job.output_path = (char *) PyUnicode_AsUTF8(value);
 #else
-            output_path = PyString_AsString(value);
+            job.output_path = PyString_AsString(value);
 #endif
         }
     }
@@ -244,7 +244,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         (unsigned char **) &data,
         &data_length
     );
-    print_printer(FALSE, printer, NULL, data, data_length);
+    print_printer(FALSE, printer, &job, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */

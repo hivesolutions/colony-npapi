@@ -202,7 +202,9 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     char *data;
     char *printer;
     char *input;
-    PyObject *options = NULL;
+    PyObject *value;
+    PyObject *options;
+	char *output_path;
     size_t data_length;
     static char *kwlist[] = {"options", NULL};
 
@@ -221,7 +223,18 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         return NULL;
     }
 
-    //@TODO é aqui que tenho de por o optional argument
+    // in case options were set then we can build the job
+    // options to be used in the print operation
+    if (options != NULL) {
+        PyObject *value = PyDict_GetItemString(options, "output_path");
+        if (value != NULL) {
+#if PY_MAJOR_VERSION >= 3
+            output_path = PyUnicode_AsUTF8(value);
+#else
+            output_path = PyString_AsString(value);
+#endif
+        }
+    }
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */

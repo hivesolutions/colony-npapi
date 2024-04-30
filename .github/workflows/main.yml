@@ -60,6 +60,27 @@ jobs:
     strategy:
       matrix:
         python-version: [
+          3.9,
+          "3.10",
+          "3.11",
+          "3.12"
+        ]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python --version
+      - run: pip install setuptools
+      - run: python setup.py build
+      - run: python setup.py test
+  build-macos-legacy:
+    name: Build MacOS Legacy
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
           3.5,
           3.6,
           3.7,

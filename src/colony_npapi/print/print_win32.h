@@ -176,8 +176,12 @@ typedef struct document_t {
  * This function is useful for situations where no print
  * dialog is wanted (fast printing).
  *
+ * Even though this function was designed to return the
+ * default system printer it allows the retrieval of a
+ * specific printer in case the name param is provided.
+ *
  * @param name The printer's name is to be retrieved. If
- * this value is not provided, the default printer is used.
+ * this value is not provided the default printer is used.
  * @param width Optional parameter that allows the retrieved
  * context to be configured with the desired width (in decimal
  * parts of millimeter).
@@ -190,7 +194,7 @@ typedef struct document_t {
 COLONY_EXPORT_PREFIX HDC get_default_printer(char *name, int width, int height);
 
 /**
- * Same as `get_default_printer`.
+ * Same as `get_default_printer`, contains the specific implementation.
  */
 COLONY_EXPORT_PREFIX HDC get_printer(char *name, int width, int height);
 

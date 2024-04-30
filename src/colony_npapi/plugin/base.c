@@ -290,7 +290,7 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
         (unsigned char **) &data,
         &data_length
     );
-    print(show_dialog, (char *) data, data_length);
+    print(show_dialog, NULL, (char *) data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */

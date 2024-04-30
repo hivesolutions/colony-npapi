@@ -71,7 +71,7 @@ void print_hello() {
         strlen(HELLO_WORLD_B64),
         (unsigned char **) &data, &data_length
     );
-    print(FALSE, data, data_length);
+    print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
@@ -113,7 +113,7 @@ void print_base64(char *file_path) {
     and then sends then decodes them as base 64 */
     fread(buffer, sizeof(char), file_size, file);
     decode_base64(buffer, file_size, (unsigned char **) &data, &data_length);
-    print(FALSE, data, data_length);
+    print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */

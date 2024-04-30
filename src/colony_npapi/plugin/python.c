@@ -152,7 +152,7 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
         (unsigned char **) &data,
         &data_length
     );
-    print(FALSE, data, data_length);
+    print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
@@ -185,7 +185,7 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
         (unsigned char **) &data,
         &data_length
     );
-    print(FALSE, data, data_length);
+    print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
@@ -196,20 +196,32 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
-static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
+static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *kwargs) {
     /* allocates space for the decoded data buffer and for
     the storage of the length (size) of it */
     char *data;
     char *printer;
     char *input;
+    PyObject *options = NULL;
     size_t data_length;
+    static char *kwlist[] = {"options", NULL};
 
     /* tries to parse the provided sequence of arguments
     as a single string value that is going to be used as
     the input value for the printing of the page */
-    if(PyArg_ParseTuple(args, "ss", &printer, &input) == FALSE) {
+    if(PyArg_ParseTupleAndKeywords(
+        args,
+        kwargs,
+        "ss|O!",
+        &printer,
+        &input,
+        &PyDict_Type,
+        &options
+    ) == FALSE) {
         return NULL;
     }
+
+    //@TODO é aqui que tenho de por o optional argument
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
@@ -219,7 +231,7 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args) {
         (unsigned char **) &data,
         &data_length
     );
-    print_printer(FALSE, printer, data, data_length);
+    print_printer(FALSE, printer, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
@@ -236,7 +248,7 @@ static PyMethodDef colony_functions[] = {
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},
-    {"print_printer_base64", print_printer_base64, METH_VARARGS, "Prints a Base64 based sequence of data in a specific printer."},
+    {"print_printer_base64", (PyCFunction) print_printer_base64, METH_VARARGS | METH_KEYWORDS, "Prints a Base64 based sequence of data in a specific printer."},
     {NULL, NULL, 0, NULL}
 };
 

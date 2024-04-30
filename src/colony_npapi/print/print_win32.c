@@ -193,11 +193,22 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     *devices_c = count;
 }
 
-int print(bool show_dialog, char *data, size_t size) {
-    return print_printer(show_dialog, NULL, data, size);
+int print(
+    bool show_dialog,
+    struct job_t *config,
+    char *data,
+    size_t size
+) {
+    return print_printer(show_dialog, NULL, config, data, size);
 }
 
-int print_printer(bool show_dialog, char *printer, char *data, size_t size) {
+int print_printer(
+    bool show_dialog,
+    char *printer,
+    struct job_t *config,
+    char *data,
+    size_t size
+) {
     /* reserves space for the printing context to be
     used in the current operation */
     HDC context;

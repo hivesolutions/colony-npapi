@@ -31,6 +31,15 @@ extern "C" {
 #endif
 
 /**
+ * Structure that describes a (printing) job
+ * to be processed in the NPAPI context.
+ */
+typedef struct job_t {
+    char *output_path;
+    size_t urgency;
+} job;
+
+/**
  * Structure that defines and identifies a
  * printing device in a neutral manner.
  *
@@ -85,6 +94,7 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  *
  * @param show_dialog If the printing dialog should be displayed for
  * printer selection.
+ * @param config The job configuration for the print operation.
  * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
  * @param size The size of the buffer of encoded data that was
@@ -92,7 +102,12 @@ COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_
  * @return The result of the printing process, if successful, a value
  * greater than zero should be returned.
  */
-COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
+COLONY_EXPORT_PREFIX int print(
+    bool show_dialog,
+    struct job_t *config,
+    char *data,
+    size_t size
+);
 
 /**
  * Prints a document using the provided printer or in case the show
@@ -106,7 +121,8 @@ COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
  * @param show_dialog If the printing dialog should be displayed for
  * printer selection.
  * @param printer The printer's name is to be used in the print
-* operation (only used in case the show dialog is not set).
+ * operation (only used in case the show dialog is not set).
+ * @param config The job configuration for the print operation.
  * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
  * @param size The size of the buffer of encoded data that was
@@ -114,7 +130,13 @@ COLONY_EXPORT_PREFIX int print(bool show_dialog, char *data, size_t size);
  * @return The result of the printing process, if successful, a value
  * greater than zero should be returned.
  */
-COLONY_EXPORT_PREFIX int print_printer(bool show_dialog, char *printer, char *data, size_t size);
+COLONY_EXPORT_PREFIX int print_printer(
+    bool show_dialog,
+    char *printer,
+    struct job_t *config,
+    char *data,
+    size_t size
+);
 
 #ifdef __cplusplus
 }

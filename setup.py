@@ -96,7 +96,7 @@ if os.name in ("nt",):
 try:
     setuptools.setup(
         name = "npcolony",
-        version = "1.1.5",
+        version = "1.2.0",
         author = "Hive Solutions Lda.",
         author_email = "development@hive.pt",
         description = "Colony Framework",
@@ -114,7 +114,7 @@ try:
         zip_safe = False,
         ext_modules = [module],
         classifiers = [
-            "Development Status :: 3 - Alpha",
+            "Development Status :: 5 - Production/Stable",
             "Topic :: Utilities",
             "License :: OSI Approved :: Apache Software License",
             "Operating System :: OS Independent",

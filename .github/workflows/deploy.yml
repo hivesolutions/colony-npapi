@@ -13,7 +13,7 @@ jobs:
     container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
-      - run: apt-get update && apt-get install -y -q libpng-dev
+      - run: apt-get update && apt-get install -y libcups2-dev
       - run: python --version
       - run: python setup.py build
       - run: python setup.py test

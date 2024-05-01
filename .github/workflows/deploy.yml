@@ -5,7 +5,7 @@ on:
       - "*"
 jobs:
   build:
-    name: Build Python
+    name: Build
     strategy:
       matrix:
         python-version: [2.7]

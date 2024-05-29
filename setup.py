@@ -74,7 +74,11 @@ module = setuptools.Extension(
             "-DCOLONY_PLATFORM_UNIX",
         ]
     ),
-    sources=glob.glob("src/colony_npapi/**/*.c", recursive=True),
+    sources=glob.glob("src/colony_npapi/*.c")
+    + glob.glob("src/colony_npapi/encoding/*.c")
+    + glob.glob("src/colony_npapi/plugin/*.c")
+    + glob.glob("src/colony_npapi/print/*.c")
+    + glob.glob("src/colony_npapi/system/*.c"),
 )
 
 if os.name in ("nt",):
@@ -93,7 +97,11 @@ try:
         test_suite="npcolony_py.test",
         package_dir={"": os.path.normpath("src/python")},
         package_data={
-            "npcolony_py": glob.glob("src/colony_npapi/**/*.h", recursive=True),
+            "npcolony_py": glob.glob("src/colony_npapi/*.h")
+            + glob.glob("src/colony_npapi/encoding/*.h")
+            + glob.glob("src/colony_npapi/plugin/*.h")
+            + glob.glob("src/colony_npapi/print/*.h")
+            + glob.glob("src/colony_npapi/system/*.h"),
         },
         zip_safe=False,
         ext_modules=[module],

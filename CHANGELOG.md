@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Final fix for missing headers using `MANIFEST.in`
 
 ## [1.2.4] - 2024-05-29
 

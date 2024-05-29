@@ -29,7 +29,6 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
-import glob
 import setuptools
 
 
@@ -74,11 +73,18 @@ module = setuptools.Extension(
             "-DCOLONY_PLATFORM_UNIX",
         ]
     ),
-    sources=glob.glob("src/colony_npapi/*.c")
-    + glob.glob("src/colony_npapi/encoding/*.c")
-    + glob.glob("src/colony_npapi/plugin/*.c")
-    + glob.glob("src/colony_npapi/print/*.c")
-    + glob.glob("src/colony_npapi/system/*.c"),
+    sources=[
+        "src/**/*.h",
+        "src/colony_npapi/stdafx.c",
+        "src/colony_npapi/encoding/base_64.c",
+        "src/colony_npapi/plugin/base.c",
+        "src/colony_npapi/plugin/python.c",
+        "src/colony_npapi/plugin/util.c",
+        "src/colony_npapi/print/print_unix.c",
+        "src/colony_npapi/print/print_win32.c",
+        "src/colony_npapi/system/gui_unix.c",
+        "src/colony_npapi/system/gui_win32.c",
+    ],
 )
 
 if os.name in ("nt",):
@@ -96,13 +102,6 @@ try:
         packages=["npcolony_py", "npcolony_py.test"],
         test_suite="npcolony_py.test",
         package_dir={"": os.path.normpath("src/python")},
-        package_data={
-            "npcolony_py": glob.glob("src/colony_npapi/*.h")
-            + glob.glob("src/colony_npapi/encoding/*.h")
-            + glob.glob("src/colony_npapi/plugin/*.h")
-            + glob.glob("src/colony_npapi/print/*.h")
-            + glob.glob("src/colony_npapi/system/*.h"),
-        },
         zip_safe=False,
         ext_modules=[module],
         classifiers=[

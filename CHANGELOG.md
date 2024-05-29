@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* New fix for header info in package data
 
 ## [1.2.2] - 2024-05-01
 

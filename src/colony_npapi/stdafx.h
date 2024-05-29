@@ -150,7 +150,7 @@ unsigned char *description_colony_npapi();
 
 #define NPCOLONY_NAME "Colony Gateway Plugin"
 #define NPCOLONY_DESCRIPTION "<a href=\"http://getcolony.com/\">Colony Gateway</a> plugin."
-#define NPCOLONY_VERSION "1.2.4"
+#define NPCOLONY_VERSION "1.2.5"
 #define NPCOLONY_MIME "application/x-colony-gateway:colony:gateway@getcolony.com";
 #define NPCOLONY_BINIE "binie"
 #define NPCOLONY_PDF "pdf"

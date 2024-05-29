@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Issue with inclusion of header files in `setup.py`
 
 ## [1.2.1] - 2024-05-01
 

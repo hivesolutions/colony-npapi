@@ -74,7 +74,6 @@ module = setuptools.Extension(
         ]
     ),
     sources=[
-        "src/**/*.h",
         "src/colony_npapi/stdafx.c",
         "src/colony_npapi/encoding/base_64.c",
         "src/colony_npapi/plugin/base.c",

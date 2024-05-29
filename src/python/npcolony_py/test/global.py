@@ -5,6 +5,7 @@ import unittest
 
 import npcolony
 
+
 class GlobalTest(unittest.TestCase):
 
     def test_basic(self):

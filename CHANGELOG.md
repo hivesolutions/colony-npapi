@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.2.6] - 2024-05-29
+
+### Fixed
+
 * Removed extra line with *.h inclusion
 
 ## [1.2.5] - 2024-05-29

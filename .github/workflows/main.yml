@@ -31,6 +31,7 @@ jobs:
       - run: python setup.py build
       - run: |
           pip install pytest
+          python setup.py install
           pytest
       - run: python setup.py test
         if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
@@ -59,6 +60,7 @@ jobs:
       - run: python setup.py build
       - run: |
           pip install pytest
+          python setup.py install
           pytest
       - run: python setup.py test
         if: matrix.python-version != '3.12'
@@ -84,6 +86,7 @@ jobs:
       - run: python setup.py build
       - run: |
           pip install pytest
+          python setup.py install
           pytest
       - run: python setup.py test
         if: matrix.python-version != '3.12'
@@ -115,6 +118,7 @@ jobs:
       - run: python setup.py build
       - run: |
           pip install pytest
+          python setup.py install
           pytest
       - run: python setup.py test
         if: matrix.python-version != '3.12'

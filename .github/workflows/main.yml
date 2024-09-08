@@ -29,6 +29,7 @@ jobs:
       - run: apt-get update && apt-get install -y libcups2-dev
       - run: python --version
       - run: python setup.py build
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
       - run: |
           pip install pytest
           pip install .
@@ -64,7 +65,7 @@ jobs:
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12'
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
   build-macos:
     name: Build MacOS
     timeout-minutes: 10

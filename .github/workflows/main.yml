@@ -58,6 +58,7 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
       - run: |
           pip install pytest
           pip install .

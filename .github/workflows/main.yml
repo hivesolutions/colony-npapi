@@ -84,12 +84,13 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12'
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
   build-macos-legacy:
     name: Build MacOS Legacy
     timeout-minutes: 10
@@ -116,9 +117,10 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12'
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'

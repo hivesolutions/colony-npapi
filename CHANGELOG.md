@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.2.10] - 2026-02-24
+
+### Fixed
+
+* Upload only sdist to PyPI to avoid rejected `linux_x86_64` wheel platform tag
+
 ## [1.2.9] - 2026-02-24
 
 ### Fixed

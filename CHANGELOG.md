@@ -19,6 +19,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.2.7] - 2026-02-24
+
+### Added
+
+* Support for Python 3.13 and 3.14 in CI
+
+### Changed
+
+* Updated CI workflows with archived Debian repos fix for EOL distributions
+* Migrated deploy workflow to use `python -m build` instead of `setup.py sdist`
+
+### Fixed
+
+* Fixed `mkstemp` implicit declaration error on GCC 14+ by defining `_GNU_SOURCE`
+* Fixed `setuptools` compatibility for newer Python versions
+
 ## [1.2.6] - 2024-05-29
 
 ### Fixed

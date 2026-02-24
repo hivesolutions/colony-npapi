@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Skip `setup.py build` for modern Python versions in deploy workflow
+*
 
 ### Fixed
 
 *
+
+## [1.2.8] - 2026-02-24
+
+### Changed
+
+* Skip `setup.py build` for modern Python versions in deploy workflow
 
 ## [1.2.7] - 2026-02-24
 

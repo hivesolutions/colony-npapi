@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Skip `setup.py build` for modern Python versions in deploy workflow
 
 ### Fixed
 

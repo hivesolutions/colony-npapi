@@ -19,6 +19,8 @@ jobs:
           "3.10",
           "3.11",
           "3.12",
+          "3.13",
+          "3.14",
           latest,
           rc
         ]
@@ -26,16 +28,24 @@ jobs:
     container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
+      - name: Fix archived Debian repos (Buster/Stretch EOL)
+        run: |
+          if grep -q "deb.debian.org\|security.debian.org" /etc/apt/sources.list 2>/dev/null; then
+            sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list
+            sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list
+            sed -i '/buster-updates/d' /etc/apt/sources.list
+            sed -i '/stretch-updates/d' /etc/apt/sources.list
+          fi
       - run: apt-get update && apt-get install -y libcups2-dev
       - run: python --version
       - run: python setup.py build
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
   build-windows:
     name: Build Windows
     timeout-minutes: 10
@@ -48,7 +58,9 @@ jobs:
           3.9,
           "3.10",
           "3.11",
-          "3.12"
+          "3.12",
+          "3.13",
+          "3.14"
         ]
     runs-on: windows-latest
     steps:
@@ -59,13 +71,13 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
   build-macos:
     name: Build MacOS
     timeout-minutes: 10
@@ -75,7 +87,9 @@ jobs:
           3.9,
           "3.10",
           "3.11",
-          "3.12"
+          "3.12",
+          "3.13",
+          "3.14"
         ]
     runs-on: macos-latest
     steps:
@@ -86,13 +100,13 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
   build-macos-legacy:
     name: Build MacOS Legacy
     timeout-minutes: 10
@@ -106,7 +120,9 @@ jobs:
           3.9,
           "3.10",
           "3.11",
-          "3.12"
+          "3.12",
+          "3.13",
+          "3.14"
         ]
     runs-on: macos-13
     steps:
@@ -119,10 +135,10 @@ jobs:
       - run: python --version
       - run: pip install setuptools
       - run: python setup.py build
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
       - run: |
           pip install pytest
           pip install .
           pytest
       - run: python setup.py test
-        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}

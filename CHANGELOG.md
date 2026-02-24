@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.2.9] - 2026-02-24
+
+### Fixed
+
 * pytest execution in deploy workflow for modern Python versions
 
 ## [1.2.8] - 2026-02-24

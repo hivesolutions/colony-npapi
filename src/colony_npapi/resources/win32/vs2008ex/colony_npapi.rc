@@ -51,7 +51,7 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Hive Solutions Lda."
-            VALUE "FileDescription", "1.2.8"
+            VALUE "FileDescription", "1.2.9"
             VALUE "FileExtents", "colony"
             VALUE "FileOpenName", "Colony Gateway Plugin"
             VALUE "FileVersion", "1, 0, 0, 1"

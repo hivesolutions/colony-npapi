@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Crash when printing on a Linux system without printers - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 * File descriptor leak on every Linux print job - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 * Failed prints reported as successful - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Memory leak when listing the printers
 
 ## [1.2.10] - 2026-02-24
 

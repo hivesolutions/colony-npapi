@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import base64
 import shutil
 import tempfile
@@ -46,6 +47,19 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(
                 device["bottom"] <= device["top"] <= device["length"], True
             )
+
+    def test_get_devices_references(self):
+        devices = npcolony.get_devices()
+        controls = [dict(value=float(index) + 0.5) for index in range(len(devices))]
+        for index in range(len(devices)):
+            self.assertEqual(
+                sys.getrefcount(devices[index]), sys.getrefcount(controls[index])
+            )
+            for key in ("width", "length", "left", "bottom", "right", "top"):
+                self.assertEqual(
+                    sys.getrefcount(devices[index][key]),
+                    sys.getrefcount(controls[index]["value"]),
+                )
 
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path(self):

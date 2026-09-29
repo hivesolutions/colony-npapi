@@ -57,7 +57,9 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
 
     /* retrieves the complete set of available printing
     devices and then iterates over them to convert their
-    internal structure into dictionaries to be returned */
+    internal structure into dictionaries to be returned, note
+    that each value (and dictionary) reference is released once
+    it's owned by its container (avoids memory leaks) */
     pdevices(&devices, &devices_s);
     for(index = 0; index < devices_s; index++) {
         device = &devices[index];
@@ -78,8 +80,10 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         );
 #endif
         PyDict_SetItemString(element, "name", item);
+        Py_DECREF(item);
         item = PyBool_FromLong((long) device->is_default);
         PyDict_SetItemString(element, "is_default", item);
+        Py_DECREF(item);
 #if PY_MAJOR_VERSION >= 3
         item = PyUnicode_Decode(
             device->media,
@@ -96,19 +100,27 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         );
 #endif
         PyDict_SetItemString(element, "media", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->width);
         PyDict_SetItemString(element, "width", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->length);
         PyDict_SetItemString(element, "length", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->left);
         PyDict_SetItemString(element, "left", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->bottom);
         PyDict_SetItemString(element, "bottom", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->right);
         PyDict_SetItemString(element, "right", item);
+        Py_DECREF(item);
         item = PyFloat_FromDouble((double) device->top);
         PyDict_SetItemString(element, "top", item);
+        Py_DECREF(item);
         PyList_Append(result, element);
+        Py_DECREF(element);
     }
 
     /* releases the memory that was allocated for the

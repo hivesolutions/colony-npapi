@@ -1,0 +1,96 @@
+name: Review Workflow
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
+
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL || 'opus' }}
+  CLAUDE_EFFORT: ${{ vars.CLAUDE_EFFORT || 'max' }}
+
+jobs:
+  review:
+    name: Review with Claude
+    timeout-minutes: 30
+    if: github.event.pull_request.draft == false && github.event.pull_request.user.type != 'Bot'
+    runs-on: [self-hosted, ubuntu, latest]
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+      actions: read
+
+    steps:
+      - name: Cleanup the hosted runner
+        uses: joamag/cleanup-hosted@master
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Review pull request
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          use_sticky_comment: true
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request. Its branch is already checked out in the
+            working directory, and AGENTS.md holds the conventions of the
+            repository, which the review follows.
+
+            Look for, in this order:
+
+            1. Bugs and regressions: wrong behaviour, unhandled errors and edge
+               cases, memory errors in the native code (leaked memory, references
+               or GDI objects, buffers read or written out of their bounds and
+               memory used after being released), failures reported as success,
+               the Linux (CUPS) and Windows (GDI) implementations drifting apart,
+               and anything a test should have caught.
+            2. The rules of AGENTS.md the change may break: code that runs on
+               Python 2.7 and on Python 3.13 alike (both branches of the C API),
+               C code that builds as C99 on Linux and macOS and as C++ on
+               Windows, no type annotations in the `.py` files (they belong in
+               `.pyi` files), the black formatting, the CRLF line endings of the
+               files kept as they are, `not item in list` and `item == None`,
+               the commenting style of the project, and the version of
+               `setup.py` not bumped.
+            3. Tests: the new and changed code covered by tests written like the
+               existing ones, skipped only on the platforms where the behaviour
+               differs, and never printing on a real printer (print to file,
+               unknown printers or invalid data instead).
+            4. The documents the change should update: the unreleased section of
+               the changelog, the documentation of the functions in the headers
+               and the README.
+            5. Security: secrets, the data of a print job (the base 64 data, the
+               Binie documents, the printer names and the options) handled as
+               untrusted input by the native code, and the files written from it
+               (print to file and the temporary files).
+
+            Verify every finding against the code before reporting it, reading the
+            files around the diff and not the diff alone, and say how sure you
+            are. Leave out what black settles, praise and restatements of what
+            the change does: a short review of real findings is worth more than a
+            long one.
+
+            Report each finding as an inline comment on the line it is about,
+            saying what is wrong, why it matters and how to fix it, and use a
+            top-level comment for the summary: the findings by severity, or that
+            none was found.
+
+          claude_args: |
+            --model ${{ env.CLAUDE_MODEL }}
+            --effort ${{ env.CLAUDE_EFFORT }}
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

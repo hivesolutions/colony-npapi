@@ -143,6 +143,8 @@ class GlobalTest(unittest.TestCase):
     def test_get_devices_custom(self):
         devices = dict((device["name"], device) for device in npcolony.get_devices())
         if not "npcolony-test-custom" in devices:
+            if os.environ.get("NPCOLONY_TEST_CUSTOM", None):
+                self.fail("the npcolony-test-custom printer is not listed")
             self.skipTest("requires the npcolony-test-custom printer")
         self.assertEqual(
             devices["npcolony-test-custom"]["custom"],

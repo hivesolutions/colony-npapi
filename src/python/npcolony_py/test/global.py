@@ -106,6 +106,8 @@ class GlobalTest(unittest.TestCase):
         self.assertRaises(ValueError, lambda: npcolony.print_base64(""))
         self.assertRaises(ValueError, lambda: npcolony.print_base64("QUJDQ"))
         self.assertRaises(ValueError, lambda: npcolony.print_base64("===="))
+        self.assertRaises(ValueError, lambda: npcolony.print_base64("!!!!"))
+        self.assertRaises(ValueError, lambda: npcolony.print_base64("AA=A"))
 
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path(self):
@@ -120,7 +122,7 @@ class GlobalTest(unittest.TestCase):
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path_padding(self):
         path = os.path.join(self.target_dir, "output.pdf")
-        for data in (b"A", b"AB", b"ABC", b"ABCD"):
+        for data in (b"A", b"AB", b"ABC", b"ABCD", b"\xfb\xff"):
             result = npcolony.print_printer_base64(
                 "npcolony-test-printer",
                 base64.b64encode(data).decode("utf-8"),
@@ -215,6 +217,10 @@ class GlobalTest(unittest.TestCase):
             lambda: npcolony.print_printer_base64(
                 "npcolony-test-printer", "====", options=dict(title="npcolony")
             ),
+        )
+        self.assertRaises(
+            ValueError,
+            lambda: npcolony.print_printer_base64("npcolony-test-printer", "QQ==QUJD"),
         )
 
     @unittest.skipIf(os.name != "nt", "binie documents are only printed on windows")

@@ -49,6 +49,10 @@ int decode_base64(
     unsigned char **decoded_buffer_pointer,
     size_t *decoded_buffer_length_pointer
 ) {
+    /* allocates space for the index used in the verification
+    of the characters of the encoded buffer */
+    size_t index;
+
     /* in case the encoded buffer is empty or its length is not a
     multiple of four it's not a valid base 64 buffer and the operation
     returns in error (avoids the access to invalid memory) */
@@ -58,6 +62,14 @@ int decode_base64(
     in error in case there's more padding than the allowed (two) */
     unsigned int padding_count = _get_padding_count(encoded_buffer, encoded_buffer_length);
     if(padding_count > 2) { return -1; }
+
+    /* verifies that every character before the padding is part of the
+    base 64 alphabet, any other one (including a misplaced padding) is
+    looked up as zero, the same value as the (valid) A character */
+    for(index = 0; index < encoded_buffer_length - padding_count; index++) {
+        if(_lookup_fast_base64(encoded_buffer[index]) != 0) { continue; }
+        if(encoded_buffer[index] != 'A') { return -1; }
+    }
 
     /* allocates the decoded buffer, and assigns the decoded buffer length */
     _allocate_decoded_buffer(encoded_buffer_length, decoded_buffer_pointer, decoded_buffer_length_pointer, padding_count);

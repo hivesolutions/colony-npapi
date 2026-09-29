@@ -54,7 +54,8 @@ COLONY_EXPORT_PREFIX int encode_base64(
  * @param encoded_buffer_length The length of the encoded buffer to be decoded from base64.
  * @param decoded_buffer_pointer The pointer to the created (decoder) buffer.
  * @param decoded_buffer_length_pointer The length of the created (decoder) buffer.
- * @return The execution status.
+ * @return The execution status, zero in case of success or a negative value
+ * in case the encoded buffer is not valid base 64 (no buffer is created).
  */
 COLONY_EXPORT_PREFIX int decode_base64(
     unsigned char *encoded_buffer,

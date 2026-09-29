@@ -44,10 +44,11 @@ HDC get_printer(char *name, int width, int height) {
     define if the dimension values should be set */
     unsigned char set_values;
 
-    /* allocates a new buffer in the stack
-    and then set a long variable with the size
+    /* allocates a new buffer in the stack (and its unicode
+    version) and then set a long variable with the size
     of it to be used in the printer call */
     char buffer[BUFFER_SIZE];
+    wchar_t buffer_unicode[BUFFER_SIZE];
     unsigned long size = BUFFER_SIZE;
 
     /* creates the array of definitions to the default
@@ -60,17 +61,31 @@ HDC get_printer(char *name, int width, int height) {
     are both valid values) */
     set_values = width > 0 && height > 0;
 
-    /* retrieves the default printer and then
-    and then uses it to create the appropriate context */
-    if(name == NULL) { GetDefaultPrinter(buffer, &size); }
-    else { memcpy(buffer, name, strlen(name) + 1); }
-    OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults);
+    /* retrieves the default printer, in case no printer (or the default
+    one) is requested, or the requested one and then uses it to create
+    the appropriate context, returning in error in case there's no
+    default printer or the name of the printer is too long */
+    if(name == NULL || name[0] == '\0' || !strcmp(name, "default")) {
+        if(!GetDefaultPrinter(buffer, &size)) { return NULL; }
+    } else {
+        if(strlen(name) >= BUFFER_SIZE) { return NULL; }
+        memcpy(buffer, name, strlen(name) + 1);
+    }
+
+    /* opens the printer and in case it fails tries it again with the
+    name converted from UTF-8 (eg: python 3 strings) into the ANSI code
+    page of the windows API, returning in error in case it still fails */
+    if(!OpenPrinter(buffer, &printer, &printer_defaults)) {
+        if(!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buffer, -1, buffer_unicode, BUFFER_SIZE)) { return NULL; }
+        if(!WideCharToMultiByte(CP_ACP, 0, buffer_unicode, -1, buffer, BUFFER_SIZE, NULL, NULL)) { return NULL; }
+        if(!OpenPrinter(buffer, &printer, &printer_defaults)) { return NULL; }
+    }
 
     /* tries to retrieve empty document properties to
     "gather" the size of the underlying structure and then
     allocates the associated dev mode */
     dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
-    if(dev_mode_size < 0) { return NULL; }
+    if(dev_mode_size < 0) { ClosePrinter(printer); return NULL; }
     dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
 
     /* retrieves the current print dev mode structure (out mode)
@@ -117,6 +132,64 @@ BOOL show_print_dialog(PRINTDLG *print_dialog_pointer) {
     return result;
 }
 
+BOOL valid_binie(char *buffer, size_t size) {
+    /* allocates space for the index of the element, for the
+    offset of the element in the buffer and for the size of the
+    header of the element (without the base element header) */
+    size_t index;
+    size_t offset;
+    size_t header_size;
+
+    /* allocates space for the document and element headers
+    that are going to be verified */
+    struct document_header_t *document_header;
+    struct element_header_t *element_header;
+    struct image_element_header_t *image_element_header;
+
+    /* verifies that the buffer is large enough to contain the
+    header of the document, returning invalid otherwise */
+    if(size < sizeof(struct document_header_t)) { return FALSE; }
+    document_header = (struct document_header_t *) buffer;
+    offset = sizeof(struct document_header_t);
+
+    /* iterates over the elements of the document to make sure that
+    each of them (header and contents) is contained in the buffer, so
+    that no memory outside of it is read while printing */
+    for(index = 0; index < document_header->element_count; index++) {
+        if(size - offset < sizeof(struct element_header_t)) { return FALSE; }
+        element_header = (struct element_header_t *) (buffer + offset);
+        offset += sizeof(struct element_header_t);
+        if(size - offset < element_header->length) { return FALSE; }
+
+        /* verifies the contents of the element according to its type (as
+        an unsigned short, the same way it's dispatched while printing), the
+        header of a text must be followed by the (null terminated) text and
+        the header of an image must be followed by the complete image */
+        switch((unsigned short) element_header->type) {
+            case TEXT_VALUE:
+                header_size = sizeof(struct text_element_header_t) - sizeof(struct element_header_t);
+                if(element_header->length <= header_size) { return FALSE; }
+                if(buffer[offset + element_header->length - 1] != '\0') { return FALSE; }
+                break;
+
+            case IMAGE_VALUE:
+                header_size = sizeof(struct image_element_header_t) - sizeof(struct element_header_t);
+                if(element_header->length < header_size) { return FALSE; }
+                image_element_header = (struct image_element_header_t *) element_header;
+                if(element_header->length - header_size < image_element_header->length) { return FALSE; }
+                break;
+        }
+
+        /* moves the offset to the next element of the
+        document, skipping the contents of the current one */
+        offset += element_header->length;
+    }
+
+    /* returns valid as the complete set of elements (and their
+    contents) are contained in the buffer */
+    return TRUE;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -138,10 +211,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     char default_printer[BUFFER_SIZE];
     unsigned long buffer_size = BUFFER_SIZE;
 
-    /* obtains the name of the default printer so that we
-    can then use it to compare to the enumeration and determine
-    if the printer is the default one or not */
-    GetDefaultPrinter(default_printer, &buffer_size);
+    /* obtains the name of the default printer (empty in case there's
+    none) so that we can then use it to compare to the enumeration and
+    determine if the printer is the default one or not */
+    if(!GetDefaultPrinter(default_printer, &buffer_size)) { default_printer[0] = '\0'; }
 
     /* runs the initial printers' enumeration to uncover the
     size of the list to be retrieved and then allocate the
@@ -178,6 +251,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device = &devices[index];
         char *name = sequence[index].pPrinterName;
         size_t name_s = strlen(name);
+        if(name_s >= sizeof(device->name)) { name_s = sizeof(device->name) - 1; }
         memcpy(device->name, name, name_s);
         device->name_s = name_s;
         device->is_default = !strcmp(device->name, default_printer) ? 1 : 0;
@@ -235,7 +309,7 @@ int print_printer(
         /* retrieves the size of the file by seeking
         to the end of it and then retrieving the offset */
         fseek(file, 0, SEEK_END);
-        size_t size = ftell(file);
+        size = ftell(file);
         fseek(file, 0, SEEK_SET);
 
         /* allocates space for the buffer to hold the binie
@@ -244,6 +318,13 @@ int print_printer(
         buffer = (char *) malloc(size);
         fread(buffer, sizeof(char), size, file);
         fclose(file);
+    }
+
+    /* verifies that the buffer contains a valid binie document, so
+    that no memory outside of it is read, returning in error otherwise */
+    if(!valid_binie(buffer, size)) {
+        if(!data) { free(buffer); }
+        return -1;
     }
 
     /* casts the initial part of the buffer into a document
@@ -273,6 +354,13 @@ int print_printer(
         );
     }
 
+    /* in case it was not possible to create the context for the
+    printer (eg: unknown printer) returns in error */
+    if(context == NULL) {
+        if(!data) { free(buffer); }
+        return -1;
+    }
+
     /* declares a document information structure
     and populate it */
     DOCINFO document_information;
@@ -283,12 +371,20 @@ int print_printer(
     } else {
         document_information.lpszOutput = config->output_path;
     }
+    document_information.lpszDatatype = NULL;
     document_information.fwType = 0;
 
-    /* builds the document information and prints
-    it on finishing it (print on closed document) */
-    StartDoc(context, &document_information);
-    StartPage(context);
+    /* builds the document information and prints it on finishing
+    it (print on closed document), in case the document can't be
+    started (eg: rejected by the spooler) returns in error and the
+    failures of the pages are kept in the status of the operation */
+    if(StartDoc(context, &document_information) <= 0) {
+        DeleteDC(context);
+        if(!data) { free(buffer); }
+        return -1;
+    }
+    int status = 0;
+    if(StartPage(context) <= 0) { status = -1; }
 
     /* sets the map mode of the document to twips */
     SetMapMode(context, MM_TWIPS);
@@ -296,7 +392,7 @@ int print_printer(
     /* creates a new (drawing) pen for the document to
     be used in the drawing process of it */
     HANDLE pen = CreatePen(0, FONT_SCALE_FACTOR, 0);
-    SelectObject(context, pen);
+    HANDLE previous_pen = SelectObject(context, pen);
 
     /* retrieves the initial document element  header */
     struct element_header_t *element_header =\
@@ -328,6 +424,7 @@ int print_printer(
         RECT clip_box;
         RECT clip_box_pixel;
         HFONT font;
+        HFONT previous_font;
         int result;
         int text_x;
         int text_y;
@@ -392,7 +489,7 @@ int print_printer(
                     VARIABLE_PITCH,
                     text_element_header->font
                 );
-                SelectObject(context, font);
+                previous_font = (HFONT) SelectObject(context, font);
 
                 /* converts the text into the appropriate windows unicode
                 representation (may represent all charset) */
@@ -458,8 +555,8 @@ int print_printer(
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
-                    EndPage(context);
-                    StartPage(context);
+                    if(EndPage(context) <= 0) { status = -1; }
+                    if(StartPage(context) <= 0) { status = -1; }
 
                     /* calculates the size of the page size in twips units
                     and uses it to re-calculate the text y position, taking
@@ -492,12 +589,14 @@ int print_printer(
                 provided (calculated) coordinates */
                 TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
-                /* deletes the font object as it's no longer going to be used,
-                avoiding possible memory leaks */
+                /* restores the previous font of the context and then deletes the
+                font object as it's no longer going to be used, avoiding possible
+                memory leaks (a selected object can't be deleted) */
+                SelectObject(context, previous_font);
                 DeleteObject(font);
 
                 /* releases the unicode representation of the text */
-                delete text_unicode;
+                delete[] text_unicode;
 
                 /* breaks the switch */
                 break;
@@ -532,7 +631,6 @@ int print_printer(
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
-                DeleteObject(handle_image_new);
 
                 /* removes the temporary image file (it's no longer required)
                 as the image was already loaded into memory */
@@ -604,8 +702,8 @@ int print_printer(
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
-                    EndPage(context);
-                    StartPage(context);
+                    if(EndPage(context) <= 0) { status = -1; }
+                    if(StartPage(context) <= 0) { status = -1; }
 
                     /* calculates the size of the page size in twips units
                     and uses it to re-calculate the text y position, taking
@@ -659,9 +757,11 @@ int print_printer(
                 );
                 SetMapMode(context, previous_mode);
 
-                /* selects the bitmap for the context and then deletes the
-                "just" generated drawing context */
+                /* selects the previous bitmap for the context and then deletes
+                the loaded bitmap (no longer selected) and the "just" generated
+                drawing context */
                 SelectBitmap(image_context, handle_image);
+                DeleteObject(handle_image_new);
                 DeleteDC(image_context);
 
                 /* breaks the switch */
@@ -673,14 +773,16 @@ int print_printer(
         element_header = (struct element_header_t *) ((char *) element_header + sizeof(struct element_header_t) + element_length);
     }
 
-    /* deletes the pen object as it's no longer going to be
-    used and should be discarded */
+    /* restores the previous pen of the context and then deletes
+    the pen object as it's no longer going to be used and should
+    be discarded (a selected object can't be deleted) */
+    SelectObject(context, previous_pen);
     DeleteObject(pen);
 
     /* ends the current page and the document for the
-    current context */
-    EndPage(context);
-    EndDoc(context);
+    current context, keeping any failure in the status */
+    if(EndPage(context) <= 0) { status = -1; }
+    if(EndDoc(context) <= 0) { status = -1; }
 
     /* deletes the print context (avoids leaking of memory) */
     DeleteDC(context);
@@ -689,8 +791,9 @@ int print_printer(
     only in case the buffer was created from the default file */
     if(!data) { free(buffer); }
 
-    /* returns with no error */
-    return 0;
+    /* returns the status of the operation, zero in case of
+    success or a negative value in case the spooler failed */
+    return status;
 }
 
 #ifdef __cplusplus

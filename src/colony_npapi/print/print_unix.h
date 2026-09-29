@@ -26,6 +26,12 @@
 
 #ifdef COLONY_PLATFORM_UNIX
 
+/**
+ * The encoding of the strings (eg: names) of the
+ * devices, as they are returned by the CUPS API.
+ */
+#define DEVICE_ENCODING "utf-8"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,6 +43,9 @@ extern "C" {
 typedef struct job_t {
     char *output_path;
     size_t urgency;
+    char *title;
+    char *media;
+    char *scaling;
 } job;
 
 /**
@@ -55,6 +64,10 @@ typedef struct device_t {
     size_t media_s;
     float width;
     float length;
+    float left;
+    float bottom;
+    float right;
+    float top;
 } device;
 
 /**
@@ -121,14 +134,19 @@ COLONY_EXPORT_PREFIX int print(
  * @param show_dialog If the printing dialog should be displayed for
  * printer selection.
  * @param printer The printer's name is to be used in the print
- * operation (only used in case the show dialog is not set).
- * @param config The job configuration for the print operation.
+ * operation (only used in case the show dialog is not set), the
+ * default printer (or the single printer of the system when none is
+ * the default) is used when no name or the default name is set.
+ * @param config The job configuration for the print operation, in
+ * case an output path is set the document is written to that path
+ * instead of being printed (print to file).
  * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
  * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process, if successful, a value
- * greater than zero should be returned.
+ * @return The identifier of the created job (greater than zero),
+ * zero in case the document was written to the output path or a
+ * negative value in case of error.
  */
 COLONY_EXPORT_PREFIX int print_printer(
     bool show_dialog,

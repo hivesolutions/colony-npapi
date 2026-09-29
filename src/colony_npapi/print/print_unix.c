@@ -92,8 +92,18 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
                 strlen(page_size_o->defchoice)
             );
             device->media_s = strlen(page_size_o->defchoice);
+        }
+
+        /* in case the default page size is valid populates the
+        dimensions of the media and its imageable area (printable
+        box), both measured in points from the bottom left corner */
+        if(page_size_o && page_size) {
             device->width = page_size->width;
             device->length = page_size->length;
+            device->left = page_size->left;
+            device->bottom = page_size->bottom;
+            device->right = page_size->right;
+            device->top = page_size->top;
         }
 
         /* closes the ppd reference object, as it's not going
@@ -103,7 +113,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         /* closes the temporary PPD file and then unlinks it
         so that it's correctly removed from the current system */
         if(ppd_file != NULL) { fclose(ppd_file); }
-        unlink(ppd_path);
+        if(ppd_path != NULL) { unlink(ppd_path); }
     }
 
     /* releases the memory used for the listing
@@ -133,36 +143,91 @@ int print_printer(
     size_t size
 ) {
     /* allocates space for the various variables that
-    are going to be used for the print operation and
-    then retrieves the various available destinies */
+    are going to be used for the print operation */
     size_t index;
+    int fd;
+    int job_id;
+    int num_dests;
+    ssize_t result;
+    FILE *file;
     char file_path[NPCOLONY_PATH_SIZE];
+    const char *title = "Colony Gateway";
     int num_options = 0;
     cups_dest_t *dest = NULL;
     cups_dest_t *dests = NULL;
     cups_option_t *options = NULL;
-    int num_dests = cupsGetDests(&dests);
 
-    /* iterates over the complete set of destinies to try
-    to find the one that is considered the default one */
-    for(index = 0; index < num_dests; index++) {
-        dest = &dests[index];
-        if(dest->is_default == 0) { continue; }
-        break;
+    /* in case an output path is defined for the job the document
+    is written to that path instead of being printed, mirroring
+    the print to file behaviour of the windows implementation */
+    if(config != NULL && config->output_path != NULL) {
+        file = fopen(config->output_path, "wb");
+        if(file == NULL) { return -1; }
+        result = (ssize_t) fwrite(data, sizeof(char), size, file);
+        if(fclose(file) != 0) { return -1; }
+        if(result != (ssize_t) size) { return -1; }
+        return 0;
+    }
+
+    /* retrieves the various available destinies and then tries
+    to find the requested printer, in case no printer (or the
+    default one) is requested the default destiny is used, or
+    the single destiny of the system when none is the default */
+    num_dests = cupsGetDests(&dests);
+    if(printer == NULL || printer[0] == '\0' || !strcmp(printer, "default")) {
+        for(index = 0; index < (size_t) num_dests; index++) {
+            if(dests[index].is_default == 0) { continue; }
+            dest = &dests[index];
+            break;
+        }
+        if(dest == NULL && num_dests == 1) { dest = &dests[0]; }
+    } else {
+        dest = cupsGetDest(printer, NULL, num_dests, dests);
+    }
+
+    /* in case no destiny was found for the requested printer
+    the destinies are released and the operation returns in
+    error (avoids the access to an invalid destiny) */
+    if(dest == NULL) {
+        cupsFreeDests(num_dests, dests);
+        return -1;
+    }
+
+    /* builds the options of the print job from the configuration
+    of the job, so that the title, the media and the scaling of the
+    document are explicitly set instead of guessed by the system */
+    if(config != NULL) {
+        if(config->title != NULL) { title = config->title; }
+        if(config->media != NULL) {
+            num_options = cupsAddOption("media", config->media, num_options, &options);
+        }
+        if(config->scaling != NULL) {
+            num_options = cupsAddOption("print-scaling", config->scaling, num_options, &options);
+        }
     }
 
     /* copies the base (file) template to the file path and
     uses it to create the final path to the temporary path
     then verifies it has been correctly opened */
     strncpy(file_path, NPCOLONY_TEMPLATE, strlen(NPCOLONY_TEMPLATE) + 1);
-    int fd = mkstemp(file_path);
-    if(fd < 0) { return -1; }
+    fd = mkstemp(file_path);
+    if(fd < 0) {
+        cupsFreeOptions(num_options, options);
+        cupsFreeDests(num_dests, dests);
+        return -1;
+    }
 
     /* writes the read contents from the pdf into the created
-    temporary file, and in case the result of the write operation
-    is not the expected returns in error */
-    size_t result = write(fd, data, size);
-    if(result == -1) { return -1; }
+    temporary file and closes it, in case the result of the write
+    (or close) operation is not the expected returns in error */
+    result = write(fd, data, size);
+    if(close(fd) != 0) { result = -1; }
+    if(result != (ssize_t) size) {
+        unlink(file_path);
+        cupsFreeOptions(num_options, options);
+        cupsFreeDests(num_dests, dests);
+        return -1;
+    }
 
     /* creates the buffer that will contain the various
     files that are meant to be printed */
@@ -172,25 +237,27 @@ int print_printer(
 
     /* sends the print job to the target printer and received
     the associated job identifier to be used */
-    cupsPrintFiles(
+    job_id = cupsPrintFiles(
         dest->name,
         1,
         (const char **) files,
-        "Colony Gateway",
+        title,
         num_options,
         options
     );
 
-    /* releases the memory used for the listing
-    of the various destinations */
+    /* releases the memory used for the options and for
+    the listing of the various destinations */
+    cupsFreeOptions(num_options, options);
     cupsFreeDests(num_dests, dests);
 
     /* unlinks the created temporary file so that
     it's able to be removed from the file system */
     unlink(file_path);
 
-    /* returns with no error */
-    return 0;
+    /* returns the identifier of the job in case it has been
+    created, otherwise (invalid identifier) returns in error */
+    return job_id > 0 ? job_id : -1;
 }
 
 #ifdef __cplusplus

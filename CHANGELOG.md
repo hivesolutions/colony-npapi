@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Printing on a chosen Linux printer with the job title, paper size and scaling - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Print to file on Linux, used by the email mode - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Printable area of each printer in the device listing - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Review of every pull request by Claude
 
 ### Changed
 
@@ -17,7 +20,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Crash when printing on a Linux system without printers - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* File descriptor leak on every Linux print job - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Failed prints reported as successful - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Memory leak when listing the printers
+* Leak of graphics resources on every Windows print job
+* Crash or memory corruption when printing empty or invalid data
+* Crash when listing printers with accented names on Windows
+* Windows printers with accented names not found when printing
+* Crash when printing an invalid Binie document on Windows
+* Windows jobs for unknown printers or failed by the spooler reported as printed
+* Windows jobs for the default printer not printed
+* Wrong default printer on Windows systems without one
 
 ## [1.2.10] - 2026-02-24
 

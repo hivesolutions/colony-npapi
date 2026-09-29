@@ -147,37 +147,58 @@ class GlobalTest(unittest.TestCase):
         if not "Microsoft Print to PDF" in names:
             self.skipTest("requires the microsoft print to pdf printer")
 
-        text = b"npcolony"
+        def element(value, weight=0, italic=0, text=True):
+            if text:
+                return (
+                    struct.pack(
+                        "<IIii256s11I",
+                        1,
+                        308 + len(value),
+                        0,
+                        0,
+                        b"Calibri",
+                        9,
+                        1,
+                        weight,
+                        italic,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        len(value),
+                    )
+                    + value
+                )
+            return (
+                struct.pack(
+                    "<IIii6I", 2, 32 + len(value), 0, 0, 1, 0, 0, 0, 0, len(value)
+                )
+                + value
+            )
+
+        def document(*elements):
+            header = struct.pack("<256sIII", b"npcolony", 0, 0, len(elements))
+            return header + b"".join(elements)
+
+        text = b"npcolony\x00"
         image = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
         image += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
         image += b"\x00\x00\xff\x00"
-        data = struct.pack("<256sIII", b"npcolony", 0, 0, 3)
-        for weight in (0, 1):
-            data += struct.pack(
-                "<IIii256s11I",
-                1,
-                308 + len(text) + 1,
-                0,
-                0,
-                b"Calibri",
-                9,
-                1,
-                weight,
-                weight,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                len(text) + 1,
-            )
-            data += text + b"\x00"
-        data += struct.pack(
-            "<IIii6I", 2, 32 + len(image), 0, 0, 1, 0, 0, 0, 0, len(image)
+        documents = (
+            document(),
+            document(element(text)),
+            document(
+                *[
+                    element(text, weight, italic)
+                    for weight in (0, 1)
+                    for italic in (0, 1)
+                ]
+            ),
+            document(element(image, text=False)),
+            document(*[element(image, text=False)] * 3),
         )
-        data += image
-        empty = struct.pack("<256sIII", b"npcolony", 0, 0, 0)
 
         class DocInfo(ctypes.Structure):
             _fields_ = [
@@ -219,14 +240,12 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(result, 0)
 
         growths = []
-        for method in (
-            print_gdi,
-            lambda: print_npcolony(empty),
-            lambda: print_npcolony(data),
-        ):
+        methods = [print_gdi]
+        methods += [lambda data=data: print_npcolony(data) for data in documents]
+        for method in methods:
             counts = []
             for _index in range(10):
                 method()
                 counts.append(user32.GetGuiResources(process, 0))
             growths.append([count - counts[5] for count in counts[5:]])
-        self.assertEqual(growths[1:], [growths[0], growths[0]])
+        self.assertEqual(growths, [growths[0]] * len(growths))

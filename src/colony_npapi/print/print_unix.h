@@ -26,6 +26,12 @@
 
 #ifdef COLONY_PLATFORM_UNIX
 
+/**
+ * The encoding of the strings (eg: names) of the
+ * devices, as they are returned by the CUPS API.
+ */
+#define DEVICE_ENCODING "utf-8"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

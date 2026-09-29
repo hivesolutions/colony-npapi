@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Memory leak when listing the printers
 * Leak of graphics resources on every Windows print job
 * Crash or memory corruption when printing empty or invalid data
+* Crash when listing printers with accented names on Windows
 
 ## [1.2.10] - 2026-02-24
 

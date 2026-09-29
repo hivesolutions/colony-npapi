@@ -33,6 +33,13 @@
 #define BUFFER_SIZE 1024
 
 /**
+ * The encoding of the strings (eg: names) of the
+ * devices, the ANSI code page of the system that is
+ * used by the (non unicode) windows API.
+ */
+#define DEVICE_ENCODING "mbcs"
+
+/**
  * The coefficient for conversion between
  * millimeter and inch.
  */

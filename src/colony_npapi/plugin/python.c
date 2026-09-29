@@ -57,9 +57,10 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
 
     /* retrieves the complete set of available printing
     devices and then iterates over them to convert their
-    internal structure into dictionaries to be returned, note
-    that each value (and dictionary) reference is released once
-    it's owned by its container (avoids memory leaks) */
+    internal structure into dictionaries to be returned, the
+    strings are decoded using the encoding of the devices (with
+    invalid characters replaced) and each value (and dictionary)
+    reference is released once it's owned by its container */
     pdevices(&devices, &devices_s);
     for(index = 0; index < devices_s; index++) {
         device = &devices[index];
@@ -68,15 +69,15 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         item = PyUnicode_Decode(
             device->name,
             device->name_s,
-            "utf-8",
-            NULL
+            DEVICE_ENCODING,
+            "replace"
         );
 #else
         item = PyString_Decode(
             device->name,
             device->name_s,
-            "utf-8",
-            NULL
+            DEVICE_ENCODING,
+            "replace"
         );
 #endif
         PyDict_SetItemString(element, "name", item);
@@ -88,15 +89,15 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         item = PyUnicode_Decode(
             device->media,
             device->media_s,
-            "utf-8",
-            NULL
+            DEVICE_ENCODING,
+            "replace"
         );
 #else
         item = PyString_Decode(
             device->media,
             device->media_s,
-            "utf-8",
-            NULL
+            DEVICE_ENCODING,
+            "replace"
         );
 #endif
         PyDict_SetItemString(element, "media", item);

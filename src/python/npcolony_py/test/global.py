@@ -19,9 +19,48 @@ class GlobalTest(unittest.TestCase):
         self.target_dir = tempfile.mkdtemp(prefix="npcolony-test-")
         self.data = b"%PDF-1.4 npcolony test document"
         self.data_b64 = base64.b64encode(self.data).decode("utf-8")
+        self.binie = self._binie([self._text("npcolony")])
+        self.binie_b64 = base64.b64encode(self.binie).decode("utf-8")
 
     def tearDown(self):
         shutil.rmtree(self.target_dir, ignore_errors=True)
+
+    def _binie(self, elements, title=b"npcolony", width=0, height=0):
+        data = struct.pack("<256sIII", title, width, height, len(elements))
+        for element_type, element in elements:
+            data += struct.pack("<II", element_type, len(element)) + element
+        return data
+
+    def _text(self, text, text_weight=0, text_italic=0):
+        text_encoded = text.encode("utf-8")
+        element = struct.pack(
+            "<ii256sIIIIIIIIIII",
+            0,
+            0,
+            b"Calibri",
+            9,
+            1,
+            text_weight,
+            text_italic,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            len(text_encoded) + 1,
+        )
+        return (1, element + text_encoded + b"\0")
+
+    def _image(self):
+        bitmap = self._bitmap()
+        element = struct.pack("<iiIIIIII", 0, 0, 1, 0, 0, 0, 0, len(bitmap))
+        return (2, element + bitmap)
+
+    def _bitmap(self):
+        bitmap = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
+        bitmap += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
+        return bitmap + b"\x00\x00\xff\x00"
 
     def test_basic(self):
         self.assertEqual(type(npcolony.VERSION), str)
@@ -101,12 +140,11 @@ class GlobalTest(unittest.TestCase):
         with open(path, "rb") as file:
             self.assertEqual(file.read(), self.data)
 
-    @unittest.skipIf(os.name == "nt", "printer resolution is only checked on unix")
     def test_print_printer_base64_output_path_none(self):
         self.assertRaises(
             IOError,
             lambda: npcolony.print_printer_base64(
-                "npcolony-test-printer", self.data_b64, options=dict(output_path=None)
+                "npcolony-test-printer", self.binie_b64, options=dict(output_path=None)
             ),
         )
 
@@ -139,22 +177,26 @@ class GlobalTest(unittest.TestCase):
             ),
         )
 
-    @unittest.skipIf(os.name == "nt", "printer resolution is only checked on unix")
     def test_print_printer_base64_unknown(self):
         self.assertRaises(
             IOError,
             lambda: npcolony.print_printer_base64(
-                "npcolony-test-printer", self.data_b64
+                "npcolony-test-printer", self.binie_b64
             ),
         )
 
-    @unittest.skipIf(os.name == "nt", "printer resolution is only checked on unix")
+    def test_print_printer_base64_long_printer(self):
+        self.assertRaises(
+            IOError,
+            lambda: npcolony.print_printer_base64("npcolony" * 256, self.binie_b64),
+        )
+
     def test_print_printer_base64_invalid_options(self):
         self.assertRaises(
             IOError,
             lambda: npcolony.print_printer_base64(
                 "npcolony-test-printer",
-                self.data_b64,
+                self.binie_b64,
                 options=dict(title=None, media=3.5, scaling=b"none"),
             ),
         )
@@ -175,54 +217,75 @@ class GlobalTest(unittest.TestCase):
             ),
         )
 
+    @unittest.skipIf(os.name != "nt", "binie documents are only printed on windows")
+    def test_print_printer_base64_invalid_binie(self):
+        names = [device["name"] for device in npcolony.get_devices()]
+        if not "Microsoft Print to PDF" in names:
+            self.skipTest("requires the microsoft print to pdf printer")
+
+        text_type, text = self._text("npcolony")
+        image_type, image = self._image()
+        options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
+        for data in (
+            self.data,
+            self.binie[:-1],
+            self._binie([(text_type, text[:-1] + b"x")]),
+            self._binie([(text_type, text[:100])]),
+            self._binie([(image_type, image[:-1])]),
+            self._binie([(image_type, image[:20])]),
+        ):
+            self.assertRaises(
+                IOError,
+                lambda: npcolony.print_printer_base64(
+                    "Microsoft Print to PDF",
+                    base64.b64encode(data).decode("utf-8"),
+                    options=options,
+                ),
+            )
+
+        data = self._binie([(text_type, text), (image_type, image), (3, b"")])
+        result = npcolony.print_printer_base64(
+            "Microsoft Print to PDF",
+            base64.b64encode(data).decode("utf-8"),
+            options=options,
+        )
+        self.assertEqual(result, 0)
+
+    @unittest.skipIf(os.name != "nt", "binie documents are only printed on windows")
+    def test_print_printer_base64_default(self):
+        names = [
+            device["name"] for device in npcolony.get_devices() if device["is_default"]
+        ]
+        if names and not names[0] in (
+            "Microsoft Print to PDF",
+            "Microsoft XPS Document Writer",
+        ):
+            self.skipTest("requires a file printer as the default printer")
+
+        options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
+        for printer in ("default", ""):
+            if names:
+                result = npcolony.print_printer_base64(
+                    printer, self.binie_b64, options=options
+                )
+                self.assertEqual(result, 0)
+            else:
+                self.assertRaises(
+                    IOError,
+                    lambda: npcolony.print_printer_base64(
+                        printer, self.binie_b64, options=options
+                    ),
+                )
+
     @unittest.skipIf(os.name != "nt", "gdi objects are only used on windows")
     def test_print_printer_base64_gdi_objects(self):
         names = [device["name"] for device in npcolony.get_devices()]
         if not "Microsoft Print to PDF" in names:
             self.skipTest("requires the microsoft print to pdf printer")
 
-        def element(value, weight=0, italic=0, text=True):
-            if text:
-                return (
-                    struct.pack(
-                        "<IIii256s11I",
-                        1,
-                        308 + len(value),
-                        0,
-                        0,
-                        b"Calibri",
-                        9,
-                        1,
-                        weight,
-                        italic,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        len(value),
-                    )
-                    + value
-                )
-            return (
-                struct.pack(
-                    "<IIii6I", 2, 32 + len(value), 0, 0, 1, 0, 0, 0, 0, len(value)
-                )
-                + value
-            )
-
-        def document(*elements):
-            header = struct.pack("<256sIII", b"npcolony", 0, 0, len(elements))
-            return header + b"".join(elements)
-
-        text = b"npcolony\x00"
-        image = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
-        image += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
-        image += b"\x00\x00\xff\x00"
         image_path = os.path.join(self.target_dir, "image.bmp")
         with open(image_path, "wb") as file:
-            file.write(image)
+            file.write(self._bitmap())
         path = os.path.join(self.target_dir, "output.pdf")
 
         class DocInfo(ctypes.Structure):
@@ -308,15 +371,17 @@ class GlobalTest(unittest.TestCase):
             return [count - counts[4] for count in counts[4:]]
 
         texts = [
-            element(text, weight, italic) for weight in (0, 1) for italic in (0, 1)
+            self._text("npcolony", text_weight, text_italic)
+            for text_weight in (0, 1)
+            for text_italic in (0, 1)
         ]
-        images = [element(image, text=False)] * 3
+        images = [self._image()] * 3
         growths = [
-            growth(print_npcolony, document()),
-            growth(print_npcolony, document(texts[0])),
-            growth(print_npcolony, document(*texts)),
-            growth(print_npcolony, document(images[0])),
-            growth(print_npcolony, document(*images)),
+            growth(print_npcolony, self._binie([])),
+            growth(print_npcolony, self._binie(texts[:1])),
+            growth(print_npcolony, self._binie(texts)),
+            growth(print_npcolony, self._binie(images[:1])),
+            growth(print_npcolony, self._binie(images)),
         ]
         empty = growth(print_gdi, 0)
         self.assertEqual(

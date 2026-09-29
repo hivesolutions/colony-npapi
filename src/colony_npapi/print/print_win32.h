@@ -188,7 +188,8 @@ typedef struct document_t {
  * specific printer in case the name param is provided.
  *
  * @param name The printer's name is to be retrieved. If
- * this value is not provided the default printer is used.
+ * this value is not provided (or is the default name) the
+ * default printer is used.
  * @param width Optional parameter that allows the retrieved
  * context to be configured with the desired width (in decimal
  * parts of millimeter).
@@ -196,7 +197,8 @@ typedef struct document_t {
  * context to be configured with the desired height (in decimal
  * parts of a millimeter).
  * @return The handle for the drawing context of the
- * default printer.
+ * default printer, or an invalid one in case the printer
+ * is not available.
  */
 COLONY_EXPORT_PREFIX HDC get_default_printer(char *name, int width, int height);
 
@@ -214,6 +216,18 @@ COLONY_EXPORT_PREFIX HDC get_printer(char *name, int width, int height);
  * @return A boolean with the successful result of the print dialog.
  */
 COLONY_EXPORT_PREFIX BOOL show_print_dialog(PRINTDLG *print_dialog_pointer);
+
+/**
+ * Verifies that the provided buffer contains a (structurally) valid
+ * binie document, meaning that the header and the elements of the
+ * document (including their contents) are contained in the buffer.
+ *
+ * @param buffer The buffer that is going to be verified.
+ * @param size The size of the buffer that is going to be verified.
+ * @return A boolean with the result of the verification, if the
+ * buffer contains a valid binie document.
+ */
+COLONY_EXPORT_PREFIX BOOL valid_binie(char *buffer, size_t size);
 
 #ifdef __cplusplus
 extern "C" {
@@ -317,14 +331,16 @@ COLONY_EXPORT_PREFIX int print(
  * @param show_dialog If the printing dialog should be displayed for
  * printer selection.
  * @param printer The printer's name is to be used in the print
- * operation (only used in case the show dialog is not set).
+ * operation (only used in case the show dialog is not set), the
+ * default printer is used when no name or the default name is set.
  * @param config The job configuration for the print operation.
  * @param data The data buffer encoded in pdf format describing
  * the document to be printed.
  * @param size The size of the buffer of encoded data that was
  * passed as an argument.
- * @return The result of the printing process, if successful, a value
- * greater than zero should be returned.
+ * @return The result of the printing process, zero in case of
+ * success or a negative value in case of error (eg: invalid
+ * document or unknown printer).
  */
 COLONY_EXPORT_PREFIX int print_printer(
     bool show_dialog,

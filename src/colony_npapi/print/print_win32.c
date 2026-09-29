@@ -60,11 +60,17 @@ HDC get_printer(char *name, int width, int height) {
     are both valid values) */
     set_values = width > 0 && height > 0;
 
-    /* retrieves the default printer and then
-    and then uses it to create the appropriate context */
-    if(name == NULL) { GetDefaultPrinter(buffer, &size); }
-    else { memcpy(buffer, name, strlen(name) + 1); }
-    if(!OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults)) { return NULL; }
+    /* retrieves the default printer, in case no printer (or the default
+    one) is requested, or the requested one and then uses it to create
+    the appropriate context, returning in error in case there's no
+    default printer or the name of the printer is too long */
+    if(name == NULL || name[0] == '\0' || !strcmp(name, "default")) {
+        if(!GetDefaultPrinter(buffer, &size)) { return NULL; }
+    } else {
+        if(strlen(name) >= BUFFER_SIZE) { return NULL; }
+        memcpy(buffer, name, strlen(name) + 1);
+    }
+    if(!OpenPrinter(buffer, &printer, &printer_defaults)) { return NULL; }
 
     /* tries to retrieve empty document properties to
     "gather" the size of the underlying structure and then
@@ -117,6 +123,63 @@ BOOL show_print_dialog(PRINTDLG *print_dialog_pointer) {
     return result;
 }
 
+BOOL valid_binie(char *buffer, size_t size) {
+    /* allocates space for the index of the element, for the
+    offset of the element in the buffer and for the size of the
+    header of the element (without the base element header) */
+    size_t index;
+    size_t offset;
+    size_t header_size;
+
+    /* allocates space for the document and element headers
+    that are going to be verified */
+    struct document_header_t *document_header;
+    struct element_header_t *element_header;
+    struct image_element_header_t *image_element_header;
+
+    /* verifies that the buffer is large enough to contain the
+    header of the document, returning invalid otherwise */
+    if(size < sizeof(struct document_header_t)) { return FALSE; }
+    document_header = (struct document_header_t *) buffer;
+    offset = sizeof(struct document_header_t);
+
+    /* iterates over the elements of the document to make sure that
+    each of them (header and contents) is contained in the buffer, so
+    that no memory outside of it is read while printing */
+    for(index = 0; index < document_header->element_count; index++) {
+        if(size - offset < sizeof(struct element_header_t)) { return FALSE; }
+        element_header = (struct element_header_t *) (buffer + offset);
+        offset += sizeof(struct element_header_t);
+        if(size - offset < element_header->length) { return FALSE; }
+
+        /* verifies the contents of the element according to its type, the
+        header of a text must be followed by the (null terminated) text and
+        the header of an image must be followed by the complete image */
+        switch(element_header->type) {
+            case TEXT_VALUE:
+                header_size = sizeof(struct text_element_header_t) - sizeof(struct element_header_t);
+                if(element_header->length <= header_size) { return FALSE; }
+                if(buffer[offset + element_header->length - 1] != '\0') { return FALSE; }
+                break;
+
+            case IMAGE_VALUE:
+                header_size = sizeof(struct image_element_header_t) - sizeof(struct element_header_t);
+                if(element_header->length < header_size) { return FALSE; }
+                image_element_header = (struct image_element_header_t *) element_header;
+                if(element_header->length - header_size < image_element_header->length) { return FALSE; }
+                break;
+        }
+
+        /* moves the offset to the next element of the
+        document, skipping the contents of the current one */
+        offset += element_header->length;
+    }
+
+    /* returns valid as the complete set of elements (and their
+    contents) are contained in the buffer */
+    return TRUE;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -138,10 +201,10 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     char default_printer[BUFFER_SIZE];
     unsigned long buffer_size = BUFFER_SIZE;
 
-    /* obtains the name of the default printer so that we
-    can then use it to compare to the enumeration and determine
-    if the printer is the default one or not */
-    GetDefaultPrinter(default_printer, &buffer_size);
+    /* obtains the name of the default printer (empty in case there's
+    none) so that we can then use it to compare to the enumeration and
+    determine if the printer is the default one or not */
+    if(!GetDefaultPrinter(default_printer, &buffer_size)) { default_printer[0] = '\0'; }
 
     /* runs the initial printers' enumeration to uncover the
     size of the list to be retrieved and then allocate the
@@ -178,6 +241,7 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
         device = &devices[index];
         char *name = sequence[index].pPrinterName;
         size_t name_s = strlen(name);
+        if(name_s >= sizeof(device->name)) { name_s = sizeof(device->name) - 1; }
         memcpy(device->name, name, name_s);
         device->name_s = name_s;
         device->is_default = !strcmp(device->name, default_printer) ? 1 : 0;
@@ -235,7 +299,7 @@ int print_printer(
         /* retrieves the size of the file by seeking
         to the end of it and then retrieving the offset */
         fseek(file, 0, SEEK_END);
-        size_t size = ftell(file);
+        size = ftell(file);
         fseek(file, 0, SEEK_SET);
 
         /* allocates space for the buffer to hold the binie
@@ -244,6 +308,13 @@ int print_printer(
         buffer = (char *) malloc(size);
         fread(buffer, sizeof(char), size, file);
         fclose(file);
+    }
+
+    /* verifies that the buffer contains a valid binie document, so
+    that no memory outside of it is read, returning in error otherwise */
+    if(!valid_binie(buffer, size)) {
+        if(!data) { free(buffer); }
+        return -1;
     }
 
     /* casts the initial part of the buffer into a document
@@ -273,6 +344,13 @@ int print_printer(
         );
     }
 
+    /* in case it was not possible to create the context for the
+    printer (eg: unknown printer) returns in error */
+    if(context == NULL) {
+        if(!data) { free(buffer); }
+        return -1;
+    }
+
     /* declares a document information structure
     and populate it */
     DOCINFO document_information;
@@ -283,6 +361,7 @@ int print_printer(
     } else {
         document_information.lpszOutput = config->output_path;
     }
+    document_information.lpszDatatype = NULL;
     document_information.fwType = 0;
 
     /* builds the document information and prints

@@ -164,21 +164,23 @@ int print_printer(
         file = fopen(config->output_path, "wb");
         if(file == NULL) { return -1; }
         result = (ssize_t) fwrite(data, sizeof(char), size, file);
-        fclose(file);
+        if(fclose(file) != 0) { return -1; }
         if(result != (ssize_t) size) { return -1; }
         return 0;
     }
 
     /* retrieves the various available destinies and then tries
     to find the requested printer, in case no printer (or the
-    default one) is requested the default destiny is used */
+    default one) is requested the default destiny is used, or
+    the single destiny of the system when none is the default */
     num_dests = cupsGetDests(&dests);
     if(printer == NULL || printer[0] == '\0' || !strcmp(printer, "default")) {
         for(index = 0; index < (size_t) num_dests; index++) {
+            if(dests[index].is_default == 0) { continue; }
             dest = &dests[index];
-            if(dest->is_default == 0) { continue; }
             break;
         }
+        if(dest == NULL && num_dests == 1) { dest = &dests[0]; }
     } else {
         dest = cupsGetDest(printer, NULL, num_dests, dests);
     }
@@ -217,9 +219,9 @@ int print_printer(
 
     /* writes the read contents from the pdf into the created
     temporary file and closes it, in case the result of the write
-    operation is not the expected returns in error */
+    (or close) operation is not the expected returns in error */
     result = write(fd, data, size);
-    close(fd);
+    if(close(fd) != 0) { result = -1; }
     if(result != (ssize_t) size) {
         unlink(file_path);
         cupsFreeOptions(num_options, options);

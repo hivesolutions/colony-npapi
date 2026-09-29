@@ -58,6 +58,44 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(file.read(), self.data)
 
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
+    def test_print_printer_base64_output_path_unicode(self):
+        path = os.path.join(self.target_dir, u"sa\xedda.pdf")
+        result = npcolony.print_printer_base64(
+            "npcolony-test-printer", self.data_b64, options=dict(output_path=path)
+        )
+        self.assertEqual(result, 0)
+        with open(path, "rb") as file:
+            self.assertEqual(file.read(), self.data)
+
+    @unittest.skipIf(os.name == "nt", "printer resolution is only checked on unix")
+    def test_print_printer_base64_output_path_none(self):
+        self.assertRaises(
+            IOError,
+            lambda: npcolony.print_printer_base64(
+                "npcolony-test-printer", self.data_b64, options=dict(output_path=None)
+            ),
+        )
+
+    def test_print_printer_base64_output_path_type(self):
+        self.assertRaises(
+            TypeError,
+            lambda: npcolony.print_printer_base64(
+                "npcolony-test-printer", self.data_b64, options=dict(output_path=1)
+            ),
+        )
+
+    @unittest.skipIf(not os.path.exists("/dev/full"), "requires the full device")
+    def test_print_printer_base64_full_disk(self):
+        self.assertRaises(
+            IOError,
+            lambda: npcolony.print_printer_base64(
+                "npcolony-test-printer",
+                self.data_b64,
+                options=dict(output_path="/dev/full"),
+            ),
+        )
+
+    @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_invalid_path(self):
         path = os.path.join(self.target_dir, "missing", "output.pdf")
         self.assertRaises(
@@ -83,6 +121,6 @@ class GlobalTest(unittest.TestCase):
             lambda: npcolony.print_printer_base64(
                 "npcolony-test-printer",
                 self.data_b64,
-                options=dict(output_path=1, title=None, media=3.5),
+                options=dict(title=None, media=3.5, scaling=b"none"),
             ),
         )

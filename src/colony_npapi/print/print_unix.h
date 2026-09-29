@@ -129,7 +129,8 @@ COLONY_EXPORT_PREFIX int print(
  * printer selection.
  * @param printer The printer's name is to be used in the print
  * operation (only used in case the show dialog is not set), the
- * default printer is used when no name or the default name is set.
+ * default printer (or the single printer of the system when none is
+ * the default) is used when no name or the default name is set.
  * @param config The job configuration for the print operation, in
  * case an output path is set the document is written to that path
  * instead of being printed (print to file).

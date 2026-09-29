@@ -220,10 +220,10 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
-static char *_get_option(PyObject *options, const char *name) {
+static char *_get_option(PyObject *options, const char *name, PyObject *encoded) {
     /* retrieves the value of the option with the provided name
-    and converts it into a string, in case the option is not set
-    or its value is not a string no value is returned */
+    and converts it into an (UTF-8) string, in case the option is
+    not set or its value is not a string no value is returned */
     char *result = NULL;
     PyObject *value = PyDict_GetItemString(options, name);
     if(value == NULL) { return NULL; }
@@ -232,7 +232,17 @@ static char *_get_option(PyObject *options, const char *name) {
         result = (char *) PyUnicode_AsUTF8(value);
     }
 #else
-    if(PyString_Check(value) || PyUnicode_Check(value)) {
+    /* unicode values are explicitly encoded as UTF-8 and the encoded
+    string is kept in the provided list, so that it remains valid
+    until the print operation is completed */
+    if(PyUnicode_Check(value)) {
+        value = PyUnicode_AsUTF8String(value);
+        if(value != NULL) {
+            PyList_Append(encoded, value);
+            Py_DECREF(value);
+            result = PyString_AsString(value);
+        }
+    } else if(PyString_Check(value)) {
         result = PyString_AsString(value);
     }
 #endif
@@ -251,7 +261,9 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     char *input;
     size_t data_length;
     int result;
+    PyObject *value;
     PyObject *options = NULL;
+    PyObject *encoded = NULL;
     struct job_t job = {NULL, 0};
     static char *kwlist[] = {"printer", "data", "options", NULL};
 
@@ -274,10 +286,22 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     // in case options were set then we can build the job
     // options to be used in the print operation
     if(options != NULL) {
-        job.output_path = _get_option(options, "output_path");
-        job.title = _get_option(options, "title");
-        job.media = _get_option(options, "media");
-        job.scaling = _get_option(options, "scaling");
+        encoded = PyList_New(0);
+        if(encoded == NULL) { return NULL; }
+        job.output_path = _get_option(options, "output_path", encoded);
+        job.title = _get_option(options, "title", encoded);
+        job.media = _get_option(options, "media", encoded);
+        job.scaling = _get_option(options, "scaling", encoded);
+
+        /* in case an output path is set but it's not possible to use it
+        (eg: invalid type) the operation fails, as the document must not
+        be printed when it's meant to be written to a file */
+        value = PyDict_GetItemString(options, "output_path");
+        if(job.output_path == NULL && value != NULL && value != Py_None) {
+            Py_DECREF(encoded);
+            PyErr_SetString(PyExc_TypeError, "Invalid output path, it must be a string");
+            return NULL;
+        }
     }
 
     /* decodes the data value from the base 64 encoding
@@ -290,9 +314,10 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     );
     result = print_printer(FALSE, printer, &job, data, data_length);
 
-    /* releases the decoded buffer (avoids memory leak)
-    and then returns in success */
+    /* releases the decoded buffer and the encoded values of
+    the options (avoids memory leaks) and then returns in success */
     _free_base64((unsigned char *) data);
+    Py_XDECREF(encoded);
 
     /* in case the print operation failed raises an exception
     so that the caller is notified about the problem */

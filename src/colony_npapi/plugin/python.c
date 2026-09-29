@@ -238,9 +238,10 @@ static char *_get_option(PyObject *options, const char *name, PyObject *encoded)
     if(PyUnicode_Check(value)) {
         value = PyUnicode_AsUTF8String(value);
         if(value != NULL) {
-            PyList_Append(encoded, value);
+            if(PyList_Append(encoded, value) == 0) {
+                result = PyString_AsString(value);
+            }
             Py_DECREF(value);
-            result = PyString_AsString(value);
         }
     } else if(PyString_Check(value)) {
         result = PyString_AsString(value);

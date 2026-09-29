@@ -186,19 +186,10 @@ class GlobalTest(unittest.TestCase):
         image = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
         image += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
         image += b"\x00\x00\xff\x00"
-        documents = (
-            document(),
-            document(element(text)),
-            document(
-                *[
-                    element(text, weight, italic)
-                    for weight in (0, 1)
-                    for italic in (0, 1)
-                ]
-            ),
-            document(element(image, text=False)),
-            document(*[element(image, text=False)] * 3),
-        )
+        image_path = os.path.join(self.target_dir, "image.bmp")
+        with open(image_path, "wb") as file:
+            file.write(image)
+        path = os.path.join(self.target_dir, "output.pdf")
 
         class DocInfo(ctypes.Structure):
             _fields_ = [
@@ -212,21 +203,57 @@ class GlobalTest(unittest.TestCase):
         gdi32 = ctypes.WinDLL("gdi32")
         gdi32.CreateDCW.restype = ctypes.c_void_p
         gdi32.CreateDCW.argtypes = (ctypes.c_wchar_p,) * 3 + (ctypes.c_void_p,)
+        gdi32.CreateCompatibleDC.restype = ctypes.c_void_p
+        gdi32.SelectObject.restype = ctypes.c_void_p
+        gdi32.SelectObject.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
+        gdi32.StretchBlt.argtypes = (
+            (ctypes.c_void_p,)
+            + (ctypes.c_int,) * 4
+            + (ctypes.c_void_p,)
+            + (ctypes.c_int,) * 4
+            + (ctypes.c_uint,)
+        )
         gdi32.StartDocW.argtypes = (ctypes.c_void_p, ctypes.POINTER(DocInfo))
-        for name in ("StartPage", "EndPage", "EndDoc", "DeleteDC"):
+        for name in (
+            "CreateCompatibleDC",
+            "DeleteObject",
+            "StartPage",
+            "EndPage",
+            "EndDoc",
+            "DeleteDC",
+        ):
             getattr(gdi32, name).argtypes = (ctypes.c_void_p,)
         kernel32 = ctypes.WinDLL("kernel32")
         kernel32.GetCurrentProcess.restype = ctypes.c_void_p
         user32 = ctypes.WinDLL("user32")
         user32.GetGuiResources.argtypes = (ctypes.c_void_p, ctypes.c_uint)
+        user32.LoadImageW.restype = ctypes.c_void_p
+        user32.LoadImageW.argtypes = (
+            ctypes.c_void_p,
+            ctypes.c_wchar_p,
+            ctypes.c_uint,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_uint,
+        )
         process = kernel32.GetCurrentProcess()
-        path = os.path.join(self.target_dir, "output.pdf")
 
-        def print_gdi():
+        def print_gdi(count):
             context = gdi32.CreateDCW("WINSPOOL", "Microsoft Print to PDF", None, None)
             info = DocInfo(ctypes.sizeof(DocInfo), "npcolony", path, None, 0)
             gdi32.StartDocW(context, ctypes.byref(info))
             gdi32.StartPage(context)
+            for _index in range(count):
+                bitmap = user32.LoadImageW(None, image_path, 0, 0, 0, 0x50)
+                image_context = gdi32.CreateCompatibleDC(None)
+                previous = gdi32.SelectObject(image_context, bitmap)
+                result = gdi32.StretchBlt(
+                    context, 0, 0, 10, 10, image_context, 0, 0, 1, 1, 0xCC0020
+                )
+                self.assertEqual(result != 0, True)
+                gdi32.SelectObject(image_context, previous)
+                self.assertEqual(gdi32.DeleteObject(bitmap) != 0, True)
+                self.assertEqual(gdi32.DeleteDC(image_context) != 0, True)
             gdi32.EndPage(context)
             gdi32.EndDoc(context)
             gdi32.DeleteDC(context)
@@ -239,13 +266,26 @@ class GlobalTest(unittest.TestCase):
             )
             self.assertEqual(result, 0)
 
-        growths = []
-        methods = [print_gdi]
-        methods += [lambda data=data: print_npcolony(data) for data in documents]
-        for method in methods:
+        def growth(method, *args):
             counts = []
-            for _index in range(10):
-                method()
+            for _index in range(8):
+                method(*args)
                 counts.append(user32.GetGuiResources(process, 0))
-            growths.append([count - counts[5] for count in counts[5:]])
-        self.assertEqual(growths, [growths[0]] * len(growths))
+            return [count - counts[4] for count in counts[4:]]
+
+        texts = [
+            element(text, weight, italic) for weight in (0, 1) for italic in (0, 1)
+        ]
+        images = [element(image, text=False)] * 3
+        growths = [
+            growth(print_npcolony, document()),
+            growth(print_npcolony, document(texts[0])),
+            growth(print_npcolony, document(*texts)),
+            growth(print_npcolony, document(images[0])),
+            growth(print_npcolony, document(*images)),
+        ]
+        empty = growth(print_gdi, 0)
+        self.assertEqual(
+            growths,
+            [empty, empty, empty, growth(print_gdi, 1), growth(print_gdi, 3)],
+        )

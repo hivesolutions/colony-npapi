@@ -44,10 +44,11 @@ HDC get_printer(char *name, int width, int height) {
     define if the dimension values should be set */
     unsigned char set_values;
 
-    /* allocates a new buffer in the stack
-    and then set a long variable with the size
+    /* allocates a new buffer in the stack (and its unicode
+    version) and then set a long variable with the size
     of it to be used in the printer call */
     char buffer[BUFFER_SIZE];
+    wchar_t buffer_unicode[BUFFER_SIZE];
     unsigned long size = BUFFER_SIZE;
 
     /* creates the array of definitions to the default
@@ -70,7 +71,15 @@ HDC get_printer(char *name, int width, int height) {
         if(strlen(name) >= BUFFER_SIZE) { return NULL; }
         memcpy(buffer, name, strlen(name) + 1);
     }
-    if(!OpenPrinter(buffer, &printer, &printer_defaults)) { return NULL; }
+
+    /* opens the printer and in case it fails tries it again with the
+    name converted from UTF-8 (eg: python 3 strings) into the ANSI code
+    page of the windows API, returning in error in case it still fails */
+    if(!OpenPrinter(buffer, &printer, &printer_defaults)) {
+        if(!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, buffer, -1, buffer_unicode, BUFFER_SIZE)) { return NULL; }
+        if(!WideCharToMultiByte(CP_ACP, 0, buffer_unicode, -1, buffer, BUFFER_SIZE, NULL, NULL)) { return NULL; }
+        if(!OpenPrinter(buffer, &printer, &printer_defaults)) { return NULL; }
+    }
 
     /* tries to retrieve empty document properties to
     "gather" the size of the underlying structure and then

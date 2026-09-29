@@ -187,6 +187,14 @@ class GlobalTest(unittest.TestCase):
             ),
         )
 
+    def test_print_printer_base64_unknown_unicode(self):
+        printer = b"npcolony-impressora-inv\xc3\xa1lida"
+        if sys.version_info[0] >= 3:
+            printer = printer.decode("utf-8")
+        self.assertRaises(
+            IOError, lambda: npcolony.print_printer_base64(printer, self.binie_b64)
+        )
+
     def test_print_printer_base64_long_printer(self):
         self.assertRaises(
             IOError,

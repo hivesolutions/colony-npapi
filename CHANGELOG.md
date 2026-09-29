@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Printing on a chosen Linux printer with the job title, paper size and scaling - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Print to file on Linux, used by the email mode - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Printable area of each printer in the device listing - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 
 ### Changed
 
@@ -17,7 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Crash when printing on a Linux system without printers - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* File descriptor leak on every Linux print job - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Failed prints reported as successful - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 
 ## [1.2.10] - 2026-02-24
 

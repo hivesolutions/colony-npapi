@@ -100,6 +100,14 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         PyDict_SetItemString(element, "width", item);
         item = PyFloat_FromDouble((double) device->length);
         PyDict_SetItemString(element, "length", item);
+        item = PyFloat_FromDouble((double) device->left);
+        PyDict_SetItemString(element, "left", item);
+        item = PyFloat_FromDouble((double) device->bottom);
+        PyDict_SetItemString(element, "bottom", item);
+        item = PyFloat_FromDouble((double) device->right);
+        PyDict_SetItemString(element, "right", item);
+        item = PyFloat_FromDouble((double) device->top);
+        PyDict_SetItemString(element, "top", item);
         PyList_Append(result, element);
     }
 
@@ -143,6 +151,7 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
     the storage of the length (size) of it */
     char *data;
     size_t data_length;
+    int result;
 
     /* decodes the data value from the base 64 encoding
     and then uses it to print the data */
@@ -152,11 +161,18 @@ static PyObject *print_hello(PyObject *self, PyObject *args) {
         (unsigned char **) &data,
         &data_length
     );
-    print(FALSE, NULL, data, data_length);
+    result = print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
     _free_base64((unsigned char *) data);
+
+    /* in case the print operation failed raises an exception
+    so that the caller is notified about the problem */
+    if(result < 0) {
+        PyErr_SetString(PyExc_IOError, "Problem printing document");
+        return NULL;
+    }
 
     /* returns an invalid value to the caller method/function
     as this function should not return anything */
@@ -169,6 +185,7 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
     char *data;
     char *input;
     size_t data_length;
+    int result;
 
     /* tries to parse the provided sequence of arguments
     as a single string value that is going to be used as
@@ -185,15 +202,45 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
         (unsigned char **) &data,
         &data_length
     );
-    print(FALSE, NULL, data, data_length);
+    result = print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
     _free_base64((unsigned char *) data);
 
+    /* in case the print operation failed raises an exception
+    so that the caller is notified about the problem */
+    if(result < 0) {
+        PyErr_SetString(PyExc_IOError, "Problem printing document");
+        return NULL;
+    }
+
     /* returns an invalid value to the caller method/function
     as this function should not return anything */
     Py_RETURN_NONE;
+}
+
+static char *_get_option(PyObject *options, const char *name) {
+    /* retrieves the value of the option with the provided name
+    and converts it into a string, in case the option is not set
+    or its value is not a string no value is returned */
+    char *result = NULL;
+    PyObject *value = PyDict_GetItemString(options, name);
+    if(value == NULL) { return NULL; }
+#if PY_MAJOR_VERSION >= 3
+    if(PyUnicode_Check(value)) {
+        result = (char *) PyUnicode_AsUTF8(value);
+    }
+#else
+    if(PyString_Check(value) || PyUnicode_Check(value)) {
+        result = PyString_AsString(value);
+    }
+#endif
+
+    /* clears any error resulting from a failed conversion, as
+    an invalid value is considered to be an option that is not set */
+    if(result == NULL) { PyErr_Clear(); }
+    return result;
 }
 
 static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *kwargs) {
@@ -202,8 +249,8 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     char *data;
     char *printer;
     char *input;
-    PyObject *value;
     size_t data_length;
+    int result;
     PyObject *options = NULL;
     struct job_t job = {NULL, 0};
     static char *kwlist[] = {"printer", "data", "options", NULL};
@@ -227,14 +274,10 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     // in case options were set then we can build the job
     // options to be used in the print operation
     if(options != NULL) {
-        value = PyDict_GetItemString(options, "output_path");
-        if(value != NULL) {
-#if PY_MAJOR_VERSION >= 3
-            job.output_path = (char *) PyUnicode_AsUTF8(value);
-#else
-            job.output_path = PyString_AsString(value);
-#endif
-        }
+        job.output_path = _get_option(options, "output_path");
+        job.title = _get_option(options, "title");
+        job.media = _get_option(options, "media");
+        job.scaling = _get_option(options, "scaling");
     }
 
     /* decodes the data value from the base 64 encoding
@@ -245,15 +288,22 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         (unsigned char **) &data,
         &data_length
     );
-    print_printer(FALSE, printer, &job, data, data_length);
+    result = print_printer(FALSE, printer, &job, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
     and then returns in success */
     _free_base64((unsigned char *) data);
 
-    /* returns an invalid value to the caller method/function
-    as this function should not return anything */
-    Py_RETURN_NONE;
+    /* in case the print operation failed raises an exception
+    so that the caller is notified about the problem */
+    if(result < 0) {
+        PyErr_Format(PyExc_IOError, "Problem printing document in '%s'", printer);
+        return NULL;
+    }
+
+    /* returns the result of the print operation to the caller
+    method/function, the identifier of the job when available */
+    return PyLong_FromLong((long) result);
 }
 
 static PyMethodDef colony_functions[] = {

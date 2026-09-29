@@ -219,6 +219,9 @@ extern "C" {
 typedef struct job_t {
     char *output_path;
     size_t urgency;
+    char *title;
+    char *media;
+    char *scaling;
 } job;
 
 /**
@@ -237,6 +240,10 @@ typedef struct device_t {
     size_t media_s;
     float width;
     float length;
+    float left;
+    float bottom;
+    float right;
+    float top;
 } device;
 
 /**

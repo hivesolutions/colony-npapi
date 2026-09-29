@@ -177,20 +177,56 @@ class GlobalTest(unittest.TestCase):
             "<IIii6I", 2, 32 + len(image), 0, 0, 1, 0, 0, 0, 0, len(image)
         )
         data += image
-        data_b64 = base64.b64encode(data).decode("utf-8")
+        empty = struct.pack("<256sIII", b"npcolony", 0, 0, 0)
 
-        kernel32 = ctypes.windll.kernel32
+        class DocInfo(ctypes.Structure):
+            _fields_ = [
+                ("size", ctypes.c_int),
+                ("name", ctypes.c_wchar_p),
+                ("output", ctypes.c_wchar_p),
+                ("datatype", ctypes.c_wchar_p),
+                ("type", ctypes.c_uint),
+            ]
+
+        gdi32 = ctypes.WinDLL("gdi32")
+        gdi32.CreateDCW.restype = ctypes.c_void_p
+        gdi32.CreateDCW.argtypes = (ctypes.c_wchar_p,) * 3 + (ctypes.c_void_p,)
+        gdi32.StartDocW.argtypes = (ctypes.c_void_p, ctypes.POINTER(DocInfo))
+        for name in ("StartPage", "EndPage", "EndDoc", "DeleteDC"):
+            getattr(gdi32, name).argtypes = (ctypes.c_void_p,)
+        kernel32 = ctypes.WinDLL("kernel32")
         kernel32.GetCurrentProcess.restype = ctypes.c_void_p
-        user32 = ctypes.windll.user32
+        user32 = ctypes.WinDLL("user32")
         user32.GetGuiResources.argtypes = (ctypes.c_void_p, ctypes.c_uint)
         process = kernel32.GetCurrentProcess()
+        path = os.path.join(self.target_dir, "output.pdf")
 
-        options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
-        counts = []
-        for _index in range(10):
+        def print_gdi():
+            context = gdi32.CreateDCW("WINSPOOL", "Microsoft Print to PDF", None, None)
+            info = DocInfo(ctypes.sizeof(DocInfo), "npcolony", path, None, 0)
+            gdi32.StartDocW(context, ctypes.byref(info))
+            gdi32.StartPage(context)
+            gdi32.EndPage(context)
+            gdi32.EndDoc(context)
+            gdi32.DeleteDC(context)
+
+        def print_npcolony(data):
             result = npcolony.print_printer_base64(
-                "Microsoft Print to PDF", data_b64, options=options
+                "Microsoft Print to PDF",
+                base64.b64encode(data).decode("utf-8"),
+                options=dict(output_path=path),
             )
             self.assertEqual(result, 0)
-            counts.append(user32.GetGuiResources(process, 0))
-        self.assertEqual(counts[5:], [counts[5]] * 5)
+
+        growths = []
+        for method in (
+            print_gdi,
+            lambda: print_npcolony(empty),
+            lambda: print_npcolony(data),
+        ):
+            counts = []
+            for _index in range(10):
+                method()
+                counts.append(user32.GetGuiResources(process, 0))
+            growths.append([count - counts[5] for count in counts[5:]])
+        self.assertEqual(growths[1:], [growths[0], growths[0]])

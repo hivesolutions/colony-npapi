@@ -160,6 +160,15 @@ class GlobalTest(unittest.TestCase):
             ),
         )
 
+    @unittest.skipIf(os.name == "nt", "custom paper sizes are only reported on unix")
+    def test_get_devices_custom_none(self):
+        devices = dict((device["name"], device) for device in npcolony.get_devices())
+        if not "npcolony-test-raw" in devices:
+            if os.environ.get("NPCOLONY_TEST_CUSTOM", None):
+                self.fail("the npcolony-test-raw printer is not listed")
+            self.skipTest("requires the npcolony-test-raw printer")
+        self.assertEqual(devices["npcolony-test-raw"]["custom"], None)
+
     def test_print_base64_invalid(self):
         self.assertRaises(ValueError, lambda: npcolony.print_base64(""))
         self.assertRaises(ValueError, lambda: npcolony.print_base64("QUJDQ"))

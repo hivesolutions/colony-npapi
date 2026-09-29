@@ -239,6 +239,7 @@ class GlobalTest(unittest.TestCase):
             self._binie([(text_type, text[:100])]),
             self._binie([(image_type, image[:-1])]),
             self._binie([(image_type, image[:20])]),
+            self._binie([(0x10000 + text_type, b"")]),
         ):
             self.assertRaises(
                 IOError,

@@ -152,10 +152,11 @@ BOOL valid_binie(char *buffer, size_t size) {
         offset += sizeof(struct element_header_t);
         if(size - offset < element_header->length) { return FALSE; }
 
-        /* verifies the contents of the element according to its type, the
+        /* verifies the contents of the element according to its type (as
+        an unsigned short, the same way it's dispatched while printing), the
         header of a text must be followed by the (null terminated) text and
         the header of an image must be followed by the complete image */
-        switch(element_header->type) {
+        switch((unsigned short) element_header->type) {
             case TEXT_VALUE:
                 header_size = sizeof(struct text_element_header_t) - sizeof(struct element_header_t);
                 if(element_header->length <= header_size) { return FALSE; }

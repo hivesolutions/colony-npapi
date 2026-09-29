@@ -49,7 +49,7 @@ jobs:
           echo "FileDevice Yes" >> /etc/cups/cups-files.conf
           mkdir -p /run/cups
           cupsd
-          for index in $(seq 1 30); do lpstat -r | grep -q "scheduler is running" && break; sleep 1; done
+          for _ in $(seq 1 30); do lpstat -r | grep -q "scheduler is running" && break; sleep 1; done
           lpadmin -p npcolony-test-custom -E -v file:///dev/null -P src/python/npcolony_py/test/custom.ppd
 
       - name: Show Python version

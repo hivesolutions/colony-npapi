@@ -125,7 +125,9 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         their range and their margins (in points), the distances to the
         edges of the page and not the coordinates of its imageable box (as
         the ones of the default media), with an invalid value for the
-        devices that don't accept custom paper sizes */
+        devices that don't accept custom paper sizes and for every device
+        on windows, where they're not reported (the size of the document
+        is given to the driver as a custom paper size instead) */
         if(device->custom) {
             item = Py_BuildValue(
                 "{s:d,s:d,s:d,s:d,s:d,s:d,s:d,s:d}",

@@ -74,6 +74,7 @@ class GlobalTest(unittest.TestCase):
                 sorted(device.keys()),
                 [
                     "bottom",
+                    "custom",
                     "is_default",
                     "left",
                     "length",
@@ -88,6 +89,31 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(
                 device["bottom"] <= device["top"] <= device["length"], True
             )
+            if device["custom"] == None:
+                continue
+            self.assertEqual(
+                sorted(device["custom"].keys()),
+                [
+                    "margin_bottom",
+                    "margin_left",
+                    "margin_right",
+                    "margin_top",
+                    "max_length",
+                    "max_width",
+                    "min_length",
+                    "min_width",
+                ],
+            )
+            self.assertEqual(
+                0.0 <= device["custom"]["min_width"] <= device["custom"]["max_width"],
+                True,
+            )
+            self.assertEqual(
+                0.0 <= device["custom"]["min_length"] <= device["custom"]["max_length"],
+                True,
+            )
+            for key in ("margin_left", "margin_bottom", "margin_right", "margin_top"):
+                self.assertEqual(device["custom"][key] >= 0.0, True)
 
     def test_get_devices_references(self):
         devices = npcolony.get_devices()
@@ -101,6 +127,57 @@ class GlobalTest(unittest.TestCase):
                     sys.getrefcount(devices[index][key]),
                     sys.getrefcount(controls[index]["value"]),
                 )
+            if devices[index]["custom"] == None:
+                continue
+            self.assertEqual(
+                sys.getrefcount(devices[index]["custom"]),
+                sys.getrefcount(controls[index]),
+            )
+            for key in devices[index]["custom"]:
+                self.assertEqual(
+                    sys.getrefcount(devices[index]["custom"][key]),
+                    sys.getrefcount(controls[index]["value"]),
+                )
+
+    @unittest.skipIf(os.name == "nt", "custom paper sizes are only reported on unix")
+    def test_get_devices_custom(self):
+        devices = dict((device["name"], device) for device in npcolony.get_devices())
+        if not "npcolony-test-custom" in devices:
+            if os.environ.get("NPCOLONY_TEST_CUSTOM", None):
+                self.fail("the npcolony-test-custom printer is not listed")
+            self.skipTest("requires the npcolony-test-custom printer")
+        self.assertEqual(
+            devices["npcolony-test-custom"]["custom"],
+            dict(
+                min_width=36.0,
+                min_length=72.0,
+                max_width=612.0,
+                max_length=1008.0,
+                margin_left=1.0,
+                margin_bottom=2.0,
+                margin_right=3.0,
+                margin_top=4.0,
+            ),
+        )
+
+    @unittest.skipIf(os.name == "nt", "custom paper sizes are only reported on unix")
+    def test_get_devices_custom_none(self):
+        devices = dict((device["name"], device) for device in npcolony.get_devices())
+        if not "npcolony-test-raw" in devices:
+            if os.environ.get("NPCOLONY_TEST_CUSTOM", None):
+                self.fail("the npcolony-test-raw printer is not listed")
+            self.skipTest("requires the npcolony-test-raw printer")
+        self.assertEqual(devices["npcolony-test-raw"]["custom"], None)
+
+    @unittest.skipIf(os.name == "nt", "custom paper sizes are only reported on unix")
+    def test_get_devices_custom_fixed(self):
+        devices = dict((device["name"], device) for device in npcolony.get_devices())
+        if not "npcolony-test-fixed" in devices:
+            if os.environ.get("NPCOLONY_TEST_CUSTOM", None):
+                self.fail("the npcolony-test-fixed printer is not listed")
+            self.skipTest("requires the npcolony-test-fixed printer")
+        self.assertEqual(devices["npcolony-test-fixed"]["media"], "A4")
+        self.assertEqual(devices["npcolony-test-fixed"]["custom"], None)
 
     def test_print_base64_invalid(self):
         self.assertRaises(ValueError, lambda: npcolony.print_base64(""))

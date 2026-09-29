@@ -68,6 +68,10 @@ typedef struct device_t {
     float bottom;
     float right;
     float top;
+    char custom;
+    float custom_min[2];
+    float custom_max[2];
+    float custom_margins[4];
 } device;
 
 /**

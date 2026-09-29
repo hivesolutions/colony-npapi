@@ -106,6 +106,17 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
             device->top = page_size->top;
         }
 
+        /* in case the device accepts custom paper sizes populates their
+        range and their (hardware) margins, all measured in points, so
+        that it's possible to know if the size of a document is accepted
+        by the device, as windows does for its custom paper sizes */
+        if(ppd && ppd->variable_sizes) {
+            device->custom = 1;
+            memcpy(device->custom_min, ppd->custom_min, sizeof(device->custom_min));
+            memcpy(device->custom_max, ppd->custom_max, sizeof(device->custom_max));
+            memcpy(device->custom_margins, ppd->custom_margins, sizeof(device->custom_margins));
+        }
+
         /* closes the ppd reference object, as it's not going
         to be used anymore (avoids memory leaks) */
         if(ppd != NULL) { ppdClose(ppd); }

@@ -51,6 +51,7 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
     size_t devices_s;
     PyObject *element;
     PyObject *item;
+    PyObject *custom;
     struct device_t *device;
     struct device_t *devices;
     PyObject *result = PyList_New(0);
@@ -120,6 +121,46 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         item = PyFloat_FromDouble((double) device->top);
         PyDict_SetItemString(element, "top", item);
         Py_DECREF(item);
+
+        /* the custom paper sizes accepted by the device are described by
+        their range and their margins (in points), the distances to the
+        edges of the page and not the coordinates of its imageable box (as
+        the ones of the default media), with an invalid value for the
+        devices that don't accept custom paper sizes and for every device
+        on windows, where they're not reported (the size of the document
+        is given to the driver as a custom paper size instead) */
+        if(device->custom) {
+            custom = PyDict_New();
+            item = PyFloat_FromDouble((double) device->custom_min[0]);
+            PyDict_SetItemString(custom, "min_width", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_min[1]);
+            PyDict_SetItemString(custom, "min_length", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_max[0]);
+            PyDict_SetItemString(custom, "max_width", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_max[1]);
+            PyDict_SetItemString(custom, "max_length", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_margins[0]);
+            PyDict_SetItemString(custom, "margin_left", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_margins[1]);
+            PyDict_SetItemString(custom, "margin_bottom", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_margins[2]);
+            PyDict_SetItemString(custom, "margin_right", item);
+            Py_DECREF(item);
+            item = PyFloat_FromDouble((double) device->custom_margins[3]);
+            PyDict_SetItemString(custom, "margin_top", item);
+            Py_DECREF(item);
+            PyDict_SetItemString(element, "custom", custom);
+            Py_DECREF(custom);
+        } else {
+            PyDict_SetItemString(element, "custom", Py_None);
+        }
+
         PyList_Append(result, element);
         Py_DECREF(element);
     }

@@ -206,14 +206,17 @@ static PyObject *print_base64(PyObject *self, PyObject *args) {
         return NULL;
     }
 
-    /* decodes the data value from the base 64 encoding
-    and then uses it to print the data */
-    decode_base64(
+    /* decodes the data value from the base 64 encoding, raising an
+    exception in case it's not valid, and then uses it to print the data */
+    if(decode_base64(
         (unsigned char *) input,
         strlen(input),
         (unsigned char **) &data,
         &data_length
-    );
+    ) != 0) {
+        PyErr_SetString(PyExc_ValueError, "Invalid data, it must be base 64 encoded");
+        return NULL;
+    }
     result = print(FALSE, NULL, data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)
@@ -317,14 +320,18 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
         }
     }
 
-    /* decodes the data value from the base 64 encoding
-    and then uses it to print the data */
-    decode_base64(
+    /* decodes the data value from the base 64 encoding, raising an
+    exception in case it's not valid, and then uses it to print the data */
+    if(decode_base64(
         (unsigned char *) input,
         strlen(input),
         (unsigned char **) &data,
         &data_length
-    );
+    ) != 0) {
+        Py_XDECREF(encoded);
+        PyErr_SetString(PyExc_ValueError, "Invalid data, it must be base 64 encoded");
+        return NULL;
+    }
     result = print_printer(FALSE, printer, &job, data, data_length);
 
     /* releases the decoded buffer and the encoded values of

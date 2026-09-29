@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Failed prints reported as successful - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 * Memory leak when listing the printers
 * Leak of graphics resources on every Windows print job
+* Crash or memory corruption when printing empty or invalid data
 
 ## [1.2.10] - 2026-02-24
 

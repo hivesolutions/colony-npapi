@@ -63,6 +63,11 @@ class GlobalTest(unittest.TestCase):
                     sys.getrefcount(controls[index]["value"]),
                 )
 
+    def test_print_base64_invalid(self):
+        self.assertRaises(ValueError, lambda: npcolony.print_base64(""))
+        self.assertRaises(ValueError, lambda: npcolony.print_base64("QUJDQ"))
+        self.assertRaises(ValueError, lambda: npcolony.print_base64("===="))
+
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path(self):
         path = os.path.join(self.target_dir, "output.pdf")
@@ -72,6 +77,19 @@ class GlobalTest(unittest.TestCase):
         self.assertEqual(result, 0)
         with open(path, "rb") as file:
             self.assertEqual(file.read(), self.data)
+
+    @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
+    def test_print_printer_base64_output_path_padding(self):
+        path = os.path.join(self.target_dir, "output.pdf")
+        for data in (b"A", b"AB", b"ABC", b"ABCD"):
+            result = npcolony.print_printer_base64(
+                "npcolony-test-printer",
+                base64.b64encode(data).decode("utf-8"),
+                options=dict(output_path=path),
+            )
+            self.assertEqual(result, 0)
+            with open(path, "rb") as file:
+                self.assertEqual(file.read(), data)
 
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path_unicode(self):
@@ -138,6 +156,22 @@ class GlobalTest(unittest.TestCase):
                 "npcolony-test-printer",
                 self.data_b64,
                 options=dict(title=None, media=3.5, scaling=b"none"),
+            ),
+        )
+
+    def test_print_printer_base64_invalid_data(self):
+        self.assertRaises(
+            ValueError,
+            lambda: npcolony.print_printer_base64("npcolony-test-printer", ""),
+        )
+        self.assertRaises(
+            ValueError,
+            lambda: npcolony.print_printer_base64("npcolony-test-printer", "QUJDQ"),
+        )
+        self.assertRaises(
+            ValueError,
+            lambda: npcolony.print_printer_base64(
+                "npcolony-test-printer", "====", options=dict(title="npcolony")
             ),
         )
 

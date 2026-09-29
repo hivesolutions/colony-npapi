@@ -282,14 +282,16 @@ bool invoke_print(NPObject *obj, const NPVariant *args, uint32_t arg_count, NPVa
     char *data;
     size_t data_length;
 
-    /* decodes the data value from the base 64 encoding
-    and then uses it to print the data */
-    decode_base64(
+    /* decodes the data value from the base 64 encoding, returning
+    immediately in case it's not valid, and then uses it to print the data */
+    if(decode_base64(
         (unsigned char *) data_string.UTF8Characters,
         data_string.UTF8Length,
         (unsigned char **) &data,
         &data_length
-    );
+    ) != 0) {
+        return true;
+    }
     print(show_dialog, NULL, (char *) data, data_length);
 
     /* releases the decoded buffer (avoids memory leak)

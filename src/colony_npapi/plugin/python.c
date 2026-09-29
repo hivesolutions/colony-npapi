@@ -120,6 +120,29 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         item = PyFloat_FromDouble((double) device->top);
         PyDict_SetItemString(element, "top", item);
         Py_DECREF(item);
+
+        /* the custom paper sizes accepted by the device are described by
+        their range and their margins (in points), with an invalid value
+        for the devices that don't accept custom paper sizes */
+        if(device->custom) {
+            item = Py_BuildValue(
+                "{s:d,s:d,s:d,s:d,s:d,s:d,s:d,s:d}",
+                "min_width", (double) device->custom_min[0],
+                "min_length", (double) device->custom_min[1],
+                "max_width", (double) device->custom_max[0],
+                "max_length", (double) device->custom_max[1],
+                "left", (double) device->custom_margins[0],
+                "bottom", (double) device->custom_margins[1],
+                "right", (double) device->custom_margins[2],
+                "top", (double) device->custom_margins[3]
+            );
+        } else {
+            item = Py_None;
+            Py_INCREF(item);
+        }
+        PyDict_SetItemString(element, "custom", item);
+        Py_DECREF(item);
+
         PyList_Append(result, element);
         Py_DECREF(element);
     }

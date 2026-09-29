@@ -74,6 +74,7 @@ class GlobalTest(unittest.TestCase):
                 sorted(device.keys()),
                 [
                     "bottom",
+                    "custom",
                     "is_default",
                     "left",
                     "length",
@@ -88,6 +89,31 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(
                 device["bottom"] <= device["top"] <= device["length"], True
             )
+            if device["custom"] == None:
+                continue
+            self.assertEqual(
+                sorted(device["custom"].keys()),
+                [
+                    "bottom",
+                    "left",
+                    "max_length",
+                    "max_width",
+                    "min_length",
+                    "min_width",
+                    "right",
+                    "top",
+                ],
+            )
+            self.assertEqual(
+                0.0 <= device["custom"]["min_width"] <= device["custom"]["max_width"],
+                True,
+            )
+            self.assertEqual(
+                0.0 <= device["custom"]["min_length"] <= device["custom"]["max_length"],
+                True,
+            )
+            for key in ("left", "bottom", "right", "top"):
+                self.assertEqual(device["custom"][key] >= 0.0, True)
 
     def test_get_devices_references(self):
         devices = npcolony.get_devices()
@@ -99,6 +125,17 @@ class GlobalTest(unittest.TestCase):
             for key in ("width", "length", "left", "bottom", "right", "top"):
                 self.assertEqual(
                     sys.getrefcount(devices[index][key]),
+                    sys.getrefcount(controls[index]["value"]),
+                )
+            if devices[index]["custom"] == None:
+                continue
+            self.assertEqual(
+                sys.getrefcount(devices[index]["custom"]),
+                sys.getrefcount(controls[index]),
+            )
+            for key in devices[index]["custom"]:
+                self.assertEqual(
+                    sys.getrefcount(devices[index]["custom"][key]),
                     sys.getrefcount(controls[index]["value"]),
                 )
 

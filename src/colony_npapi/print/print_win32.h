@@ -340,7 +340,7 @@ COLONY_EXPORT_PREFIX int print(
  * passed as an argument.
  * @return The result of the printing process, zero in case of
  * success or a negative value in case of error (eg: invalid
- * document or unknown printer).
+ * document, unknown printer or failure of the spooler).
  */
 COLONY_EXPORT_PREFIX int print_printer(
     bool show_dialog,

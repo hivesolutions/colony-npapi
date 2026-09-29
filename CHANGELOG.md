@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Crash or memory corruption when printing empty or invalid data
 * Crash when listing printers with accented names on Windows
 * Crash when printing an invalid Binie document on Windows
-* Windows jobs for unknown printers reported as printed
+* Windows jobs for unknown printers or failed by the spooler reported as printed
 * Windows jobs for the default printer not printed
 * Wrong default printer on Windows systems without one
 

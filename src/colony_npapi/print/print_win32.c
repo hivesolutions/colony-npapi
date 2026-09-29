@@ -365,10 +365,17 @@ int print_printer(
     document_information.lpszDatatype = NULL;
     document_information.fwType = 0;
 
-    /* builds the document information and prints
-    it on finishing it (print on closed document) */
-    StartDoc(context, &document_information);
-    StartPage(context);
+    /* builds the document information and prints it on finishing
+    it (print on closed document), in case the document can't be
+    started (eg: rejected by the spooler) returns in error and the
+    failures of the pages are kept in the status of the operation */
+    if(StartDoc(context, &document_information) <= 0) {
+        DeleteDC(context);
+        if(!data) { free(buffer); }
+        return -1;
+    }
+    int status = 0;
+    if(StartPage(context) <= 0) { status = -1; }
 
     /* sets the map mode of the document to twips */
     SetMapMode(context, MM_TWIPS);
@@ -539,8 +546,8 @@ int print_printer(
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
-                    EndPage(context);
-                    StartPage(context);
+                    if(EndPage(context) <= 0) { status = -1; }
+                    if(StartPage(context) <= 0) { status = -1; }
 
                     /* calculates the size of the page size in twips units
                     and uses it to re-calculate the text y position, taking
@@ -686,8 +693,8 @@ int print_printer(
                 if(new_page > current_page) {
                     /* ends the current page and starts a new
                     on (page break operation) */
-                    EndPage(context);
-                    StartPage(context);
+                    if(EndPage(context) <= 0) { status = -1; }
+                    if(StartPage(context) <= 0) { status = -1; }
 
                     /* calculates the size of the page size in twips units
                     and uses it to re-calculate the text y position, taking
@@ -764,9 +771,9 @@ int print_printer(
     DeleteObject(pen);
 
     /* ends the current page and the document for the
-    current context */
-    EndPage(context);
-    EndDoc(context);
+    current context, keeping any failure in the status */
+    if(EndPage(context) <= 0) { status = -1; }
+    if(EndDoc(context) <= 0) { status = -1; }
 
     /* deletes the print context (avoids leaking of memory) */
     DeleteDC(context);
@@ -775,8 +782,9 @@ int print_printer(
     only in case the buffer was created from the default file */
     if(!data) { free(buffer); }
 
-    /* returns with no error */
-    return 0;
+    /* returns the status of the operation, zero in case of
+    success or a negative value in case the spooler failed */
+    return status;
 }
 
 #ifdef __cplusplus

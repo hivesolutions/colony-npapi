@@ -186,15 +186,11 @@ class GlobalTest(unittest.TestCase):
         process = kernel32.GetCurrentProcess()
 
         options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
-        result = npcolony.print_printer_base64(
-            "Microsoft Print to PDF", data_b64, options=options
-        )
-        self.assertEqual(result, 0)
-
-        count = user32.GetGuiResources(process, 0)
-        for _index in range(3):
+        counts = []
+        for _index in range(10):
             result = npcolony.print_printer_base64(
                 "Microsoft Print to PDF", data_b64, options=options
             )
             self.assertEqual(result, 0)
-        self.assertEqual(user32.GetGuiResources(process, 0), count)
+            counts.append(user32.GetGuiResources(process, 0))
+        self.assertEqual(counts[5:], [counts[5]] * 5)

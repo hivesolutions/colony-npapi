@@ -59,7 +59,7 @@ class GlobalTest(unittest.TestCase):
 
     @unittest.skipIf(os.name == "nt", "print to file writes the document on unix")
     def test_print_printer_base64_output_path_unicode(self):
-        path = os.path.join(self.target_dir, u"sa\xedda.pdf")
+        path = os.path.join(self.target_dir, b"sa\xc3\xadda.pdf".decode("utf-8"))
         result = npcolony.print_printer_base64(
             "npcolony-test-printer", self.data_b64, options=dict(output_path=path)
         )

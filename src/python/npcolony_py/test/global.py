@@ -94,14 +94,14 @@ class GlobalTest(unittest.TestCase):
             self.assertEqual(
                 sorted(device["custom"].keys()),
                 [
-                    "bottom",
-                    "left",
+                    "margin_bottom",
+                    "margin_left",
+                    "margin_right",
+                    "margin_top",
                     "max_length",
                     "max_width",
                     "min_length",
                     "min_width",
-                    "right",
-                    "top",
                 ],
             )
             self.assertEqual(
@@ -112,7 +112,7 @@ class GlobalTest(unittest.TestCase):
                 0.0 <= device["custom"]["min_length"] <= device["custom"]["max_length"],
                 True,
             )
-            for key in ("left", "bottom", "right", "top"):
+            for key in ("margin_left", "margin_bottom", "margin_right", "margin_top"):
                 self.assertEqual(device["custom"][key] >= 0.0, True)
 
     def test_get_devices_references(self):
@@ -138,6 +138,25 @@ class GlobalTest(unittest.TestCase):
                     sys.getrefcount(devices[index]["custom"][key]),
                     sys.getrefcount(controls[index]["value"]),
                 )
+
+    @unittest.skipIf(os.name == "nt", "custom paper sizes are only reported on unix")
+    def test_get_devices_custom(self):
+        devices = dict((device["name"], device) for device in npcolony.get_devices())
+        if not "npcolony-test-custom" in devices:
+            self.skipTest("requires the npcolony-test-custom printer")
+        self.assertEqual(
+            devices["npcolony-test-custom"]["custom"],
+            dict(
+                min_width=36.0,
+                min_length=72.0,
+                max_width=612.0,
+                max_length=1008.0,
+                margin_left=1.0,
+                margin_bottom=2.0,
+                margin_right=3.0,
+                margin_top=4.0,
+            ),
+        )
 
     def test_print_base64_invalid(self):
         self.assertRaises(ValueError, lambda: npcolony.print_base64(""))

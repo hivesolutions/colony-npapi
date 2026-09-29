@@ -122,8 +122,10 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
         Py_DECREF(item);
 
         /* the custom paper sizes accepted by the device are described by
-        their range and their margins (in points), with an invalid value
-        for the devices that don't accept custom paper sizes */
+        their range and their margins (in points), the distances to the
+        edges of the page and not the coordinates of its imageable box (as
+        the ones of the default media), with an invalid value for the
+        devices that don't accept custom paper sizes */
         if(device->custom) {
             item = Py_BuildValue(
                 "{s:d,s:d,s:d,s:d,s:d,s:d,s:d,s:d}",
@@ -131,10 +133,10 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
                 "min_length", (double) device->custom_min[1],
                 "max_width", (double) device->custom_max[0],
                 "max_length", (double) device->custom_max[1],
-                "left", (double) device->custom_margins[0],
-                "bottom", (double) device->custom_margins[1],
-                "right", (double) device->custom_margins[2],
-                "top", (double) device->custom_margins[3]
+                "margin_left", (double) device->custom_margins[0],
+                "margin_bottom", (double) device->custom_margins[1],
+                "margin_right", (double) device->custom_margins[2],
+                "margin_top", (double) device->custom_margins[3]
             );
         } else {
             item = Py_None;

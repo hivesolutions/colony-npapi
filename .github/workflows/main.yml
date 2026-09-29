@@ -52,6 +52,8 @@ jobs:
           for _ in $(seq 1 30); do lpstat -r | grep -q "scheduler is running" && break; sleep 1; done
           lpadmin -p npcolony-test-custom -E -v file:///dev/null -P src/python/npcolony_py/test/custom.ppd
           lpadmin -p npcolony-test-raw -E -v file:///dev/null
+          grep -v -e Custom -e VariablePaperSize -e MaxMedia -e HWMargins src/python/npcolony_py/test/custom.ppd > /tmp/fixed.ppd
+          lpadmin -p npcolony-test-fixed -E -v file:///dev/null -P /tmp/fixed.ppd
           echo "NPCOLONY_TEST_CUSTOM=1" >> "$GITHUB_ENV"
 
       - name: Show Python version

@@ -9,14 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Printing on a chosen Linux printer with the job title, paper size and scaling - [#24](https://github.com/hivesolutions/colony-print/issues/24)
-* Print to file on Linux, used by the email mode - [#24](https://github.com/hivesolutions/colony-print/issues/24)
-* Printable area of each printer in the device listing - [#24](https://github.com/hivesolutions/colony-print/issues/24)
-* Review of every pull request by Claude
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [1.3.0] - 2026-09-29
+
+### Added
+
+* Printing on a chosen Linux printer with the job title, paper size and scaling - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Print to file on Linux, used by the email mode - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Printable area of each printer in the device listing - [#24](https://github.com/hivesolutions/colony-print/issues/24)
+* Review of every pull request by Claude
 
 ### Fixed
 

@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * File descriptor leak on every Linux print job - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 * Failed prints reported as successful - [#24](https://github.com/hivesolutions/colony-print/issues/24)
 * Memory leak when listing the printers
+* Leak of graphics resources on every Windows print job
 
 ## [1.2.10] - 2026-02-24
 

@@ -4,7 +4,9 @@
 import os
 import sys
 import base64
+import ctypes
 import shutil
+import struct
 import tempfile
 import unittest
 
@@ -138,3 +140,61 @@ class GlobalTest(unittest.TestCase):
                 options=dict(title=None, media=3.5, scaling=b"none"),
             ),
         )
+
+    @unittest.skipIf(os.name != "nt", "gdi objects are only used on windows")
+    def test_print_printer_base64_gdi_objects(self):
+        names = [device["name"] for device in npcolony.get_devices()]
+        if not "Microsoft Print to PDF" in names:
+            self.skipTest("requires the microsoft print to pdf printer")
+
+        text = b"npcolony"
+        image = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
+        image += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
+        image += b"\x00\x00\xff\x00"
+        data = struct.pack("<256sIII", b"npcolony", 0, 0, 3)
+        for weight in (0, 1):
+            data += struct.pack(
+                "<IIii256s11I",
+                1,
+                308 + len(text) + 1,
+                0,
+                0,
+                b"Calibri",
+                9,
+                1,
+                weight,
+                weight,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                len(text) + 1,
+            )
+            data += text + b"\x00"
+        data += struct.pack(
+            "<IIii6I", 2, 32 + len(image), 0, 0, 1, 0, 0, 0, 0, len(image)
+        )
+        data += image
+        data_b64 = base64.b64encode(data).decode("utf-8")
+
+        kernel32 = ctypes.windll.kernel32
+        kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+        user32 = ctypes.windll.user32
+        user32.GetGuiResources.argtypes = (ctypes.c_void_p, ctypes.c_uint)
+        process = kernel32.GetCurrentProcess()
+
+        options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
+        result = npcolony.print_printer_base64(
+            "Microsoft Print to PDF", data_b64, options=options
+        )
+        self.assertEqual(result, 0)
+
+        count = user32.GetGuiResources(process, 0)
+        for _index in range(3):
+            result = npcolony.print_printer_base64(
+                "Microsoft Print to PDF", data_b64, options=options
+            )
+            self.assertEqual(result, 0)
+        self.assertEqual(user32.GetGuiResources(process, 0), count)

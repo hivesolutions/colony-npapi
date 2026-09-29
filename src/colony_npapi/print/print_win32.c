@@ -64,13 +64,13 @@ HDC get_printer(char *name, int width, int height) {
     and then uses it to create the appropriate context */
     if(name == NULL) { GetDefaultPrinter(buffer, &size); }
     else { memcpy(buffer, name, strlen(name) + 1); }
-    OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults);
+    if(!OpenPrinter(name == NULL ? buffer : name, &printer, &printer_defaults)) { return NULL; }
 
     /* tries to retrieve empty document properties to
     "gather" the size of the underlying structure and then
     allocates the associated dev mode */
     dev_mode_size = DocumentProperties(NULL, printer, buffer, NULL, NULL, 0);
-    if(dev_mode_size < 0) { return NULL; }
+    if(dev_mode_size < 0) { ClosePrinter(printer); return NULL; }
     dev_mode = (PDEVMODEA) LocalAlloc(LPTR, dev_mode_size);
 
     /* retrieves the current print dev mode structure (out mode)
@@ -296,7 +296,7 @@ int print_printer(
     /* creates a new (drawing) pen for the document to
     be used in the drawing process of it */
     HANDLE pen = CreatePen(0, FONT_SCALE_FACTOR, 0);
-    SelectObject(context, pen);
+    HANDLE previous_pen = SelectObject(context, pen);
 
     /* retrieves the initial document element  header */
     struct element_header_t *element_header =\
@@ -328,6 +328,7 @@ int print_printer(
         RECT clip_box;
         RECT clip_box_pixel;
         HFONT font;
+        HFONT previous_font;
         int result;
         int text_x;
         int text_y;
@@ -392,7 +393,7 @@ int print_printer(
                     VARIABLE_PITCH,
                     text_element_header->font
                 );
-                SelectObject(context, font);
+                previous_font = (HFONT) SelectObject(context, font);
 
                 /* converts the text into the appropriate windows unicode
                 representation (may represent all charset) */
@@ -492,12 +493,14 @@ int print_printer(
                 provided (calculated) coordinates */
                 TextOutW(context, text_x, text_y, text_unicode, lstrlenW(text_unicode));
 
-                /* deletes the font object as it's no longer going to be used,
-                avoiding possible memory leaks */
+                /* restores the previous font of the context and then deletes the
+                font object as it's no longer going to be used, avoiding possible
+                memory leaks (a selected object can't be deleted) */
+                SelectObject(context, previous_font);
                 DeleteObject(font);
 
                 /* releases the unicode representation of the text */
-                delete text_unicode;
+                delete[] text_unicode;
 
                 /* breaks the switch */
                 break;
@@ -532,7 +535,6 @@ int print_printer(
                 image_context = CreateCompatibleDC(NULL);
                 handle_image = SelectBitmap(image_context, handle_image_new);
                 GetObject(handle_image_new, sizeof(bitmap), &bitmap);
-                DeleteObject(handle_image_new);
 
                 /* removes the temporary image file (it's no longer required)
                 as the image was already loaded into memory */
@@ -659,9 +661,11 @@ int print_printer(
                 );
                 SetMapMode(context, previous_mode);
 
-                /* selects the bitmap for the context and then deletes the
-                "just" generated drawing context */
+                /* selects the previous bitmap for the context and then deletes
+                the loaded bitmap (no longer selected) and the "just" generated
+                drawing context */
                 SelectBitmap(image_context, handle_image);
+                DeleteObject(handle_image_new);
                 DeleteDC(image_context);
 
                 /* breaks the switch */
@@ -673,8 +677,10 @@ int print_printer(
         element_header = (struct element_header_t *) ((char *) element_header + sizeof(struct element_header_t) + element_length);
     }
 
-    /* deletes the pen object as it's no longer going to be
-    used and should be discarded */
+    /* restores the previous pen of the context and then deletes
+    the pen object as it's no longer going to be used and should
+    be discarded (a selected object can't be deleted) */
+    SelectObject(context, previous_pen);
     DeleteObject(pen);
 
     /* ends the current page and the document for the

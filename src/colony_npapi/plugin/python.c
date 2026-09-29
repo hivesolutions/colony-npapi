@@ -155,12 +155,11 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
             item = PyFloat_FromDouble((double) device->custom_margins[3]);
             PyDict_SetItemString(custom, "margin_top", item);
             Py_DECREF(item);
+            PyDict_SetItemString(element, "custom", custom);
+            Py_DECREF(custom);
         } else {
-            custom = Py_None;
-            Py_INCREF(custom);
+            PyDict_SetItemString(element, "custom", Py_None);
         }
-        PyDict_SetItemString(element, "custom", custom);
-        Py_DECREF(custom);
 
         PyList_Append(result, element);
         Py_DECREF(element);

@@ -62,6 +62,46 @@ class GlobalTest(unittest.TestCase):
         bitmap += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
         return bitmap + b"\x00\x00\xff\x00"
 
+    def _font(self, name, directory="fonts"):
+        # copies the arial font of the system renaming its family into the
+        # provided name (of the same size), so that the font is not installed
+        fonts_dir = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts")
+        with open(os.path.join(fonts_dir, "arial.ttf"), "rb") as file:
+            data = file.read()
+        data = data.replace(b"Arial", name.encode("utf-8"))
+        data = data.replace("Arial".encode("utf-16-be"), name.encode("utf-16-be"))
+        font_dir = os.path.join(self.target_dir, directory)
+        os.makedirs(font_dir)
+        font_path = os.path.join(font_dir, "%s.ttf" % name)
+        with open(font_path, "wb") as file:
+            file.write(data)
+        return font_path
+
+    def _face(self, name):
+        # retrieves the name of the face that GDI selects for a font with the
+        # provided name, the one of a substitute font when it's not available
+        gdi32 = ctypes.WinDLL("gdi32")
+        gdi32.CreateCompatibleDC.restype = ctypes.c_void_p
+        gdi32.CreateCompatibleDC.argtypes = (ctypes.c_void_p,)
+        gdi32.CreateFontW.restype = ctypes.c_void_p
+        gdi32.CreateFontW.argtypes = (
+            (ctypes.c_int,) * 5 + (ctypes.c_uint,) * 8 + (ctypes.c_wchar_p,)
+        )
+        gdi32.SelectObject.restype = ctypes.c_void_p
+        gdi32.SelectObject.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
+        gdi32.GetTextFaceW.argtypes = (ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p)
+        gdi32.DeleteObject.argtypes = (ctypes.c_void_p,)
+        gdi32.DeleteDC.argtypes = (ctypes.c_void_p,)
+        context = gdi32.CreateCompatibleDC(None)
+        font = gdi32.CreateFontW(20, 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 0, 0, name)
+        previous = gdi32.SelectObject(context, font)
+        buffer = ctypes.create_unicode_buffer(64)
+        gdi32.GetTextFaceW(context, 64, buffer)
+        gdi32.SelectObject(context, previous)
+        gdi32.DeleteObject(font)
+        gdi32.DeleteDC(context)
+        return buffer.value
+
     def test_basic(self):
         self.assertEqual(type(npcolony.VERSION), str)
         self.assertEqual(npcolony.VERSION, "1.7.0")
@@ -482,3 +522,40 @@ class GlobalTest(unittest.TestCase):
             growths,
             [empty, empty, empty, growth(print_gdi, 1), growth(print_gdi, 3)],
         )
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font(self):
+        font_path = self._font("Npcol", directory="fontes-\u00e7\u00e3o")
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        try:
+            self.assertEqual(self._face("Npcol"), "Npcol")
+        finally:
+            npcolony.unload_font(font_path)
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_invalid(self):
+        font_path = os.path.join(self.target_dir, "missing.ttf")
+        self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
+
+        font_path = os.path.join(self.target_dir, "invalid.ttf")
+        with open(font_path, "wb") as file:
+            file.write(b"not a font")
+        self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
+
+        self.assertRaises(TypeError, lambda: npcolony.load_font(font_path.encode()))
+        self.assertRaises(TypeError, lambda: npcolony.load_font(None))
+        self.assertRaises(TypeError, lambda: npcolony.load_font())
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_unload_font_invalid(self):
+        font_path = self._font("Npcol")
+        self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
+        self.assertRaises(TypeError, lambda: npcolony.unload_font(font_path.encode()))
+        self.assertRaises(TypeError, lambda: npcolony.unload_font())
+
+    @unittest.skipIf(os.name == "nt", "fonts are only loaded on windows")
+    def test_load_font_unix(self):
+        self.assertEqual(hasattr(npcolony, "load_font"), False)
+        self.assertEqual(hasattr(npcolony, "unload_font"), False)

@@ -393,6 +393,74 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     return PyLong_FromLong((long) result);
 }
 
+#if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
+static PyObject *load_font(PyObject *self, PyObject *args) {
+    /* allocates space for the path to the font file (as a wide
+    string) and for the number of fonts loaded from it */
+    PyObject *value;
+    wchar_t *path;
+    int result;
+
+    /* tries to parse the provided sequence of arguments as a single
+    (unicode) string value, the path to the font file, converting it
+    into a wide string as expected by the windows (unicode) API */
+    if(PyArg_ParseTuple(args, "U", &value) == FALSE) {
+        return NULL;
+    }
+    path = PyUnicode_AsWideCharString(value, NULL);
+    if(path == NULL) { return NULL; }
+
+    /* loads the font file as a private font of the current process
+    and then releases the wide string (avoids memory leaks) */
+    result = pload_font(path);
+    PyMem_Free(path);
+
+    /* in case no font was loaded from the font file raises an exception
+    so that the caller is notified about the problem */
+    if(result == 0) {
+        PyErr_Format(PyExc_IOError, "Problem loading font '%U'", value);
+        return NULL;
+    }
+
+    /* returns the number of fonts loaded from the font file to
+    the caller method/function */
+    return PyLong_FromLong((long) result);
+}
+
+static PyObject *unload_font(PyObject *self, PyObject *args) {
+    /* allocates space for the path to the font file (as a wide
+    string) and for the result of the unloading */
+    PyObject *value;
+    wchar_t *path;
+    int result;
+
+    /* tries to parse the provided sequence of arguments as a single
+    (unicode) string value, the path to the font file, converting it
+    into a wide string as expected by the windows (unicode) API */
+    if(PyArg_ParseTuple(args, "U", &value) == FALSE) {
+        return NULL;
+    }
+    path = PyUnicode_AsWideCharString(value, NULL);
+    if(path == NULL) { return NULL; }
+
+    /* unloads the font file from the private fonts of the current
+    process and then releases the wide string (avoids memory leaks) */
+    result = punload_font(path);
+    PyMem_Free(path);
+
+    /* in case the unload operation failed raises an exception
+    so that the caller is notified about the problem */
+    if(result < 0) {
+        PyErr_Format(PyExc_IOError, "Problem unloading font '%U'", value);
+        return NULL;
+    }
+
+    /* returns an invalid value to the caller method/function
+    as this function should not return anything */
+    Py_RETURN_NONE;
+}
+#endif
+
 static PyMethodDef colony_functions[] = {
     {"get_format", get_format, METH_NOARGS, "Retrieves the format supported by the system."},
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
@@ -400,6 +468,10 @@ static PyMethodDef colony_functions[] = {
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},
     {"print_printer_base64", (PyCFunction) print_printer_base64, METH_VARARGS | METH_KEYWORDS, "Prints a Base64 based sequence of data in a specific printer with optional options."},
+#if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
+    {"load_font", load_font, METH_VARARGS, "Loads a font file as a private font of the current process."},
+    {"unload_font", unload_font, METH_VARARGS, "Unloads a font file loaded as a private font of the current process."},
+#endif
     {NULL, NULL, 0, NULL}
 };
 

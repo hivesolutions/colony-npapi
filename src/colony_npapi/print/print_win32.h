@@ -298,6 +298,29 @@ COLONY_EXPORT_PREFIX const char *pformat();
 COLONY_EXPORT_PREFIX void pdevices(struct device_t **devices_p, size_t *devices_c);
 
 /**
+ * Loads the font file of the provided path as a private font of the
+ * current process, so that its fonts are available (by their family
+ * name) for the printing of the documents of the process, without
+ * being installed in the system (no administration rights required).
+ *
+ * @param path The path to the (true type) font file to be loaded.
+ * @return The number of fonts loaded from the font file, zero in
+ * case it was not possible to load the font file.
+ */
+COLONY_EXPORT_PREFIX int pload_font(const wchar_t *path);
+
+/**
+ * Unloads the font file of the provided path, previously loaded as
+ * a private font of the current process, so that its fonts are no
+ * longer available for the printing of the documents.
+ *
+ * @param path The path to the font file to be unloaded.
+ * @return The result of the unloading of the font file, zero in case
+ * of success or a negative value in case of error.
+ */
+COLONY_EXPORT_PREFIX int punload_font(const wchar_t *path);
+
+/**
  * Prints a document using the default printer or in case the show
  * dialog option is set using the printer selected in the printing
  * dialog.

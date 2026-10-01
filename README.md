@@ -36,7 +36,7 @@ Use the `/usr/lib/mozilla/plugins/` directory to test the `*.so` based plugin fi
 It's also possible to build a Python module that exports the functionality in the NPAPI Plugin for
 running the python script as `python setup.py install` under an UNIX-based machine.
 
-Prebuilt wheels are published to [PyPI](https://pypi.org/project/npcolony) for 64 bit Windows and Python 3.10
+Prebuilt wheels are published to [PyPI](https://pypi.org/project/npcolony) for 64 bit Windows and Python 3.6
 onwards, the other platforms build the module from the source distribution when running `pip install npcolony`.
 
 ## Packaging

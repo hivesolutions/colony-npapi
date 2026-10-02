@@ -344,7 +344,7 @@ jobs:
 
   deploy:
     name: Publish to PyPI
-    needs: [build-linux, build-manylinux, build-manylinux-arm, build-windows, build-windows-arm, build-windows-xp, build-macos-arm]
+    needs: [build-linux, build-manylinux, build-manylinux-arm, build-windows, build-windows-arm, build-macos-arm]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     container: python:3.14
@@ -361,6 +361,30 @@ jobs:
 
       - name: Check version of distributions
         run: ls "dist/npcolony-${GITHUB_REF_NAME}.tar.gz"
+
+      - name: Upload to PyPI
+        run: python -m twine upload --skip-existing --non-interactive dist/*
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+  deploy-xp:
+    name: Publish Windows XP to PyPI
+    needs: [build-windows-xp, deploy]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    container: python:3.14
+
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v8
+        with:
+          pattern: wheel-xp-*
+          path: dist
+          merge-multiple: true
+
+      - name: Install dependencies
+        run: pip install twine
 
       - name: Upload to PyPI
         run: python -m twine upload --skip-existing --non-interactive dist/*

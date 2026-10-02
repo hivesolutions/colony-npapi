@@ -82,6 +82,110 @@ jobs:
         if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
         run: python setup.py test
 
+  build-manylinux:
+    name: Build manylinux
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          3.9,
+          "3.10",
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ]
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux_2_28_x86_64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install system dependencies
+        run: yum install -y cups-devel
+
+      - name: Setup Python ${{ matrix.python-version }}
+        run: python${{ matrix.python-version }} -c "import sysconfig; print(sysconfig.get_path('scripts'))" >> "$GITHUB_PATH"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: pip install setuptools pytest build
+
+      - name: Build extension with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run tests with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py test
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Repair wheel
+        run: auditwheel repair --exclude libcups.so.2 dist/*.whl
+
+  build-manylinux-arm:
+    name: Build manylinux ARM
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          3.9,
+          "3.10",
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ]
+    runs-on: ubuntu-26.04-arm
+    container: quay.io/pypa/manylinux_2_28_aarch64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install system dependencies
+        run: yum install -y cups-devel
+
+      - name: Setup Python ${{ matrix.python-version }}
+        run: python${{ matrix.python-version }} -c "import sysconfig; print(sysconfig.get_path('scripts'))" >> "$GITHUB_PATH"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: pip install setuptools pytest build
+
+      - name: Build extension with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run tests with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py test
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Repair wheel
+        run: auditwheel repair --exclude libcups.so.2 dist/*.whl
+
   build-windows:
     name: Build Windows
     timeout-minutes: 10

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 import base64
 import ctypes
@@ -586,12 +587,22 @@ class GlobalTest(unittest.TestCase):
         data_b64 = base64.b64encode(binie).decode("utf-8")
         npcolony.load_font(font_path)
         try:
-            data = self._print_pdf(data_b64, "loaded.pdf")
+            loaded = self._print_pdf(data_b64, "loaded.pdf")
         finally:
             npcolony.unload_font(font_path)
-        self.assertEqual(b"Npcol" in data, True)
-        data = self._print_pdf(data_b64, "unloaded.pdf")
-        self.assertEqual(b"Npcol" in data, False)
+        unloaded = self._print_pdf(data_b64, "unloaded.pdf")
+
+        # describes the fonts of both documents, so that a failure tells a
+        # font that doesn't reach the printer from a document that doesn't
+        # expose the names of its fonts (eg: compressed object streams)
+        message = "loaded %r (%d bytes, object streams %s), unloaded %r" % (
+            re.findall(b"/BaseFont\\s*/([^\\s/<>()\\[\\]]+)", loaded),
+            len(loaded),
+            b"/ObjStm" in loaded,
+            re.findall(b"/BaseFont\\s*/([^\\s/<>()\\[\\]]+)", unloaded),
+        )
+        self.assertEqual(b"Npcol" in loaded, True, message)
+        self.assertEqual(b"Npcol" in unloaded, False, message)
 
     @unittest.skipIf(
         os.name != "nt" or sys.version_info[0] < 3,

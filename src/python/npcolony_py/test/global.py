@@ -242,9 +242,7 @@ class GlobalTest(unittest.TestCase):
     def test_get_features(self):
         features = npcolony.get_features()
         self.assertEqual(type(features), list)
-        self.assertEqual(
-            ("load-fonts" in features), os.name == "nt" and sys.version_info[0] >= 3
-        )
+        self.assertEqual(("load-fonts" in features), os.name == "nt")
         self.assertEqual(hasattr(npcolony, "load_font"), "load-fonts" in features)
         self.assertEqual(hasattr(npcolony, "unload_font"), "load-fonts" in features)
         for feature in features:
@@ -555,10 +553,7 @@ class GlobalTest(unittest.TestCase):
             [empty, empty, empty, growth(print_gdi, 1), growth(print_gdi, 3)],
         )
 
-    @unittest.skipIf(
-        os.name != "nt" or sys.version_info[0] < 3,
-        "fonts are only loaded on windows with python 3",
-    )
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font(self):
         font_path = self._font(
             "Npcol", directory=b"fontes-\xc3\xa7\xc3\xa3o".decode("utf-8")
@@ -571,10 +566,20 @@ class GlobalTest(unittest.TestCase):
             npcolony.unload_font(font_path)
         self.assertEqual(self._face("Npcol") == "Npcol", False)
 
-    @unittest.skipIf(
-        os.name != "nt" or sys.version_info[0] < 3,
-        "fonts are only loaded on windows with python 3",
-    )
+        # the path may also be a (byte) string of the file system encoding
+        # on python 2, as the other paths of python 2, but not on python 3
+        path = font_path.encode(sys.getfilesystemencoding())
+        if sys.version_info[0] < 3:
+            self.assertEqual(npcolony.load_font(path), 1)
+            try:
+                self.assertEqual(self._face("Npcol"), "Npcol")
+            finally:
+                npcolony.unload_font(path)
+            self.assertEqual(self._face("Npcol") == "Npcol", False)
+        else:
+            self.assertRaises(TypeError, lambda: npcolony.load_font(path))
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_counted(self):
         # the loads of a font file are counted, so the font loaded twice is
         # still available after the first unload and removed by the last one
@@ -589,10 +594,7 @@ class GlobalTest(unittest.TestCase):
         self.assertEqual(self._face("Npcol") == "Npcol", False)
         self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
 
-    @unittest.skipIf(
-        os.name != "nt" or sys.version_info[0] < 3,
-        "fonts are only loaded on windows with python 3",
-    )
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_print(self):
         names = [device["name"] for device in npcolony.get_devices()]
         if not "Microsoft Print to PDF" in names:
@@ -630,10 +632,7 @@ class GlobalTest(unittest.TestCase):
         self.assertEqual(sizes[0], sizes[2], message)
         self.assertNotEqual(sizes[1], sizes[2], message)
 
-    @unittest.skipIf(
-        os.name != "nt" or sys.version_info[0] < 3,
-        "fonts are only loaded on windows with python 3",
-    )
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_invalid(self):
         font_path = os.path.join(self.target_dir, "missing.ttf")
         self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
@@ -643,8 +642,12 @@ class GlobalTest(unittest.TestCase):
             file.write(b"not a font")
         self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
 
-        self.assertRaises(TypeError, lambda: npcolony.load_font(font_path.encode()))
+        # the (byte) string path of the invalid font is accepted on python 2
+        # (and so the font fails to load), but refused on python 3
+        error = IOError if sys.version_info[0] < 3 else TypeError
+        self.assertRaises(error, lambda: npcolony.load_font(font_path.encode()))
         self.assertRaises(TypeError, lambda: npcolony.load_font(None))
+        self.assertRaises(TypeError, lambda: npcolony.load_font(1))
         self.assertRaises(TypeError, lambda: npcolony.load_font())
 
         # a path with a null character would be truncated (into the path of
@@ -655,21 +658,17 @@ class GlobalTest(unittest.TestCase):
             ValueError, lambda: npcolony.load_font(font_path + "\0.backup")
         )
 
-    @unittest.skipIf(
-        os.name != "nt" or sys.version_info[0] < 3,
-        "fonts are only loaded on windows with python 3",
-    )
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_unload_font_invalid(self):
         font_path = self._font("Npcol")
         self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
         self.assertRaises(ValueError, lambda: npcolony.unload_font(font_path + "\0"))
-        self.assertRaises(TypeError, lambda: npcolony.unload_font(font_path.encode()))
+        error = IOError if sys.version_info[0] < 3 else TypeError
+        self.assertRaises(error, lambda: npcolony.unload_font(font_path.encode()))
+        self.assertRaises(TypeError, lambda: npcolony.unload_font(None))
         self.assertRaises(TypeError, lambda: npcolony.unload_font())
 
-    @unittest.skipIf(
-        os.name == "nt" and sys.version_info[0] >= 3,
-        "fonts are only loaded on windows with python 3",
-    )
+    @unittest.skipIf(os.name == "nt", "fonts are only loaded on windows")
     def test_load_font_unsupported(self):
         self.assertEqual("load-fonts" in npcolony.get_features(), False)
         self.assertEqual(hasattr(npcolony, "load_font"), False)

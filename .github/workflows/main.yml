@@ -309,8 +309,8 @@ jobs:
       - name: Setup MSVC 9.0
         if: matrix.python-version == '2.7.18'
         run: |
-          Invoke-WebRequest "${{ vars.VCPYTHON27_URL || 'https://web.archive.org/web/20210106040222/download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi' }}" -OutFile vcpython27.msi
-          if ((Get-FileHash vcpython27.msi).Hash -ne "070474db76a2e625513a5835df4595df9324d820f9cc97eab2a596dcbc2f5cbf") { throw "Invalid checksum for vcpython27.msi" }
+          Invoke-WebRequest "${{ vars.VCPYTHON27_URL || 'https://web.archive.org/web/20210106040222id_/https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi' }}" -OutFile vcpython27.msi
+          if ((Get-FileHash vcpython27.msi).Hash -ne "070474db76a2e625513a5835df4595df9324d820f9cc97eab2a596dcbc2f5cbf") { (Get-Item vcpython27.msi).Length; Get-Content vcpython27.msi -TotalCount 20; throw "Invalid checksum for vcpython27.msi" }
           $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i vcpython27.msi /qn /norestart /l*v vcpython27.log ALLUSERS=1"
           if ($process.ExitCode -notin 0, 3010) { Get-Content vcpython27.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install vcpython27.msi ($($process.ExitCode))" }
 

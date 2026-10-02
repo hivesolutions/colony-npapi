@@ -595,6 +595,34 @@ class GlobalTest(unittest.TestCase):
         self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
 
     @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_references(self):
+        # the paths keep their references after loading and unloading the
+        # fonts, either the operations succeed or fail, including the (byte)
+        # string paths that are decoded into new values on python 2
+        font_path = self._font(
+            "Npcol", directory=b"fontes-\xc3\xa7\xc3\xa3o".decode("utf-8")
+        )
+        missing_path = os.path.join(self.target_dir, b"n\xc3\xa3o.ttf".decode("utf-8"))
+        null_path = font_path + "\0"
+        byte_path = font_path.encode(sys.getfilesystemencoding())
+        paths = (font_path, missing_path, null_path, byte_path)
+        counts = [sys.getrefcount(path) for path in paths]
+        for _index in range(8):
+            self.assertEqual(npcolony.load_font(font_path), 1)
+            npcolony.unload_font(font_path)
+            self.assertRaises(IOError, lambda: npcolony.load_font(missing_path))
+            self.assertRaises(IOError, lambda: npcolony.unload_font(missing_path))
+            self.assertRaises(ValueError, lambda: npcolony.load_font(null_path))
+            self.assertRaises(ValueError, lambda: npcolony.unload_font(null_path))
+            if sys.version_info[0] < 3:
+                self.assertEqual(npcolony.load_font(byte_path), 1)
+                npcolony.unload_font(byte_path)
+            else:
+                self.assertRaises(TypeError, lambda: npcolony.load_font(byte_path))
+                self.assertRaises(TypeError, lambda: npcolony.unload_font(byte_path))
+        self.assertEqual([sys.getrefcount(path) for path in paths], counts)
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_print(self):
         names = [device["name"] for device in npcolony.get_devices()]
         if not "Microsoft Print to PDF" in names:

@@ -174,6 +174,35 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
     return result;
 }
 
+static PyObject *get_features(PyObject *self, PyObject *args) {
+    /* allocates the list of the (optional) features supported by the
+    module in the current system, identified by lowercase and dash
+    separated names, so that they're checked without probing for
+    the functions that implement them */
+#if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
+    PyObject *item;
+#endif
+    PyObject *result = PyList_New(0);
+    if(result == NULL) { return NULL; }
+
+    /* the loading of fonts is only supported on windows and with python
+    3 (see the load font function), as the functions are only defined
+    there, the feature is only added to the list in such case */
+#if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
+    item = PyUnicode_FromString("load-fonts");
+    if(item == NULL || PyList_Append(result, item) != 0) {
+        Py_XDECREF(item);
+        Py_DECREF(result);
+        return NULL;
+    }
+    Py_DECREF(item);
+#endif
+
+    /* returns the list of features that has been constructed
+    to the caller method/function */
+    return result;
+}
+
 static PyObject *print_devices(PyObject *self, PyObject *args) {
     /* allocates memory for the various internal structure
     that are going to be used to print device information */
@@ -393,6 +422,10 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     return PyLong_FromLong((long) result);
 }
 
+/* the loading of fonts is only available on windows, as the other
+systems embed the fonts in the (pdf) documents they print, and only
+with python 3, whose unicode API converts the paths into wide strings,
+the load fonts feature reports its availability (get features) */
 #if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
 static PyObject *load_font(PyObject *self, PyObject *args) {
     /* allocates space for the path to the font file (as a wide
@@ -464,6 +497,7 @@ static PyObject *unload_font(PyObject *self, PyObject *args) {
 static PyMethodDef colony_functions[] = {
     {"get_format", get_format, METH_NOARGS, "Retrieves the format supported by the system."},
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
+    {"get_features", get_features, METH_NOARGS, "Retrieves the features supported in the current system."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},

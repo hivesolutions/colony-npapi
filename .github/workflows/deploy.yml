@@ -131,9 +131,54 @@ jobs:
           name: wheel-arm-${{ matrix.python-version }}
           path: dist/*.whl
 
+  build-macos-arm:
+    name: Build macOS ARM
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          3.9,
+          "3.10",
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ]
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: pip install setuptools pytest build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: wheel-macos-arm-${{ matrix.python-version }}
+          path: dist/*.whl
+
   deploy:
     name: Publish to PyPI
-    needs: [build-linux, build-windows, build-windows-arm]
+    needs: [build-linux, build-windows, build-windows-arm, build-macos-arm]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     container: python:3.14

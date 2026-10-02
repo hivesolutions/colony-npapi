@@ -282,6 +282,69 @@ jobs:
       - name: Build wheel
         run: python -m build --wheel
 
+  build-windows-xp:
+    name: Build Windows XP
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          2.7.18,
+          3.4.4
+        ]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python ${{ matrix.python-version }}
+        run: |
+          Invoke-WebRequest https://www.python.org/ftp/python/${{ matrix.python-version }}/python-${{ matrix.python-version }}.msi -OutFile python.msi
+          Start-Process msiexec -Wait -ArgumentList "/i python.msi /qn ALLUSERS=1 TARGETDIR=C:\Python"
+          Add-Content $env:GITHUB_PATH "C:\Python", "C:\Python\Scripts"
+          Add-Content $env:GITHUB_ENV "NPCOLONY_TEST_XP=1"
+
+      - name: Setup MSVC 9.0
+        if: matrix.python-version == '2.7.18'
+        run: |
+          Invoke-WebRequest "${{ vars.VCPYTHON27_URL }}" -OutFile vcpython27.msi
+          if ((Get-FileHash vcpython27.msi).Hash -ne "070474db76a2e625513a5835df4595df9324d820f9cc97eab2a596dcbc2f5cbf") { throw "Invalid checksum for vcpython27.msi" }
+          Start-Process msiexec -Wait -ArgumentList "/i vcpython27.msi /qn ALLUSERS=1"
+
+      - name: Setup MSVC 10.0
+        if: matrix.python-version == '3.4.4'
+        run: |
+          Invoke-WebRequest https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso -OutFile sdk.iso
+          if ((Get-FileHash sdk.iso).Hash -ne "27cb38f76095c0acb9b558109f8693b39cbceb796856c15bd575f9e9d0b316c3") { throw "Invalid checksum for sdk.iso" }
+          $drive = (Mount-DiskImage -ImagePath "$pwd\sdk.iso" -PassThru | Get-Volume).DriveLetter
+          Start-Process msiexec -Wait -ArgumentList "/i ${drive}:\Setup\WinSDKBuild\WinSDKBuild_x86.msi /qn"
+          Start-Process msiexec -Wait -ArgumentList "/i ${drive}:\Setup\vc_stdx86\vc_stdx86.msi /qn"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install "pip<19.2"
+          pip install setuptools pytest wheel
+
+      - name: Build extension with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run tests with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py test
+
+      - name: Build wheel
+        run: python setup.py bdist_wheel
+
   build-macos-arm:
     name: Build macOS ARM
     timeout-minutes: 10

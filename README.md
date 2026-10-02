@@ -46,6 +46,10 @@ source distribution when running `pip install npcolony`.
 The Linux wheels use the CUPS library of the system, which must be installed (`libcups2` under Debian and Ubuntu
 or `cups-libs` under Fedora and Red Hat).
 
+Under a 64 bit Windows the Windows x86 wheels print to file (`output_path`) asynchronously, the file is written by
+the spooler after the print returns, so each print should use its own output path, as printing to a file that is
+still being written opens a dialog asking for another one.
+
 ## Packaging
 
 ### Google Chrome

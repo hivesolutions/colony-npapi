@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Build of the Python module for Python 2.7 on Windows, Visual C++ 2008 has no `stdint.h`
+* Windows printing tests hanging on 32 bit Python, consecutive jobs to the same output file opened the "Save Print Output As" dialog
 
 ## [1.6.0] - 2026-10-02
 

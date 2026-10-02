@@ -113,7 +113,7 @@ jobs:
         run: python --version
 
       - name: Install dependencies
-        run: pip install setuptools pytest
+        run: pip install setuptools pytest build
 
       - name: Build extension with setup.py
         if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
@@ -128,6 +128,55 @@ jobs:
       - name: Run tests with setup.py
         if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
         run: python setup.py test
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+  build-windows-arm:
+    name: Build Windows ARM
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ]
+    runs-on: windows-11-arm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: arm64
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: pip install setuptools pytest build
+
+      - name: Build extension with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run tests with setup.py
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+        run: python setup.py test
+
+      - name: Build wheel
+        run: python -m build --wheel
 
   build-macos-arm:
     name: Build macOS ARM

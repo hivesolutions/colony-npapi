@@ -64,14 +64,15 @@ class GlobalTest(unittest.TestCase):
         bitmap += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
         return bitmap + b"\x00\x00\xff\x00"
 
-    def _font(self, name, directory="fonts"):
-        # copies the arial font of the system renaming its family into the
-        # provided name (of the same size), so that the font is not installed
+    def _font(self, name, directory="fonts", file_name="arial.ttf", family="Arial"):
+        # copies a font of the system (arial by default) renaming its family
+        # into the provided name (of the same size), so that the font is not
+        # installed in the system
         fonts_dir = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts")
-        with open(os.path.join(fonts_dir, "arial.ttf"), "rb") as file:
+        with open(os.path.join(fonts_dir, file_name), "rb") as file:
             data = file.read()
-        data = data.replace(b"Arial", name.encode("utf-8"))
-        data = data.replace("Arial".encode("utf-16-be"), name.encode("utf-16-be"))
+        data = data.replace(family.encode("utf-8"), name.encode("utf-8"))
+        data = data.replace(family.encode("utf-16-be"), name.encode("utf-16-be"))
         font_dir = os.path.join(self.target_dir, directory)
         os.makedirs(font_dir)
         font_path = os.path.join(font_dir, "%s.ttf" % name)
@@ -579,11 +580,14 @@ class GlobalTest(unittest.TestCase):
         if not "Microsoft Print to PDF" in names:
             self.skipTest("requires the microsoft print to pdf printer")
 
-        # prints a document with the loaded font, that must reach the printer
-        # (through the spooler) and be embedded in the pdf document, and then
-        # the same document once the font is unloaded (substituted)
-        font_path = self._font("Npcol")
-        binie = self._binie([self._text("npcolony", font=b"Npcol")])
+        # prints a document with the loaded font (consolas renamed), that must
+        # reach the printer (through the spooler) and be embedded in the pdf
+        # document, then the same document once the font is unloaded (and so
+        # substituted) and the document with consolas itself, as the printer
+        # names the embedded fonts generically (eg: CIDFont+F1) the fonts are
+        # told apart by their bounding box (the one of the font itself)
+        font_path = self._font("Npcolony", file_name="consola.ttf", family="Consolas")
+        binie = self._binie([self._text("npcolony", font=b"Npcolony")])
         data_b64 = base64.b64encode(binie).decode("utf-8")
         npcolony.load_font(font_path)
         try:
@@ -591,18 +595,19 @@ class GlobalTest(unittest.TestCase):
         finally:
             npcolony.unload_font(font_path)
         unloaded = self._print_pdf(data_b64, "unloaded.pdf")
-
-        # describes the fonts of both documents, so that a failure tells a
-        # font that doesn't reach the printer from a document that doesn't
-        # expose the names of its fonts (eg: compressed object streams)
-        message = "loaded %r (%d bytes, object streams %s), unloaded %r" % (
-            re.findall(b"/BaseFont\\s*/([^\\s/<>()\\[\\]]+)", loaded),
-            len(loaded),
-            b"/ObjStm" in loaded,
-            re.findall(b"/BaseFont\\s*/([^\\s/<>()\\[\\]]+)", unloaded),
+        binie = self._binie([self._text("npcolony", font=b"Consolas")])
+        consolas = self._print_pdf(
+            base64.b64encode(binie).decode("utf-8"), "consolas.pdf"
         )
-        self.assertEqual(b"Npcol" in loaded, True, message)
-        self.assertEqual(b"Npcol" in unloaded, False, message)
+
+        boxes = [
+            re.findall(b"/FontBBox\\s*\\[([^\\]]*)\\]", data)
+            for data in (loaded, unloaded, consolas)
+        ]
+        message = "font boxes: loaded %r, unloaded %r, consolas %r" % tuple(boxes)
+        self.assertEqual(len(boxes[2]) > 0, True, message)
+        self.assertEqual(boxes[0], boxes[2], message)
+        self.assertNotEqual(boxes[1], boxes[2], message)
 
     @unittest.skipIf(
         os.name != "nt" or sys.version_info[0] < 3,

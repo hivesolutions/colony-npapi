@@ -605,6 +605,10 @@ class GlobalTest(unittest.TestCase):
             for data in (loaded, unloaded, consolas)
         ]
         message = "font boxes: loaded %r, unloaded %r, consolas %r" % tuple(boxes)
+        message += ", font keys %r, streams %r" % (
+            sorted(set(re.findall(b"/[A-Za-z]*Font[A-Za-z0-9]*", loaded))),
+            re.findall(b"<<[^<>]{0,300}>>\\s*stream", loaded)[:12],
+        )
         self.assertEqual(len(boxes[2]) > 0, True, message)
         self.assertEqual(boxes[0], boxes[2], message)
         self.assertNotEqual(boxes[1], boxes[2], message)

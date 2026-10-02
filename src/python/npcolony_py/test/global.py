@@ -650,6 +650,18 @@ class GlobalTest(unittest.TestCase):
         self.assertRaises(TypeError, lambda: npcolony.load_font(1))
         self.assertRaises(TypeError, lambda: npcolony.load_font())
 
+        # the error of a font with a non ASCII path is converted into a
+        # string (as callers log it) on every version of python
+        font_path = os.path.join(
+            self.target_dir, b"inv\xc3\xa1lida.ttf".decode("utf-8")
+        )
+        with open(font_path, "wb") as file:
+            file.write(b"not a font")
+        with self.assertRaises(IOError) as context:
+            npcolony.load_font(font_path)
+        self.assertEqual("inv" in str(context.exception), True)
+        self.assertEqual("lida.ttf" in str(context.exception), True)
+
         # a path with a null character would be truncated (into the path of
         # a valid font), so it's refused on every version of python
         font_path = self._font("Npcol")
@@ -667,6 +679,13 @@ class GlobalTest(unittest.TestCase):
         self.assertRaises(error, lambda: npcolony.unload_font(font_path.encode()))
         self.assertRaises(TypeError, lambda: npcolony.unload_font(None))
         self.assertRaises(TypeError, lambda: npcolony.unload_font())
+
+        # the error of a font with a non ASCII path is converted into a
+        # string (as callers log it) on every version of python
+        font_path = os.path.join(self.target_dir, b"n\xc3\xa3o.ttf".decode("utf-8"))
+        with self.assertRaises(IOError) as context:
+            npcolony.unload_font(font_path)
+        self.assertEqual("o.ttf" in str(context.exception), True)
 
     @unittest.skipIf(os.name == "nt", "fonts are only loaded on windows")
     def test_load_font_unsupported(self):

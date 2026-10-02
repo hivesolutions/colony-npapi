@@ -482,13 +482,18 @@ static wchar_t *_get_path(PyObject *object, PyObject **value) {
 }
 
 static void _set_font_error(const char *message, PyObject *value) {
-    /* raises an IO error with the provided message and the (unicode)
-    path of the font file, formatted as unicode as the format of the
-    errors of python 2 doesn't support unicode values */
-    PyObject *error = PyUnicode_FromFormat("%s '%U'", message, value);
-    if(error == NULL) { return; }
-    PyErr_SetObject(PyExc_IOError, error);
-    Py_DECREF(error);
+    /* raises an IO error with the provided message and the path of the
+    font file, encoded with the encoding of the file system on python 2,
+    as the (byte) string conversion of its errors fails for unicode
+    messages with non ASCII characters */
+#if PY_MAJOR_VERSION >= 3
+    PyErr_Format(PyExc_IOError, "%s '%U'", message, value);
+#else
+    PyObject *path = PyUnicode_AsEncodedString(value, Py_FileSystemDefaultEncoding, "replace");
+    if(path == NULL) { return; }
+    PyErr_Format(PyExc_IOError, "%s '%s'", message, PyString_AS_STRING(path));
+    Py_DECREF(path);
+#endif
 }
 
 static PyObject *load_font(PyObject *self, PyObject *args) {

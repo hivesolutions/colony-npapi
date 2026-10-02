@@ -89,9 +89,54 @@ jobs:
           path: dist/*.whl
           if-no-files-found: error
 
+  build-windows-arm:
+    name: Build Windows ARM
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: [
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ]
+    runs-on: windows-11-arm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: arm64
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: pip install setuptools pytest build
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: wheel-arm-${{ matrix.python-version }}
+          path: dist/*.whl
+          if-no-files-found: error
+
   deploy:
     name: Publish to PyPI
-    needs: [build-sdist, build-windows]
+    needs: [build-sdist, build-windows, build-windows-arm]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     container: python:3.14

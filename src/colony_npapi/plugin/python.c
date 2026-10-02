@@ -427,6 +427,21 @@ systems embed the fonts in the (pdf) documents they print, and only
 with python 3, whose unicode API converts the paths into wide strings,
 the load fonts feature reports its availability (get features) */
 #if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
+static wchar_t *_get_path(PyObject *value) {
+    /* converts the provided (unicode) path into a wide string, rejecting
+    the paths with null characters that would truncate it, as python 3.6
+    only rejects them when the size of the string is not requested */
+    Py_ssize_t size;
+    wchar_t *path = PyUnicode_AsWideCharString(value, &size);
+    if(path == NULL) { return NULL; }
+    if(wcslen(path) != (size_t) size) {
+        PyMem_Free(path);
+        PyErr_SetString(PyExc_ValueError, "Invalid path, it must not contain null characters");
+        return NULL;
+    }
+    return path;
+}
+
 static PyObject *load_font(PyObject *self, PyObject *args) {
     /* allocates space for the path to the font file (as a wide
     string) and for the number of fonts loaded from it */
@@ -440,7 +455,7 @@ static PyObject *load_font(PyObject *self, PyObject *args) {
     if(PyArg_ParseTuple(args, "U", &value) == FALSE) {
         return NULL;
     }
-    path = PyUnicode_AsWideCharString(value, NULL);
+    path = _get_path(value);
     if(path == NULL) { return NULL; }
 
     /* loads the font file as a private font of the current process
@@ -473,7 +488,7 @@ static PyObject *unload_font(PyObject *self, PyObject *args) {
     if(PyArg_ParseTuple(args, "U", &value) == FALSE) {
         return NULL;
     }
-    path = PyUnicode_AsWideCharString(value, NULL);
+    path = _get_path(value);
     if(path == NULL) { return NULL; }
 
     /* unloads the font file from the private fonts of the current

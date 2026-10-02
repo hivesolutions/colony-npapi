@@ -267,6 +267,19 @@ void pdevices(struct device_t **devices_p, size_t *devices_c) {
     *devices_c = count;
 }
 
+int pload_font(const wchar_t *path) {
+    /* adds the font file as a private font resource, only visible
+    to the current process and removed when the process ends, the
+    number of fonts added is returned (zero in case of failure) */
+    return AddFontResourceExW(path, FR_PRIVATE, 0);
+}
+
+int punload_font(const wchar_t *path) {
+    /* removes the font file from the private font resources of the
+    current process, the flags must match the ones used to add it */
+    return RemoveFontResourceExW(path, FR_PRIVATE, 0) ? 0 : -1;
+}
+
 int print(
     bool show_dialog,
     struct job_t *config,

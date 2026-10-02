@@ -174,6 +174,35 @@ static PyObject *get_devices(PyObject *self, PyObject *args) {
     return result;
 }
 
+static PyObject *get_features(PyObject *self, PyObject *args) {
+    /* allocates the list of the (optional) features supported by the
+    module in the current system, identified by lowercase and dash
+    separated names, so that they're checked without probing for
+    the functions that implement them */
+#ifdef COLONY_PLATFORM_WIN32
+    PyObject *item;
+#endif
+    PyObject *result = PyList_New(0);
+    if(result == NULL) { return NULL; }
+
+    /* the loading of fonts is only supported on windows (see the load
+    font function), as the functions are only defined there, the feature
+    is only added to the list in such case */
+#ifdef COLONY_PLATFORM_WIN32
+    item = PyUnicode_FromString("load-fonts");
+    if(item == NULL || PyList_Append(result, item) != 0) {
+        Py_XDECREF(item);
+        Py_DECREF(result);
+        return NULL;
+    }
+    Py_DECREF(item);
+#endif
+
+    /* returns the list of features that has been constructed
+    to the caller method/function */
+    return result;
+}
+
 static PyObject *print_devices(PyObject *self, PyObject *args) {
     /* allocates memory for the various internal structure
     that are going to be used to print device information */
@@ -393,13 +422,165 @@ static PyObject *print_printer_base64(PyObject *self, PyObject *args, PyObject *
     return PyLong_FromLong((long) result);
 }
 
+/* the loading of fonts is only available on windows, as the other
+systems embed the fonts in the (pdf) documents they print, the load
+fonts feature reports its availability (get features) */
+#ifdef COLONY_PLATFORM_WIN32
+static wchar_t *_get_path(PyObject *object, PyObject **value) {
+    /* converts the provided path (string) into a wide string, setting
+    its unicode value (a new reference) in the provided pointer, notice
+    that python 2 (byte) strings are decoded with the encoding of the
+    file system, as the other path arguments of python 2 on windows */
+    Py_ssize_t size;
+    wchar_t *path;
+#if PY_MAJOR_VERSION >= 3
+    if(!PyUnicode_Check(object)) {
+        PyErr_SetString(PyExc_TypeError, "Invalid path, it must be a string");
+        return NULL;
+    }
+    Py_INCREF(object);
+    *value = object;
+    path = PyUnicode_AsWideCharString(*value, &size);
+#else
+    if(PyUnicode_Check(object)) {
+        Py_INCREF(object);
+        *value = object;
+    } else if(PyString_Check(object)) {
+        *value = PyUnicode_FromEncodedObject(object, Py_FileSystemDefaultEncoding, NULL);
+        if(*value == NULL) { return NULL; }
+    } else {
+        PyErr_SetString(PyExc_TypeError, "Invalid path, it must be a string");
+        return NULL;
+    }
+
+    /* python 2 unicode strings are stored as wide strings on windows,
+    so they're copied into a (null terminated) buffer */
+    size = PyUnicode_GET_SIZE(*value);
+    path = (wchar_t *) PyMem_Malloc((size + 1) * sizeof(wchar_t));
+    if(path == NULL) {
+        PyErr_NoMemory();
+    } else {
+        memcpy(path, PyUnicode_AS_UNICODE(*value), size * sizeof(wchar_t));
+        path[size] = L'\0';
+    }
+#endif
+    if(path == NULL) {
+        Py_DECREF(*value);
+        return NULL;
+    }
+
+    /* rejects the paths with null characters that would truncate them,
+    as python only rejects them when the size is not requested (and
+    only from 3.7 on) */
+    if(wcslen(path) != (size_t) size) {
+        PyMem_Free(path);
+        Py_DECREF(*value);
+        PyErr_SetString(PyExc_ValueError, "Invalid path, it must not contain null characters");
+        return NULL;
+    }
+    return path;
+}
+
+static void _set_font_error(const char *message, PyObject *value) {
+    /* raises an IO error with the provided message and the path of the
+    font file, encoded with the encoding of the file system on python 2,
+    as the (byte) string conversion of its errors fails for unicode
+    messages with non ASCII characters */
+#if PY_MAJOR_VERSION >= 3
+    PyErr_Format(PyExc_IOError, "%s '%U'", message, value);
+#else
+    PyObject *path = PyUnicode_AsEncodedString(value, Py_FileSystemDefaultEncoding, "replace");
+    if(path == NULL) { return; }
+    PyErr_Format(PyExc_IOError, "%s '%s'", message, PyString_AS_STRING(path));
+    Py_DECREF(path);
+#endif
+}
+
+static PyObject *load_font(PyObject *self, PyObject *args) {
+    /* allocates space for the path to the font file (as a wide
+    string) and for the number of fonts loaded from it */
+    PyObject *object;
+    PyObject *value;
+    wchar_t *path;
+    int result;
+
+    /* tries to parse the provided sequence of arguments as a single
+    (string) value, the path to the font file, converting it into
+    a wide string as expected by the windows (unicode) API */
+    if(PyArg_ParseTuple(args, "O", &object) == FALSE) {
+        return NULL;
+    }
+    path = _get_path(object, &value);
+    if(path == NULL) { return NULL; }
+
+    /* loads the font file as a private font of the current process
+    and then releases the wide string (avoids memory leaks) */
+    result = pload_font(path);
+    PyMem_Free(path);
+
+    /* in case no font was loaded from the font file raises an exception
+    so that the caller is notified about the problem */
+    if(result == 0) {
+        _set_font_error("Problem loading font", value);
+        Py_DECREF(value);
+        return NULL;
+    }
+
+    /* releases the (unicode) path and returns the number of fonts
+    loaded from the font file to the caller method/function */
+    Py_DECREF(value);
+    return PyLong_FromLong((long) result);
+}
+
+static PyObject *unload_font(PyObject *self, PyObject *args) {
+    /* allocates space for the path to the font file (as a wide
+    string) and for the result of the unloading */
+    PyObject *object;
+    PyObject *value;
+    wchar_t *path;
+    int result;
+
+    /* tries to parse the provided sequence of arguments as a single
+    (string) value, the path to the font file, converting it into
+    a wide string as expected by the windows (unicode) API */
+    if(PyArg_ParseTuple(args, "O", &object) == FALSE) {
+        return NULL;
+    }
+    path = _get_path(object, &value);
+    if(path == NULL) { return NULL; }
+
+    /* unloads the font file from the private fonts of the current
+    process and then releases the wide string (avoids memory leaks) */
+    result = punload_font(path);
+    PyMem_Free(path);
+
+    /* in case the unload operation failed raises an exception
+    so that the caller is notified about the problem */
+    if(result < 0) {
+        _set_font_error("Problem unloading font", value);
+        Py_DECREF(value);
+        return NULL;
+    }
+
+    /* releases the (unicode) path and returns an invalid value to the
+    caller method/function as this function should not return anything */
+    Py_DECREF(value);
+    Py_RETURN_NONE;
+}
+#endif
+
 static PyMethodDef colony_functions[] = {
     {"get_format", get_format, METH_NOARGS, "Retrieves the format supported by the system."},
     {"get_devices", get_devices, METH_NOARGS, "Retrieves the complete set of devices."},
+    {"get_features", get_features, METH_NOARGS, "Retrieves the features supported in the current system."},
     {"print_devices", print_devices, METH_NOARGS, "Prints the complete set of devices to stdout."},
     {"print_hello", print_hello, METH_NOARGS, "Prints an hello message to default printer."},
     {"print_base64", print_base64, METH_VARARGS, "Prints a Base64 based sequence of data to default printer."},
     {"print_printer_base64", (PyCFunction) print_printer_base64, METH_VARARGS | METH_KEYWORDS, "Prints a Base64 based sequence of data in a specific printer with optional options."},
+#ifdef COLONY_PLATFORM_WIN32
+    {"load_font", load_font, METH_VARARGS, "Loads a font file as a private font of the current process."},
+    {"unload_font", unload_font, METH_VARARGS, "Unloads a font file loaded as a private font of the current process."},
+#endif
     {NULL, NULL, 0, NULL}
 };
 

@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
+import time
 import base64
 import ctypes
 import shutil
@@ -31,13 +33,13 @@ class GlobalTest(unittest.TestCase):
             data += struct.pack("<II", element_type, len(element)) + element
         return data
 
-    def _text(self, text, text_weight=0, text_italic=0):
+    def _text(self, text, text_weight=0, text_italic=0, font=b"Calibri"):
         text_encoded = text.encode("utf-8")
         element = struct.pack(
             "<ii256sIIIIIIIIIII",
             0,
             0,
-            b"Calibri",
+            font,
             9,
             1,
             text_weight,
@@ -61,6 +63,64 @@ class GlobalTest(unittest.TestCase):
         bitmap = struct.pack("<2sIHHI", b"BM", 58, 0, 0, 54)
         bitmap += struct.pack("<IiiHHIIiiII", 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0)
         return bitmap + b"\x00\x00\xff\x00"
+
+    def _font(self, name, directory="fonts", file_name="arial.ttf", family="Arial"):
+        # copies a font of the system (arial by default) renaming its family
+        # into the provided name (of the same size), so that the font is not
+        # installed in the system
+        fonts_dir = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts")
+        with open(os.path.join(fonts_dir, file_name), "rb") as file:
+            data = file.read()
+        data = data.replace(family.encode("utf-8"), name.encode("utf-8"))
+        data = data.replace(family.encode("utf-16-be"), name.encode("utf-16-be"))
+        font_dir = os.path.join(self.target_dir, directory)
+        os.makedirs(font_dir)
+        font_path = os.path.join(font_dir, "%s.ttf" % name)
+        with open(font_path, "wb") as file:
+            file.write(data)
+        return font_path
+
+    def _face(self, name):
+        # retrieves the name of the face that GDI selects for a font with the
+        # provided name, the one of a substitute font when it's not available
+        gdi32 = ctypes.WinDLL("gdi32")
+        gdi32.CreateCompatibleDC.restype = ctypes.c_void_p
+        gdi32.CreateCompatibleDC.argtypes = (ctypes.c_void_p,)
+        gdi32.CreateFontW.restype = ctypes.c_void_p
+        gdi32.CreateFontW.argtypes = (
+            (ctypes.c_int,) * 5 + (ctypes.c_uint,) * 8 + (ctypes.c_wchar_p,)
+        )
+        gdi32.SelectObject.restype = ctypes.c_void_p
+        gdi32.SelectObject.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
+        gdi32.GetTextFaceW.argtypes = (ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p)
+        gdi32.DeleteObject.argtypes = (ctypes.c_void_p,)
+        gdi32.DeleteDC.argtypes = (ctypes.c_void_p,)
+        context = gdi32.CreateCompatibleDC(None)
+        font = gdi32.CreateFontW(20, 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 0, 0, name)
+        previous = gdi32.SelectObject(context, font)
+        buffer = ctypes.create_unicode_buffer(64)
+        gdi32.GetTextFaceW(context, 64, buffer)
+        gdi32.SelectObject(context, previous)
+        gdi32.DeleteObject(font)
+        gdi32.DeleteDC(context)
+        return buffer.value
+
+    def _print_pdf(self, data_b64, name):
+        # prints the binie document to the microsoft print to pdf printer and
+        # waits for the spooler to write the (complete) pdf document, as it
+        # may be written after the print operation returns
+        path = os.path.join(self.target_dir, name)
+        npcolony.print_printer_base64(
+            "Microsoft Print to PDF", data_b64, options=dict(output_path=path)
+        )
+        for _index in range(60):
+            if os.path.exists(path):
+                with open(path, "rb") as file:
+                    data = file.read()
+                if data.rstrip().endswith(b"%%EOF"):
+                    return data
+            time.sleep(0.5)
+        self.fail("PDF document not written by the printer")
 
     def test_basic(self):
         self.assertEqual(type(npcolony.VERSION), str)
@@ -178,6 +238,16 @@ class GlobalTest(unittest.TestCase):
             self.skipTest("requires the npcolony-test-fixed printer")
         self.assertEqual(devices["npcolony-test-fixed"]["media"], "A4")
         self.assertEqual(devices["npcolony-test-fixed"]["custom"], None)
+
+    def test_get_features(self):
+        features = npcolony.get_features()
+        self.assertEqual(type(features), list)
+        self.assertEqual(("load-fonts" in features), os.name == "nt")
+        self.assertEqual(hasattr(npcolony, "load_font"), "load-fonts" in features)
+        self.assertEqual(hasattr(npcolony, "unload_font"), "load-fonts" in features)
+        for feature in features:
+            self.assertEqual(feature, feature.lower())
+            self.assertEqual(" " in feature or "_" in feature, False)
 
     def test_print_base64_invalid(self):
         self.assertRaises(ValueError, lambda: npcolony.print_base64(""))
@@ -482,3 +552,182 @@ class GlobalTest(unittest.TestCase):
             growths,
             [empty, empty, empty, growth(print_gdi, 1), growth(print_gdi, 3)],
         )
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font(self):
+        font_path = self._font(
+            "Npcol", directory=b"fontes-\xc3\xa7\xc3\xa3o".decode("utf-8")
+        )
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        try:
+            self.assertEqual(self._face("Npcol"), "Npcol")
+        finally:
+            npcolony.unload_font(font_path)
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+
+        # the path may also be a (byte) string of the file system encoding
+        # on python 2, as the other paths of python 2, but not on python 3
+        path = font_path.encode(sys.getfilesystemencoding())
+        if sys.version_info[0] < 3:
+            self.assertEqual(npcolony.load_font(path), 1)
+            try:
+                self.assertEqual(self._face("Npcol"), "Npcol")
+            finally:
+                npcolony.unload_font(path)
+            self.assertEqual(self._face("Npcol") == "Npcol", False)
+        else:
+            self.assertRaises(TypeError, lambda: npcolony.load_font(path))
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_counted(self):
+        # the loads of a font file are counted, so the font loaded twice is
+        # still available after the first unload and removed by the last one
+        font_path = self._font("Npcol")
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        try:
+            npcolony.unload_font(font_path)
+            self.assertEqual(self._face("Npcol"), "Npcol")
+        finally:
+            npcolony.unload_font(font_path)
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+        self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_references(self):
+        # the paths keep their references after loading and unloading the
+        # fonts, either the operations succeed or fail
+        font_path = self._font(
+            "Npcol", directory=b"fontes-\xc3\xa7\xc3\xa3o".decode("utf-8")
+        )
+        missing_path = os.path.join(self.target_dir, b"n\xc3\xa3o.ttf".decode("utf-8"))
+        null_path = font_path + "\0"
+        byte_path = font_path.encode(sys.getfilesystemencoding())
+        paths = (font_path, missing_path, null_path, byte_path)
+        counts = [sys.getrefcount(path) for path in paths]
+        for _index in range(8):
+            self.assertEqual(npcolony.load_font(font_path), 1)
+            npcolony.unload_font(font_path)
+            self.assertRaises(IOError, lambda: npcolony.load_font(missing_path))
+            self.assertRaises(IOError, lambda: npcolony.unload_font(missing_path))
+            self.assertRaises(ValueError, lambda: npcolony.load_font(null_path))
+            self.assertRaises(ValueError, lambda: npcolony.unload_font(null_path))
+            if sys.version_info[0] < 3:
+                self.assertEqual(npcolony.load_font(byte_path), 1)
+                npcolony.unload_font(byte_path)
+            else:
+                self.assertRaises(TypeError, lambda: npcolony.load_font(byte_path))
+                self.assertRaises(TypeError, lambda: npcolony.unload_font(byte_path))
+        self.assertEqual([sys.getrefcount(path) for path in paths], counts)
+
+        # on python 2 the (byte) string paths are decoded into new values,
+        # not covered by the counts of the paths, but an empty path is decoded
+        # into the shared empty value, whose count changes when the decoded
+        # values leak (or are over released), the empty path failing to load
+        if sys.version_info[0] < 3:
+            empty = b"".decode("utf-8")
+            count = sys.getrefcount(empty)
+            for _index in range(8):
+                self.assertRaises(IOError, lambda: npcolony.load_font(b""))
+                self.assertRaises(IOError, lambda: npcolony.unload_font(b""))
+            self.assertEqual(sys.getrefcount(empty), count)
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_print(self):
+        names = [device["name"] for device in npcolony.get_devices()]
+        if not "Microsoft Print to PDF" in names:
+            self.skipTest("requires the microsoft print to pdf printer")
+
+        # prints a document with the loaded font (consolas renamed), that must
+        # reach the printer (through the spooler) and be embedded in the pdf
+        # document, then the same document once the font is unloaded (and so
+        # substituted) and the document with consolas itself, as the printer
+        # names the embedded fonts generically (eg: CIDFont+F1) the fonts are
+        # told apart by the size of their embedded font programs, the same for
+        # the loaded font and for consolas (the renamed font has its size)
+        font_path = self._font("Npcolony", file_name="consola.ttf", family="Consolas")
+        binie = self._binie([self._text("npcolony", font=b"Npcolony")])
+        data_b64 = base64.b64encode(binie).decode("utf-8")
+        npcolony.load_font(font_path)
+        try:
+            loaded = self._print_pdf(data_b64, "loaded.pdf")
+        finally:
+            npcolony.unload_font(font_path)
+        unloaded = self._print_pdf(data_b64, "unloaded.pdf")
+        binie = self._binie([self._text("npcolony", font=b"Consolas")])
+        consolas = self._print_pdf(
+            base64.b64encode(binie).decode("utf-8"), "consolas.pdf"
+        )
+
+        sizes = [
+            re.findall(b"/Length1\\s+(\\d+)", data)
+            for data in (loaded, unloaded, consolas)
+        ]
+        message = "font program sizes: loaded %r, unloaded %r, consolas %r" % tuple(
+            sizes
+        )
+        self.assertEqual(len(sizes[2]) > 0, True, message)
+        self.assertEqual(sizes[0], sizes[2], message)
+        self.assertNotEqual(sizes[1], sizes[2], message)
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_load_font_invalid(self):
+        font_path = os.path.join(self.target_dir, "missing.ttf")
+        self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
+
+        font_path = os.path.join(self.target_dir, "invalid.ttf")
+        with open(font_path, "wb") as file:
+            file.write(b"not a font")
+        self.assertRaises(IOError, lambda: npcolony.load_font(font_path))
+
+        # the (byte) string path of the invalid font is accepted on python 2
+        # (and so the font fails to load), but refused on python 3
+        error = IOError if sys.version_info[0] < 3 else TypeError
+        self.assertRaises(error, lambda: npcolony.load_font(font_path.encode()))
+        self.assertRaises(TypeError, lambda: npcolony.load_font(None))
+        self.assertRaises(TypeError, lambda: npcolony.load_font(1))
+        self.assertRaises(TypeError, lambda: npcolony.load_font())
+
+        # the error of a font with a non ASCII path is converted into a
+        # string (as callers log it) on every version of python
+        font_path = os.path.join(
+            self.target_dir, b"inv\xc3\xa1lida.ttf".decode("utf-8")
+        )
+        with open(font_path, "wb") as file:
+            file.write(b"not a font")
+        with self.assertRaises(IOError) as context:
+            npcolony.load_font(font_path)
+        self.assertEqual("inv" in str(context.exception), True)
+        self.assertEqual("lida.ttf" in str(context.exception), True)
+
+        # a path with a null character would be truncated (into the path of
+        # a valid font), so it's refused on every version of python
+        font_path = self._font("Npcol")
+        self.assertRaises(ValueError, lambda: npcolony.load_font(font_path + "\0"))
+        self.assertRaises(
+            ValueError, lambda: npcolony.load_font(font_path + "\0.backup")
+        )
+
+    @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
+    def test_unload_font_invalid(self):
+        font_path = self._font("Npcol")
+        self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
+        self.assertRaises(ValueError, lambda: npcolony.unload_font(font_path + "\0"))
+        error = IOError if sys.version_info[0] < 3 else TypeError
+        self.assertRaises(error, lambda: npcolony.unload_font(font_path.encode()))
+        self.assertRaises(TypeError, lambda: npcolony.unload_font(None))
+        self.assertRaises(TypeError, lambda: npcolony.unload_font())
+
+        # the error of a font with a non ASCII path is converted into a
+        # string (as callers log it) on every version of python
+        font_path = os.path.join(self.target_dir, b"n\xc3\xa3o.ttf".decode("utf-8"))
+        with self.assertRaises(IOError) as context:
+            npcolony.unload_font(font_path)
+        self.assertEqual("o.ttf" in str(context.exception), True)
+
+    @unittest.skipIf(os.name == "nt", "fonts are only loaded on windows")
+    def test_load_font_unsupported(self):
+        self.assertEqual("load-fonts" in npcolony.get_features(), False)
+        self.assertEqual(hasattr(npcolony, "load_font"), False)
+        self.assertEqual(hasattr(npcolony, "unload_font"), False)

@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Loading of fonts on Windows for the printing of the documents, without installing them in the system - [#29](https://github.com/hivesolutions/colony-print/issues/29)
+* Features supported in the current system (e.g. the loading of fonts) reported by the module - [#29](https://github.com/hivesolutions/colony-print/issues/29)
 
 ### Changed
 

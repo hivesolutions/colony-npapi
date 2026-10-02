@@ -597,8 +597,7 @@ class GlobalTest(unittest.TestCase):
     @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_references(self):
         # the paths keep their references after loading and unloading the
-        # fonts, either the operations succeed or fail, including the (byte)
-        # string paths that are decoded into new values on python 2
+        # fonts, either the operations succeed or fail
         font_path = self._font(
             "Npcol", directory=b"fontes-\xc3\xa7\xc3\xa3o".decode("utf-8")
         )
@@ -621,6 +620,18 @@ class GlobalTest(unittest.TestCase):
                 self.assertRaises(TypeError, lambda: npcolony.load_font(byte_path))
                 self.assertRaises(TypeError, lambda: npcolony.unload_font(byte_path))
         self.assertEqual([sys.getrefcount(path) for path in paths], counts)
+
+        # on python 2 the (byte) string paths are decoded into new values,
+        # not covered by the counts of the paths, but an empty path is decoded
+        # into the shared empty value, whose count changes when the decoded
+        # values leak (or are over released), the empty path failing to load
+        if sys.version_info[0] < 3:
+            empty = b"".decode("utf-8")
+            count = sys.getrefcount(empty)
+            for _index in range(8):
+                self.assertRaises(IOError, lambda: npcolony.load_font(b""))
+                self.assertRaises(IOError, lambda: npcolony.unload_font(b""))
+            self.assertEqual(sys.getrefcount(empty), count)
 
     @unittest.skipIf(os.name != "nt", "fonts are only loaded on windows")
     def test_load_font_print(self):

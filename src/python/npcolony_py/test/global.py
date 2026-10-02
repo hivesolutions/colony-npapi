@@ -585,7 +585,8 @@ class GlobalTest(unittest.TestCase):
         # document, then the same document once the font is unloaded (and so
         # substituted) and the document with consolas itself, as the printer
         # names the embedded fonts generically (eg: CIDFont+F1) the fonts are
-        # told apart by their bounding box (the one of the font itself)
+        # told apart by the size of their embedded font programs, the same for
+        # the loaded font and for consolas (the renamed font has its size)
         font_path = self._font("Npcolony", file_name="consola.ttf", family="Consolas")
         binie = self._binie([self._text("npcolony", font=b"Npcolony")])
         data_b64 = base64.b64encode(binie).decode("utf-8")
@@ -600,18 +601,16 @@ class GlobalTest(unittest.TestCase):
             base64.b64encode(binie).decode("utf-8"), "consolas.pdf"
         )
 
-        boxes = [
-            re.findall(b"/FontBBox\\s*\\[([^\\]]*)\\]", data)
+        sizes = [
+            re.findall(b"/Length1\\s+(\\d+)", data)
             for data in (loaded, unloaded, consolas)
         ]
-        message = "font boxes: loaded %r, unloaded %r, consolas %r" % tuple(boxes)
-        message += ", font keys %r, streams %r" % (
-            sorted(set(re.findall(b"/[A-Za-z]*Font[A-Za-z0-9]*", loaded))),
-            re.findall(b"<<[^<>]{0,300}>>\\s*stream", loaded)[:12],
+        message = "font program sizes: loaded %r, unloaded %r, consolas %r" % tuple(
+            sizes
         )
-        self.assertEqual(len(boxes[2]) > 0, True, message)
-        self.assertEqual(boxes[0], boxes[2], message)
-        self.assertNotEqual(boxes[1], boxes[2], message)
+        self.assertEqual(len(sizes[2]) > 0, True, message)
+        self.assertEqual(sizes[0], sizes[2], message)
+        self.assertNotEqual(sizes[1], sizes[2], message)
 
     @unittest.skipIf(
         os.name != "nt" or sys.version_info[0] < 3,

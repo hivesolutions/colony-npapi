@@ -4,10 +4,10 @@
 import os
 import re
 import sys
+import time
 import base64
 import ctypes
 import shutil
-import time
 import struct
 import tempfile
 import unittest
@@ -113,7 +113,7 @@ class GlobalTest(unittest.TestCase):
         npcolony.print_printer_base64(
             "Microsoft Print to PDF", data_b64, options=dict(output_path=path)
         )
-        for _ in range(60):
+        for _index in range(60):
             if os.path.exists(path):
                 with open(path, "rb") as file:
                     data = file.read()

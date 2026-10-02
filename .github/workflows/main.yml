@@ -286,6 +286,7 @@ jobs:
     name: Build Windows XP
     timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         python-version: [
           2.7.18,
@@ -300,16 +301,19 @@ jobs:
       - name: Setup Python ${{ matrix.python-version }}
         run: |
           Invoke-WebRequest https://www.python.org/ftp/python/${{ matrix.python-version }}/python-${{ matrix.python-version }}.msi -OutFile python.msi
-          Start-Process msiexec -Wait -ArgumentList "/i python.msi /qn ALLUSERS=1 TARGETDIR=C:\Python"
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i python.msi /qn /norestart /l*v python.log ALLUSERS=1 TARGETDIR=C:\Python"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content python.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install python.msi ($($process.ExitCode))" }
           Add-Content $env:GITHUB_PATH "C:\Python", "C:\Python\Scripts"
           Add-Content $env:GITHUB_ENV "NPCOLONY_TEST_XP=1"
 
       - name: Setup MSVC 9.0
         if: matrix.python-version == '2.7.18'
         run: |
+          if (-not "${{ vars.VCPYTHON27_URL }}") { throw "The VCPYTHON27_URL repository variable (URL of VCForPython27.msi) is not set" }
           Invoke-WebRequest "${{ vars.VCPYTHON27_URL }}" -OutFile vcpython27.msi
           if ((Get-FileHash vcpython27.msi).Hash -ne "070474db76a2e625513a5835df4595df9324d820f9cc97eab2a596dcbc2f5cbf") { throw "Invalid checksum for vcpython27.msi" }
-          Start-Process msiexec -Wait -ArgumentList "/i vcpython27.msi /qn ALLUSERS=1"
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i vcpython27.msi /qn /norestart /l*v vcpython27.log ALLUSERS=1"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content vcpython27.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install vcpython27.msi ($($process.ExitCode))" }
 
       - name: Setup MSVC 10.0
         if: matrix.python-version == '3.4.4'
@@ -317,8 +321,10 @@ jobs:
           Invoke-WebRequest https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso -OutFile sdk.iso
           if ((Get-FileHash sdk.iso).Hash -ne "27cb38f76095c0acb9b558109f8693b39cbceb796856c15bd575f9e9d0b316c3") { throw "Invalid checksum for sdk.iso" }
           $drive = (Mount-DiskImage -ImagePath "$pwd\sdk.iso" -PassThru | Get-Volume).DriveLetter
-          Start-Process msiexec -Wait -ArgumentList "/i ${drive}:\Setup\WinSDKBuild\WinSDKBuild_x86.msi /qn"
-          Start-Process msiexec -Wait -ArgumentList "/i ${drive}:\Setup\vc_stdx86\vc_stdx86.msi /qn"
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i ${drive}:\Setup\WinSDKBuild\WinSDKBuild_x86.msi /qn /norestart /l*v sdk.log"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content sdk.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install WinSDKBuild_x86.msi ($($process.ExitCode))" }
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i ${drive}:\Setup\vc_stdx86\vc_stdx86.msi /qn /norestart /l*v vc.log"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content vc.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install vc_stdx86.msi ($($process.ExitCode))" }
 
       - name: Show Python version
         run: python --version

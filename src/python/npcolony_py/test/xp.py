@@ -141,7 +141,7 @@ class XpTest(unittest.TestCase):
 
     @unittest.skipIf(os.name != "nt", "windows xp modules are only built on windows")
     def test_check_module_npcolony(self):
-        if struct.calcsize("P") == 8 or sys.version_info >= (3, 5):
+        if struct.calcsize("P") == 8 or not sys.version_info[:2] in ((2, 7), (3, 4)):
             if os.environ.get("NPCOLONY_TEST_XP", None):
                 self.fail("the npcolony module is not built for windows xp")
             self.skipTest("requires a 32 bit python 2.7 or 3.4")

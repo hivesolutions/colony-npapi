@@ -342,60 +342,82 @@ jobs:
 
       - name: Diagnose printing
         run: |
-          Get-Printer | Format-Table Name, DriverName, PortName -AutoSize
-          Get-PrinterDriver | Format-Table Name, MajorVersion, PrinterEnvironment -AutoSize
-          python -c "import npcolony; print([(device['name'], device['is_default']) for device in npcolony.get_devices()])"
           @'
           import os
           import sys
           import time
           import base64
-          import struct
           import ctypes
+          import importlib
           import npcolony
-          printer = sys.argv[1]
-          mode = sys.argv[2]
-          path = os.path.abspath("diagnose-%s.out" % mode)
+          test = importlib.import_module("npcolony_py.test.global").GlobalTest("test_basic")
           start = time.time()
           def log(message):
-              sys.stdout.write("%6.1fs %s %s: %s\n" % (time.time() - start, mode, printer, message))
+              sys.stdout.write("%6.1fs %s\n" % (time.time() - start, message))
               sys.stdout.flush()
-          if mode == "npcolony":
-              data = base64.b64encode(struct.pack("<256sIII", b"npcolony", 0, 0, 0)).decode("ascii")
-              log("print_printer_base64")
-              log(npcolony.print_printer_base64(printer, data, options=dict(output_path=path)))
-          else:
-              class DocInfo(ctypes.Structure):
-                  _fields_ = [("size", ctypes.c_int), ("name", ctypes.c_wchar_p), ("output", ctypes.c_wchar_p), ("datatype", ctypes.c_wchar_p), ("type", ctypes.c_uint)]
-              gdi32 = ctypes.WinDLL("gdi32")
-              gdi32.CreateDCW.restype = ctypes.c_void_p
-              gdi32.CreateDCW.argtypes = (ctypes.c_wchar_p,) * 3 + (ctypes.c_void_p,)
-              gdi32.StartDocW.argtypes = (ctypes.c_void_p, ctypes.POINTER(DocInfo))
-              for name in ("StartPage", "EndPage", "EndDoc", "DeleteDC"):
-                  getattr(gdi32, name).argtypes = (ctypes.c_void_p,)
-              log("CreateDCW")
-              context = gdi32.CreateDCW(u"WINSPOOL", u"" + printer, None, None)
-              log("context %r" % context)
-              info = DocInfo(ctypes.sizeof(DocInfo), u"npcolony", u"" + path, None, 0)
-              log("StartDocW %d" % gdi32.StartDocW(context, ctypes.byref(info)))
-              log("StartPage %d" % gdi32.StartPage(context))
-              log("EndPage %d" % gdi32.EndPage(context))
-              log("EndDoc %d" % gdi32.EndDoc(context))
-              log("DeleteDC %d" % gdi32.DeleteDC(context))
-          log("exists %s" % os.path.exists(path))
+          printer = "Microsoft Print to PDF"
+          path = os.path.abspath("diagnose.pdf")
+          data = base64.b64encode(test._binie([])).decode("ascii")
+          log("single %s" % npcolony.print_printer_base64(printer, data, options=dict(output_path=path)))
+          for _index in range(30):
+              if os.path.exists(path):
+                  break
+              time.sleep(0.5)
+          log("single exists %s" % os.path.exists(path))
+          texts = [test._text("npcolony", text_weight, text_italic) for text_weight in (0, 1) for text_italic in (0, 1)]
+          images = [test._image()] * 3
+          for label, elements in (("empty", []), ("text", texts[:1]), ("texts", texts), ("image", images[:1]), ("images", images)):
+              data = base64.b64encode(test._binie(elements)).decode("ascii")
+              for index in range(8):
+                  log("%s %d" % (label, index))
+                  log("%s %d result %s" % (label, index, npcolony.print_printer_base64(printer, data, options=dict(output_path=path))))
+          image_path = os.path.abspath("diagnose.bmp")
+          with open(image_path, "wb") as file:
+              file.write(test._bitmap())
+          class DocInfo(ctypes.Structure):
+              _fields_ = [("size", ctypes.c_int), ("name", ctypes.c_wchar_p), ("output", ctypes.c_wchar_p), ("datatype", ctypes.c_wchar_p), ("type", ctypes.c_uint)]
+          gdi32 = ctypes.WinDLL("gdi32")
+          gdi32.CreateDCW.restype = ctypes.c_void_p
+          gdi32.CreateDCW.argtypes = (ctypes.c_wchar_p,) * 3 + (ctypes.c_void_p,)
+          gdi32.CreateCompatibleDC.restype = ctypes.c_void_p
+          gdi32.SelectObject.restype = ctypes.c_void_p
+          gdi32.SelectObject.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
+          gdi32.StretchBlt.argtypes = (ctypes.c_void_p,) + (ctypes.c_int,) * 4 + (ctypes.c_void_p,) + (ctypes.c_int,) * 4 + (ctypes.c_uint,)
+          gdi32.StartDocW.argtypes = (ctypes.c_void_p, ctypes.POINTER(DocInfo))
+          for name in ("CreateCompatibleDC", "DeleteObject", "StartPage", "EndPage", "EndDoc", "DeleteDC"):
+              getattr(gdi32, name).argtypes = (ctypes.c_void_p,)
+          user32 = ctypes.WinDLL("user32")
+          user32.LoadImageW.restype = ctypes.c_void_p
+          user32.LoadImageW.argtypes = (ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint, ctypes.c_int, ctypes.c_int, ctypes.c_uint)
+          for count in (0, 1, 3):
+              for index in range(8):
+                  log("gdi %d %d" % (count, index))
+                  context = gdi32.CreateDCW(u"WINSPOOL", u"" + printer, None, None)
+                  info = DocInfo(ctypes.sizeof(DocInfo), u"npcolony", u"" + path, None, 0)
+                  gdi32.StartDocW(context, ctypes.byref(info))
+                  gdi32.StartPage(context)
+                  for _index in range(count):
+                      bitmap = user32.LoadImageW(None, u"" + image_path, 0, 0, 0, 0x50)
+                      image_context = gdi32.CreateCompatibleDC(None)
+                      previous = gdi32.SelectObject(image_context, bitmap)
+                      gdi32.StretchBlt(context, 0, 0, 10, 10, image_context, 0, 0, 1, 1, 0xCC0020)
+                      gdi32.SelectObject(image_context, previous)
+                      gdi32.DeleteObject(bitmap)
+                      gdi32.DeleteDC(image_context)
+                  gdi32.EndPage(context)
+                  gdi32.EndDoc(context)
+                  gdi32.DeleteDC(context)
+                  log("gdi %d %d done" % (count, index))
+          log("done")
           '@ | Set-Content diagnose.py
-          foreach ($mode in "gdi", "npcolony") {
-            foreach ($printer in "Microsoft Print to PDF", "Microsoft XPS Document Writer") {
-              $process = Start-Process python -ArgumentList "diagnose.py", "`"$printer`"", $mode -NoNewWindow -PassThru
-              if (-not $process.WaitForExit(90000)) {
-                Write-Output "timeout: $mode $printer"
-                Get-Process | Where-Object { $_.MainWindowTitle } | Format-Table Id, ProcessName, MainWindowTitle -AutoSize
-                Get-Process splwow64 -ErrorAction SilentlyContinue | Format-Table Id, ProcessName, StartTime -AutoSize
-                Stop-Process -Id $process.Id -Force
-                Stop-Process -Name splwow64 -Force -ErrorAction SilentlyContinue
-              }
-            }
+          $process = Start-Process python -ArgumentList "diagnose.py" -NoNewWindow -PassThru
+          if (-not $process.WaitForExit(240000)) {
+            Write-Output "timeout"
+            Get-Process | Where-Object { $_.MainWindowTitle } | Format-Table Id, ProcessName, MainWindowTitle -AutoSize
+            Get-Process splwow64, PrintIsolationHost -ErrorAction SilentlyContinue | Format-Table Id, ProcessName, StartTime -AutoSize
+            Stop-Process -Id $process.Id -Force
           }
+          Get-PrintJob -PrinterName "Microsoft Print to PDF" | Format-Table Id, JobStatus, DocumentName, SubmittedTime, Size -AutoSize
           throw "Printing diagnosed"
 
       - name: Run tests

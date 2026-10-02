@@ -5,7 +5,8 @@ NPAPI-based plugin that provides a series of native features like:
 * Printing using direct access to the printing infra-structure of the operative system
 * Creation of native-based GUI elements
 
-The current implementation supports only x86/x64 architectures and Windows, Linux, and Mac OS X.
+The current implementation of the plugin supports only x86/x64 architectures and Windows, Linux, and Mac OS X,
+while the Python module also supports the ARM64 architecture.
 
 ## Building
 
@@ -38,8 +39,8 @@ running the python script as `python setup.py install` under an UNIX-based machi
 
 Prebuilt wheels are published to [PyPI](https://pypi.org/project/npcolony) for Windows x64 (Python 3.6 to 3.14),
 Windows ARM64 (Python 3.11 to 3.14), Mac OS X (Python 3.9 to 3.14, universal for both Intel and Apple Silicon)
-and Linux x64 and ARM64 (Python 3.9 to 3.14), the other platforms and versions build the module from the source
-distribution when running `pip install npcolony`.
+and Linux x64 and ARM64 with glibc 2.17 or newer (Python 3.9 to 3.14), the other platforms (eg: musl based ones
+like Alpine) and versions build the module from the source distribution when running `pip install npcolony`.
 
 The Linux wheels use the CUPS library of the system, which must be installed (`libcups2` under Debian and Ubuntu
 or `cups-libs` under Fedora and Red Hat).

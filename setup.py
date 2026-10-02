@@ -91,7 +91,7 @@ if os.name in ("nt",):
 try:
     setuptools.setup(
         name="npcolony",
-        version="1.3.0",
+        version="1.4.0",
         author="Hive Solutions Lda.",
         author_email="development@hive.pt",
         description="Colony Framework",

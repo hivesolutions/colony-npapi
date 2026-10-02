@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Custom paper sizes accepted by each Linux printer, with their margins, in the listing of the printers - [#26](https://github.com/hivesolutions/colony-print/issues/26)
-* Windows wheels for x64 (Python 3.6 to 3.14) and ARM64 (Python 3.11 to 3.14) published to PyPI on every release
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.4.0] - 2026-10-02
+
+### Added
+
+* Custom paper sizes accepted by each Linux printer, with their margins, in the listing of the printers - [#26](https://github.com/hivesolutions/colony-print/issues/26)
+* Windows wheels for x64 (Python 3.6 to 3.14) and ARM64 (Python 3.11 to 3.14) published to PyPI on every release
 
 ## [1.3.0] - 2026-09-29
 

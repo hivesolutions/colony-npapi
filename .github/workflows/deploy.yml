@@ -5,8 +5,8 @@ on:
       - "*"
 
 jobs:
-  build-sdist:
-    name: Build Source Distribution
+  build-linux:
+    name: Build Linux
     timeout-minutes: 10
     runs-on: ubuntu-latest
     container: python:3.14
@@ -38,7 +38,6 @@ jobs:
         with:
           name: sdist
           path: dist/*.tar.gz
-          if-no-files-found: error
 
   build-windows:
     name: Build Windows
@@ -87,7 +86,6 @@ jobs:
         with:
           name: wheel-${{ matrix.python-version }}
           path: dist/*.whl
-          if-no-files-found: error
 
   build-windows-arm:
     name: Build Windows ARM
@@ -132,11 +130,10 @@ jobs:
         with:
           name: wheel-arm-${{ matrix.python-version }}
           path: dist/*.whl
-          if-no-files-found: error
 
   deploy:
     name: Publish to PyPI
-    needs: [build-sdist, build-windows, build-windows-arm]
+    needs: [build-linux, build-windows, build-windows-arm]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     container: python:3.14

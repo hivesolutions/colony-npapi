@@ -575,6 +575,24 @@ class GlobalTest(unittest.TestCase):
         os.name != "nt" or sys.version_info[0] < 3,
         "fonts are only loaded on windows with python 3",
     )
+    def test_load_font_counted(self):
+        # the loads of a font file are counted, so the font loaded twice is
+        # still available after the first unload and removed by the last one
+        font_path = self._font("Npcol")
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        self.assertEqual(npcolony.load_font(font_path), 1)
+        try:
+            npcolony.unload_font(font_path)
+            self.assertEqual(self._face("Npcol"), "Npcol")
+        finally:
+            npcolony.unload_font(font_path)
+        self.assertEqual(self._face("Npcol") == "Npcol", False)
+        self.assertRaises(IOError, lambda: npcolony.unload_font(font_path))
+
+    @unittest.skipIf(
+        os.name != "nt" or sys.version_info[0] < 3,
+        "fonts are only loaded on windows with python 3",
+    )
     def test_load_font_print(self):
         names = [device["name"] for device in npcolony.get_devices()]
         if not "Microsoft Print to PDF" in names:

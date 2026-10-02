@@ -231,6 +231,72 @@ jobs:
           name: wheel-arm-${{ matrix.python-version }}
           path: dist/*.whl
 
+  build-windows-xp:
+    name: Build Windows XP
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          2.7.18,
+          3.4.4
+        ]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python ${{ matrix.python-version }}
+        run: |
+          Invoke-WebRequest https://www.python.org/ftp/python/${{ matrix.python-version }}/python-${{ matrix.python-version }}.msi -OutFile python.msi
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i python.msi /qn /norestart /l*v python.log ALLUSERS=1 TARGETDIR=C:\Python"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content python.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install python.msi ($($process.ExitCode))" }
+          Add-Content $env:GITHUB_PATH "C:\Python", "C:\Python\Scripts"
+          Add-Content $env:GITHUB_ENV "NPCOLONY_TEST_XP=1"
+
+      - name: Setup MSVC 9.0
+        if: matrix.python-version == '2.7.18'
+        run: |
+          Invoke-WebRequest "${{ vars.VCPYTHON27_URL || 'https://web.archive.org/web/20210106040222id_/https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi' }}" -OutFile vcpython27.msi
+          if ((Get-FileHash vcpython27.msi).Hash -ne "070474db76a2e625513a5835df4595df9324d820f9cc97eab2a596dcbc2f5cbf") { (Get-Item vcpython27.msi).Length; Get-Content vcpython27.msi -TotalCount 20; throw "Invalid checksum for vcpython27.msi" }
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i vcpython27.msi /qn /norestart /l*v vcpython27.log ALLUSERS=1"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content vcpython27.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install vcpython27.msi ($($process.ExitCode))" }
+
+      - name: Setup MSVC 10.0
+        if: matrix.python-version == '3.4.4'
+        run: |
+          Invoke-WebRequest https://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso -OutFile sdk.iso
+          if ((Get-FileHash sdk.iso).Hash -ne "27cb38f76095c0acb9b558109f8693b39cbceb796856c15bd575f9e9d0b316c3") { throw "Invalid checksum for sdk.iso" }
+          $drive = (Mount-DiskImage -ImagePath "$pwd\sdk.iso" -PassThru | Get-Volume).DriveLetter
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i ${drive}:\Setup\WinSDKBuild\WinSDKBuild_x86.msi /qn /norestart /l*v sdk.log"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content sdk.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install WinSDKBuild_x86.msi ($($process.ExitCode))" }
+          $process = Start-Process msiexec -Wait -PassThru -ArgumentList "/i ${drive}:\Setup\vc_stdx86\vc_stdx86.msi /qn /norestart /l*v vc.log"
+          if ($process.ExitCode -notin 0, 3010) { Get-Content vc.log -Tail 100 -ErrorAction SilentlyContinue; throw "Failed to install vc_stdx86.msi ($($process.ExitCode))" }
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade "pip<19.2"
+          pip install --upgrade setuptools pytest wheel
+
+      - name: Install package
+        run: pip install .
+
+      - name: Run tests
+        run: pytest
+
+      - name: Build wheel
+        run: python setup.py bdist_wheel
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: wheel-xp-${{ matrix.python-version }}
+          path: dist/*.whl
+
   build-macos-arm:
     name: Build macOS ARM
     timeout-minutes: 10
@@ -290,11 +356,38 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Remove Windows XP distributions
+        run: rm -f dist/*-win32.whl
+
       - name: Install dependencies
         run: pip install twine
 
       - name: Check version of distributions
         run: ls "dist/npcolony-${GITHUB_REF_NAME}.tar.gz"
+
+      - name: Upload to PyPI
+        run: python -m twine upload --skip-existing --non-interactive dist/*
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+  deploy-xp:
+    name: Publish Windows XP to PyPI
+    needs: [build-windows-xp, deploy]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    container: python:3.14
+
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v8
+        with:
+          pattern: wheel-xp-*
+          path: dist
+          merge-multiple: true
+
+      - name: Install dependencies
+        run: pip install twine
 
       - name: Upload to PyPI
         run: python -m twine upload --skip-existing --non-interactive dist/*

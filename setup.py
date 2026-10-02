@@ -58,7 +58,7 @@ module = setuptools.Extension(
     ),
     library_dirs=["/usr/local/lib"],
     extra_compile_args=(
-        ["/DHAVE_LIBPYTHON", "/DHAVE_LIBPYTHON_UNDEF"]
+        ["/DWIN32", "/GS", "/DHAVE_LIBPYTHON", "/DHAVE_LIBPYTHON_UNDEF"]
         if os.name in ("nt",)
         else [
             "-std=c99",

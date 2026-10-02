@@ -354,8 +354,9 @@ class GlobalTest(unittest.TestCase):
         ):
             self.skipTest("requires a file printer as the default printer")
 
-        options = dict(output_path=os.path.join(self.target_dir, "output.pdf"))
         for printer in ("default", ""):
+            path = os.path.join(tempfile.mkdtemp(dir=self.target_dir), "output.pdf")
+            options = dict(output_path=path)
             if names:
                 result = npcolony.print_printer_base64(
                     printer, self.binie_b64, options=options
@@ -378,7 +379,6 @@ class GlobalTest(unittest.TestCase):
         image_path = os.path.join(self.target_dir, "image.bmp")
         with open(image_path, "wb") as file:
             file.write(self._bitmap())
-        path = os.path.join(self.target_dir, "output.pdf")
 
         class DocInfo(ctypes.Structure):
             _fields_ = [
@@ -428,6 +428,7 @@ class GlobalTest(unittest.TestCase):
         process = kernel32.GetCurrentProcess()
 
         def print_gdi(count):
+            path = os.path.join(tempfile.mkdtemp(dir=self.target_dir), "output.pdf")
             context = gdi32.CreateDCW("WINSPOOL", "Microsoft Print to PDF", None, None)
             info = DocInfo(ctypes.sizeof(DocInfo), "npcolony", path, None, 0)
             gdi32.StartDocW(context, ctypes.byref(info))
@@ -448,6 +449,7 @@ class GlobalTest(unittest.TestCase):
             gdi32.DeleteDC(context)
 
         def print_npcolony(data):
+            path = os.path.join(tempfile.mkdtemp(dir=self.target_dir), "output.pdf")
             result = npcolony.print_printer_base64(
                 "Microsoft Print to PDF",
                 base64.b64encode(data).decode("utf-8"),

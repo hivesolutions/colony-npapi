@@ -343,7 +343,6 @@ jobs:
       - name: Diagnose printing
         run: |
           wevtutil sl Microsoft-Windows-PrintService/Operational /e:true
-          Get-Printer -Name "Microsoft Print to PDF" | Format-List *
           @'
           import os
           import sys
@@ -368,8 +367,8 @@ jobs:
           gdi32.StartDocW.argtypes = (ctypes.c_void_p, ctypes.POINTER(DocInfo))
           for name in ("StartPage", "EndPage", "EndDoc", "DeleteDC"):
               getattr(gdi32, name).argtypes = (ctypes.c_void_p,)
+          path = os.path.abspath("diagnose-%s.pdf" % mode)
           for index in range(4):
-              path = os.path.abspath("diagnose-%s-%d.pdf" % (mode, index))
               if mode == "gdi":
                   log("gdi %d CreateDCW" % index)
                   context = gdi32.CreateDCW(u"WINSPOOL", u"" + printer, None, None)
@@ -383,29 +382,25 @@ jobs:
               else:
                   log("%s %d" % (mode, index))
                   log("%s %d result %s" % (mode, index, npcolony.print_printer_base64(printer, data, options=dict(output_path=path))))
-              if mode == "wait":
-                  for _index in range(60):
-                      if os.path.exists(path):
-                          break
-                      time.sleep(0.5)
-                  log("wait %d exists %s" % (index, os.path.exists(path)))
+              if mode == "sleep":
+                  time.sleep(3.0)
           log("done")
           '@ | Set-Content diagnose.py
           $debuggers = "C:\Program Files (x86)\Windows Kits\10\Debuggers"
-          Test-Path "$debuggers\x86\cdb.exe", "$debuggers\x64\cdb.exe"
           $dumped = $false
-          foreach ($mode in "gdi", "npcolony", "wait") {
+          foreach ($mode in "gdi", "npcolony", "sleep") {
             Write-Output "--- $mode"
             $process = Start-Process python -ArgumentList "diagnose.py $mode" -NoNewWindow -PassThru
             if (-not $process.WaitForExit(45000)) {
               Write-Output "timeout"
               Get-PrintJob -PrinterName "Microsoft Print to PDF" | Format-Table Id, JobStatus, DocumentName, SubmittedTime, Size -AutoSize
               Get-Process splwow64, spoolsv, PrintFilterPipelineSvc, PrintIsolationHost -ErrorAction SilentlyContinue | Format-Table Id, ProcessName, StartTime -AutoSize
-              if (-not $dumped -and (Test-Path "$debuggers\x86\cdb.exe")) {
+              Get-WinEvent -LogName Microsoft-Windows-PrintService/Operational -MaxEvents 30 -ErrorAction SilentlyContinue | Sort-Object TimeCreated | Format-Table TimeCreated, Id, Message -Wrap
+              if (-not $dumped) {
                 $dumped = $true
-                & "$debuggers\x86\cdb.exe" -p $process.Id -c ".symfix C:\symbols; .reload; ~*kb 30; qd"
+                & "$debuggers\x86\cdb.exe" -p $process.Id -c ".symfix C:\symbols; .reload; ~*kb 40; qd"
                 foreach ($name in "splwow64", "PrintFilterPipelineSvc") {
-                  Get-Process $name -ErrorAction SilentlyContinue | ForEach-Object { & "$debuggers\x64\cdb.exe" -p $_.Id -c ".symfix C:\symbols; .reload; ~*kb 30; qd" }
+                  Get-Process $name -ErrorAction SilentlyContinue | ForEach-Object { & "$debuggers\x64\cdb.exe" -p $_.Id -c ".symfix C:\symbols; .reload; ~*kb 40; qd" }
                 }
               }
               Stop-Process -Id $process.Id -Force
@@ -414,8 +409,6 @@ jobs:
             Restart-Service Spooler -Force
           }
           Get-WinEvent -LogName Microsoft-Windows-PrintService/Operational -MaxEvents 80 -ErrorAction SilentlyContinue | Sort-Object TimeCreated | Format-Table TimeCreated, Id, Message -Wrap
-          Get-WinEvent -LogName Microsoft-Windows-PrintService/Admin -MaxEvents 20 -ErrorAction SilentlyContinue | Format-Table TimeCreated, Id, Message -Wrap
-          Get-WinEvent -FilterHashtable @{ LogName = "Application"; Level = 1, 2 } -MaxEvents 10 -ErrorAction SilentlyContinue | Format-Table TimeCreated, ProviderName, Message -Wrap
           throw "Printing diagnosed"
 
       - name: Run tests

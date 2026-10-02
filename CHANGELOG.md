@@ -9,11 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Windows XP compatible wheels for x86 (Python 2.7 and 3.4) published to PyPI on every release
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [1.7.0] - 2026-10-02
+
+### Added
+
+* Windows XP compatible wheels for x86 (Python 2.7 and 3.4) published to PyPI on every release
 
 ### Fixed
 

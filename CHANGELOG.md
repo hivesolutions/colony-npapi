@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Linux wheels for x64 and ARM64 (Python 3.9 to 3.14) published to PyPI on every release
 
 ### Changed
 

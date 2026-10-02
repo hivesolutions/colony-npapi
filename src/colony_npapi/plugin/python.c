@@ -429,8 +429,8 @@ the load fonts feature reports its availability (get features) */
 #if defined(COLONY_PLATFORM_WIN32) && PY_MAJOR_VERSION >= 3
 static wchar_t *_get_path(PyObject *value) {
     /* converts the provided (unicode) path into a wide string, rejecting
-    the paths with null characters that would truncate it, as python 3.6
-    only rejects them when the size of the string is not requested */
+    the paths with null characters that would truncate it, as python only
+    rejects them when the size is not requested (and only from 3.7 on) */
     Py_ssize_t size;
     wchar_t *path = PyUnicode_AsWideCharString(value, &size);
     if(path == NULL) { return NULL; }

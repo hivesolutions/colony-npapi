@@ -356,6 +356,9 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Remove Windows XP distributions
+        run: rm -f dist/*-win32.whl
+
       - name: Install dependencies
         run: pip install twine
 

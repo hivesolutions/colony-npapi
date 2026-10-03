@@ -124,7 +124,7 @@ class GlobalTest(unittest.TestCase):
 
     def test_basic(self):
         self.assertEqual(type(npcolony.VERSION), str)
-        self.assertEqual(npcolony.VERSION, "1.7.0")
+        self.assertEqual(npcolony.VERSION, "1.8.0")
 
         self.assertEqual(type(npcolony.get_devices()), list)
 
